@@ -1,0 +1,30 @@
+<?php if(!empty($this->error)): ?>
+
+<div class="textblock block">
+
+  <h1>Bei der Suche nach "<em><?= $this->suche ?></em>" ist ein Fehler passiert</h1>
+  <p>
+    <?= $this->error ?>
+  </p>
+</div>
+
+<?php else:?>
+
+<div class="textblock block">
+
+  <h1><?= $this->ergAnzahl ?> Suchergebnisse für <em><?= $this->suche ?></em></h1>
+
+  <?php foreach($this->searchResult as $result): ?>
+  <div class="result block">
+    <a href="/halteverbot/<?= $result['alias'] ?>.html" title="<?= $result['question'] ?>">
+      <h2><?= $result['question'] ?> </h2>
+    </a>
+    <span class="kreisDetails">Kreis: <?= $result['kreis'] ?> in <b><?= $result['bundesland'] ?></b></span>
+    <p>Halteverbot ab <?= $result['hvz_single_og'] ?> €</p>
+  </div>
+  <?php endforeach; ?>
+
+</div>
+
+<?php endif; ?>
+

@@ -1,0 +1,33 @@
+{
+    "name": "chuckki/contao-hvz",
+    "description": "hvz extension for Contao Open Source CMS",
+    "keywords": ["contao", "hvz"],
+    "type": "contao-module",
+    "license": "LGPL-3.0+",
+    "authors": [
+        {
+            "name": "projektorientiert",
+            "homepage": "https://www.projektorientiert.com"
+        }
+    ],
+    "require":{
+        "php":">=7.0",
+        "contao/core-bundle":"^4.2",
+        "contao-community-alliance/composer-plugin":"~2.4 || ~3.0"
+        "chuckki/rabattbundle" : "dev-master"
+    },
+    "repositories" : [{
+        "type" : "vcs",
+        "url" : "https://github.com/chuckki/contao-rabatt.git"
+    }],
+    "replace": {
+        "contao-legacy/hvz": "self.version"
+    },
+    "extra":{
+        "contao": {
+            "sources":{
+                "": "system/modules/hvz"
+            }
+        }
+    }
+}

@@ -1,0 +1,4 @@
+<?php
+    $GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/hvz/assets/js/forAll.min.js|static';
+    $GLOBALS['TL_CSS'][] = 'files/hvb-theme/font-awesome-4.4.0/css/font-awesome.min.css';
+?>

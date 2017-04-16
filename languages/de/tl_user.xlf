@@ -1,0 +1,26 @@
+<?xml version="1.0" ?><xliff version="1.1">
+  <file datatype="php" original="system/modules/hvz/languages/en/tl_user.php" source-language="en">
+    <body>
+      <trans-unit id="tl_user.hvzs.0">
+        <source>Allowed HVZ categories</source>
+        <target>Erlaubte HVZ-Kategorien</target>
+      </trans-unit>
+      <trans-unit id="tl_user.hvzs.1">
+        <source>Here you can grant access to one or more HVZ categories.</source>
+        <target>Hier können Sie den Zugriff auf eine oder mehrere HVZ-Kategorien erlauben.</target>
+      </trans-unit>
+      <trans-unit id="tl_user.hvzp.0">
+        <source>HVZ category permissions</source>
+        <target>HVZ-Kategorierechte</target>
+      </trans-unit>
+      <trans-unit id="tl_user.hvzp.1">
+        <source>Here you can define the HVZ category permissions.</source>
+        <target>Hier können Sie die HVZ-Kategorierechte festlegen.</target>
+      </trans-unit>
+      <trans-unit id="tl_user.hvz_legend">
+        <source>HVZ permissions</source>
+        <target>HVZ-Rechte</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

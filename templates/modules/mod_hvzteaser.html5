@@ -1,0 +1,20 @@
+<div id="hvzteaser" class="<?= $this->class ?> block"<?= $this->cssID ?><?php if ($this->style): ?> style="<?= $this->style ?>"<?php endif; ?>>
+  <h2>Sofort Halteverbot beantragen in:</h2>
+<?php foreach($this->hvz as $category): ?>
+    <ul class="<?= $category['class'] ?>">
+<?php 
+foreach ($category['items'] as $hvz):
+  if ($hvz['question'] =='Frankfurt am Main'){
+    $hvz['question'] = "Frankfurt";
+  };
+?>
+      <li class="featuredlist">
+        <a class="btn" href="<?= $hvz['href'] ?>" title="Halteverbot in <?= $hvz['title'] ?> bestellen">
+          <?php echo $hvz['question'] ?>
+        </a>
+      </li>
+<?php endforeach; ?>
+    </ul>
+<?php endforeach; ?>
+    <span class="more">weitere Städte finden Sie <a href="{{link_url::halteverbot-deutschlandweit}}" title="Halteverbote und Absperrungen deutschlandweit">hier</a></span>
+</div>

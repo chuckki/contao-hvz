@@ -1,0 +1,18 @@
+<?php $this->extend('block_unsearchable'); ?>
+
+<?php $this->block('content'); ?>
+  <?= $this->teaser; ?>
+
+  <div id="hvz_list">
+    <ul class="hvzlist">
+    <?php foreach ($this->hvz['items'] as $hvz): ?>
+      <li>
+        <a href="<?= $hvz['href'] ?>" title="Halteverbot in <?= $hvz['title'] ?> beantragen">
+          <?= $hvz['title'] ?>
+        </a>
+      </li>
+    <?php endforeach; ?>
+    </ul>
+  </div>
+
+<?php $this->endblock(); ?>

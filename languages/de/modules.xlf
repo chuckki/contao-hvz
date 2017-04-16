@@ -1,0 +1,42 @@
+<?xml version="1.0" ?><xliff version="1.1">
+  <file datatype="php" original="system/modules/hvz/languages/en/modules.php" source-language="en">
+    <body>
+      <trans-unit id="MOD.hvz.0">
+        <source>HVZ</source>
+        <target>HVZ</target>
+      </trans-unit>
+      <trans-unit id="MOD.hvz.1">
+        <source>Manage frequently asked questions</source>
+        <target>Häufig gestellte Fragen verwalten</target>
+      </trans-unit>
+      <trans-unit id="FMD.hvz">
+        <source>HVZ</source>
+        <target>HVZ</target>
+      </trans-unit>
+      <trans-unit id="FMD.hvzlist.0">
+        <source>HVZ list</source>
+        <target>HVZ-Liste</target>
+      </trans-unit>
+      <trans-unit id="FMD.hvzlist.1">
+        <source>Adds a list of frequently asked questions to the page</source>
+        <target>Fügt der Seite eine Liste häufig gestellter Fragen hinzu</target>
+      </trans-unit>
+      <trans-unit id="FMD.hvzreader.0">
+        <source>HVZ reader</source>
+        <target>HVZ-Leser</target>
+      </trans-unit>
+      <trans-unit id="FMD.hvzreader.1">
+        <source>Shows the answer to a frequently asked question</source>
+        <target>Stellt die Antwort zu einer häufig gestellten Frage dar</target>
+      </trans-unit>
+      <trans-unit id="FMD.hvzpage.0">
+        <source>HVZ page</source>
+        <target>HVZ-Seite</target>
+      </trans-unit>
+      <trans-unit id="FMD.hvzpage.1">
+        <source>Shows the HVZ list and HVZ reader on the same page</source>
+        <target>Gibt die HVZ-Liste und den HVZ-Leser auf derselben Seite aus</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
