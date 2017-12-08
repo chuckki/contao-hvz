@@ -1,0 +1,30 @@
+<?php 
+	$classes = explode(" ",$this->class);
+	$count = count($classes);
+	switch($classes[$count-1]){
+		case "preisText":
+			$title = "Preise für Ihre Halteverbotszone in:";
+			break;
+		case "preisBestellung":
+			$title = "Bestellen Sie Ihre Halteverbotszone in:";
+			break;
+		default:
+			$title = "Preise für Ihre Halteverbotszone in:";
+	}
+
+?>
+
+<div class="citysearch">
+
+<?php  if($this->headline): ?>
+  <<?= $this->hl ?>><?= $this->headline ?></<?= $this->hl ?>>
+<?php else: ?>
+  <<?= $this->hl ?> id="hvzlistdropdown"><?= $title ?></<?= $this->hl ?>>
+<?php endif; ?>
+
+<input type="text" placeholder="Name oder PLZ der Stadt eintragen" value="<?= $_REQUEST['suche'] ?>" id="tags">
+<div class="sexp">
+    Suchen Sie nach dem folgenden Mustern: "<b>Berlin</b>", "<b>10115 Berlin</b>" oder "<b>10115</b>"
+</div>
+
+</div>

@@ -2,7 +2,7 @@
     "name": "chuckki/contao-hvz",
     "description": "hvz extension for Contao Open Source CMS",
     "keywords": ["contao", "hvz"],
-    "type": "contao-module",
+    "type": "contao-bundle",
     "license": "LGPL-3.0+",
     "authors": [
         {
@@ -12,22 +12,38 @@
     ],
     "require":{
         "php":">=7.0",
-        "contao/core-bundle":"^4.2",
-        "contao-community-alliance/composer-plugin":"~2.4 || ~3.0",
-        "chuckki/rabattbundle":"dev-master"
+		"contao/core-bundle": "~4.3"
     },
-    "repositories" : [{
-        "type" : "vcs",
-        "url" : "https://github.com/chuckki/contao-rabatt.git"
-    }],
-    "replace": {
-        "contao-legacy/hvz": "self.version"
-    },
-    "extra":{
-        "contao": {
-            "sources":{
-                "": "system/modules/hvz"
-            }
-        }
-    }
+	"require-dev": {
+			"contao/manager-plugin": "^2.0"
+	},
+	"conflict": {
+			"contao/manager-plugin": "<2.0 || >=3.0"
+	},
+
+	"autoload":{
+        "psr-4": {
+                    "Chuckki\\ContaoHvzBundle\\": "src/"
+		},
+		"classmap": [
+					"src/Resources/contao/"
+		],
+		"exclude-from-classmap": [
+					"src/Resources/contao/config/",
+					"src/Resources/contao/dca/",
+					"src/Resources/contao/languages/",
+					"src/Resources/contao/templates/"
+		]
+	},
+	"extra":{
+		"contao":{
+			"transifex": {
+				"project": "contao-hvz-bundle",
+				"prefix": "master-",
+				"languages_cto": "src/Resources/contao/languages",
+				"languages_tx": ".tx"
+			}
+		},
+		"contao-manager-plugin": "Chuckki\\ContaoHvzBundle\\ContaoManager\\Plugin"
+	}
 }
