@@ -10,6 +10,8 @@
 
 namespace Chuckki\ContaoHvzBundle;
 
+use GuzzleHttp\Client;
+
 /**
  * Provide methods regarding HVZs.
  *
@@ -303,6 +305,43 @@ class ModuleHvz extends \Frontend
 
 			$objInsertStmt = $this->Database->prepare("INSERT INTO tl_hvz_orders " . " %s")
 				->set($set)->execute();
+
+            $client = new \GuzzleHttp\Client([
+                'base_uri' => 'http://hvb2018-api.projektorientiert.de',
+                'headers'  => [
+                    'Content-Type' => 'application/json',
+                    'authorization' => 'Basic dGVzdGluZzpqdXN0b25ldGVzdGZvcm9uZXBhc3N3b3Jk'
+                ],
+
+            ]);
+
+            // payload with missing value
+            $data = array(
+                'uniqueRef' => $arrSubmitted['orderNumber'],
+                'reason' => $arrSubmitted['Grund'],
+                'plz' => $arrSubmitted['PLZ'],
+                'city' =>  $arrSubmitted['Ort'],
+                'price' => $arrSubmitted['Preis']."",
+                'streetName' => $arrSubmitted['Strasse'],
+                'streetNumber' => '00',
+                'dateFrom' => $arrSubmitted['vom'],
+                'dateTo' => $arrSubmitted['bis'],
+                'timeFrom' => $arrSubmitted['vomUhrzeit'],
+                'timeTo' => $arrSubmitted['bisUhrzeit'],
+                'length' => $arrSubmitted['Meter'],
+                'isDoubleSided' => true,
+                'carrier' => $arrSubmitted['Name'],
+                'additionalInfo' => $arrSubmitted['Zusatzinformationen'],
+            );
+
+            // call create order
+            $response = $client->post(
+                '/v1/order/new',
+                [
+                    'body' => json_encode($data)
+                ]
+            );
+
 		}
 
 	}
