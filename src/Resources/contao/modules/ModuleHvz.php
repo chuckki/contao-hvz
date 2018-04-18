@@ -319,7 +319,7 @@ class ModuleHvz extends \Frontend
             $data = array(
                 'uniqueRef' => $arrSubmitted['orderNumber'],
                 'reason' => $arrSubmitted['Grund'],
-                'plz' => $arrSubmitted['PLZ'],
+                'plz' => intval($arrSubmitted['PLZ']),
                 'city' =>  $arrSubmitted['Ort'],
                 'price' => $arrSubmitted['Preis']."",
                 'streetName' => $arrSubmitted['Strasse'],
@@ -328,7 +328,7 @@ class ModuleHvz extends \Frontend
                 'dateTo' => $arrSubmitted['bis'],
                 'timeFrom' => $arrSubmitted['vomUhrzeit'],
                 'timeTo' => $arrSubmitted['bisUhrzeit'],
-                'length' => $arrSubmitted['Meter'],
+                'length' => intval($arrSubmitted['Meter']),
                 'isDoubleSided' => true,
                 'carrier' => $arrSubmitted['Name'],
                 'additionalInfo' => $arrSubmitted['Zusatzinformationen'],
