@@ -68,7 +68,8 @@ Hier können Sie einfach und unkompliziert Ihr <b>Halteverbot in <?= $this->ques
           <input type="hidden" name="type" value="0">          
           <input type="hidden" name="Preis" id="setprice" value="0">
           <input type="hidden" name="hvzTagesPreis" value="0">
-          <input type="hidden" name="hvzLand" value="<?= $this->hvz_land ?>">
+            <input type="hidden" name="hvzLand" value="<?= $this->hvz_land ?>">
+            <input type="hidden" name="hvzID" value="<?= $this->hvz_id ?>">
           <input type="hidden" name="PreisMwSt" value="0">
           <input type="hidden" name="Rabatt" value="0">
           <input type="hidden" name="EndPreis" value="0">

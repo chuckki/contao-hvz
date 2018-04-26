@@ -108,6 +108,7 @@ class ModuleHvzReader extends \Module
         $this->Template->back = $GLOBALS['TL_LANG']['MSC']['goBack'];
         $this->Template->referer = 'javascript:history.go(-1)';
 
+        /** @var ModuleHvz $objHvz */
         $objHvz = \HvzModel::findPublishedByParentAndIdOrAlias(\Input::get('items'), $this->hvz_categories);
 
         if ($objHvz === null) {
@@ -139,6 +140,7 @@ class ModuleHvzReader extends \Module
         $this->import('Database');
         $objUpdate = $this->Database->prepare("UPDATE tl_hvz set isFamus = ? where id = ?")
             ->execute($updateFamus, $objHvz->id);
+        $this->Template->hvz_id = $objHvz->id;
         $this->Template->hvz_land = $objHvz->land;
         $this->Template->hvz_single = $objHvz->hvz_single;
         $this->Template->hvz_double = $objHvz->hvz_double;

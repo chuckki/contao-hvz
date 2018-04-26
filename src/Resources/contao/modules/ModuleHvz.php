@@ -195,27 +195,140 @@ class ModuleHvz extends \Frontend
 		file_put_contents($file, $myString, FILE_APPEND);
 	}
 
+	private function roundTo2($value){
+	    return round(round($value,3),2);
+    }
+
 	public function saveFormData(&$arrSubmitted, $arrLabels, $objForm)
 	{
 		if (!empty($arrSubmitted['type']))
 		{
 			$this->import('Database');
 
-			// todo: lookup vs xss-attacks
+            //  ************************************
+			//  1. check valid Values - lookup DB for Price
+
+			$objHvz = \HvzModel::findById($arrSubmitted['hvzID']);
+
+			switch ($arrSubmitted['type']){
+                case 1:
+                    $price = $objHvz->hvz_single;
+                    break;
+                case 2:
+                    $price = $objHvz->hvz_double;
+                    break;
+                case 3:
+                    $price = $objHvz->hvz_single_og;
+                    break;
+                case 4:
+                    $price = $objHvz->hvz_double_og;
+                    break;
+                default:
+                    // todo: logit
+            }
+
+
+            $anzahlTage = $arrSubmitted['wievieleTage'];
+            $arrSubmitted['hvzTagesPreis'] = $objHvz->hvz_extra_tag;
+
+            $fullPrice = $price + ($anzahlTage - 1) * $objHvz->hvz_extra_tag;
+
+            // get Rabatt and calc new
+            $rabattCode = $arrSubmitted['gutscheincode'];
+            if(!empty($rabattCode)){
+
+                $objRabatt = \Database::getInstance()
+                    ->prepare("SELECT
+                  rabattProzent,
+                  rabattCode
+                FROM 
+                  tl_hvz_rabatt
+                WHERE
+                  rabattCode=? AND 
+                  (start<? OR start='') AND 
+                  (stop>? OR stop='')
+            
+                    ")
+                    ->limit(1)
+                    ->execute($rabattCode,time(),time());
+
+                while($objRabatt->next()){
+                    $rabatt = $objRabatt->rabattProzent;
+                }
+
+                $arrSubmitted['Rabatt'] = $rabatt;
+                $netto  = $this->roundTo2($fullPrice/119*100);
+
+                $rabattValue = $this->roundTo2($netto/100*$rabatt);
+
+                $zwischenSummer = $netto - $rabattValue;
+                $newMsst = $this->roundTo2($zwischenSummer * 0.19);
+
+                $arr = array(
+                    'brutto' => $fullPrice,
+                    'netto' => $netto,
+                    'rabatt' => $rabatt,
+                    'rabattValue' => $rabattValue,
+                    'rabatCode' =>$rabattCode,
+                    'zwischenSumme' => $zwischenSummer,
+                    'newMst' => $newMsst,
+                    'fullNew' => $newMsst + $zwischenSummer,
+                );
+
+                $arrSubmitted['Preis'] = $newMsst + $zwischenSummer;
+
+            }
+
+
+            //  ************************************
+            //  2. prepare Data
+
 			if ($arrSubmitted['genehmigungVorhanden'] == 1)
 			{
 				$arrSubmitted['genehmigungVorhanden'] = 'ja';
 			}else{
 				$arrSubmitted['genehmigungVorhanden'] = 'nein';
 			}
+            $genehmigungVorhanden = substr($arrSubmitted['genehmigungVorhanden'],0,1);
 
-			$arrSubmitted['fullNetto'] = number_format(($arrSubmitted['EndPreis'] / 119 * 100), 2);
 
-			if (!isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-				$client_ip = $_SERVER['REMOTE_ADDR'];
-			} else {
-				$client_ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-			};
+            if (!isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+                $client_ip = $_SERVER['REMOTE_ADDR'];
+            } else {
+                $client_ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+            };
+
+            $userId = 0;
+            $this->import('FrontendUser', 'user');
+            if (FE_USER_LOGGED_IN) {
+                $userId = $this->user->id;
+            }
+
+            if(empty($arrSubmitted['umstid'])){
+                $umstid = '';
+            }else{
+                $umstid = $arrSubmitted['umstid'];
+            }
+
+            $date = new \DateTime();
+            $ts =  $date->format('Y-m-d H:i:s');
+            $arrSubmitted['orderNumber'] = $date->format('ym') . dechex(time());
+
+
+            $formDatas = array();
+            $formDatas['ort'] = $arrSubmitted['Ort'];
+            $formDatas['auftragsNr'] = $arrSubmitted['orderNumber'];
+            $formDatas['formAnrede'] = 'Sehr geehrte Frau '.$arrSubmitted['Name'];
+            if($arrSubmitted['Geschlecht'] == 'Herr'){
+                $formDatas['formAnrede'] = 'Sehr geehrter Herr '.$arrSubmitted['Name'];
+            }
+            \System::getContainer()->get('session')->set('myform',$formDatas);
+
+
+
+
+            $arrSubmitted['fullNetto'] = number_format(($arrSubmitted['EndPreis'] / 119 * 100), 2);
+
 
 			$type = 0; // anfrage
 			if ($arrSubmitted['Preis'] != 0) {
@@ -236,32 +349,11 @@ class ModuleHvz extends \Frontend
 				};
 			}
 
-			$userId = 0;
-			$this->import('FrontendUser', 'user');
-			if (FE_USER_LOGGED_IN) {
-				$userId = $this->user->id;
-			}
 
-			$genehmigungVorhanden = substr($arrSubmitted['genehmigungVorhanden'],0,1);
 
-			$date = new \DateTime();
-			$ts =  $date->format('Y-m-d H:i:s');
 
-			$arrSubmitted['orderNumber'] = dechex(time());
 
-			$formDatas = array();
-			$formDatas['ort'] = $arrSubmitted['Ort'];
-			$formDatas['auftragsNr'] = $arrSubmitted['orderNumber'];
-			$formDatas['formAnrede'] = 'Sehr geehrte Frau '.$arrSubmitted['Name'];
-			if($arrSubmitted['Geschlecht'] == 'Herr'){
-				$formDatas['formAnrede'] = 'Sehr geehrter Herr '.$arrSubmitted['Name'];
-			}
 
-			if(empty($arrSubmitted['umstid'])){
-			    $umstid = '';
-            }else{
-                $umstid = $arrSubmitted['umstid'];
-            }
 
 			$set           = array(
 				'tstamp'            => time(),
@@ -270,11 +362,14 @@ class ModuleHvz extends \Frontend
 				'hvz_type'          => $arrSubmitted['type'],
 				'hvz_type_name'     => $arrSubmitted['Genehmigung'],
 				'hvz_preis'         => $arrSubmitted['Preis'],
+                'hvzTagesPreis'		=> $arrSubmitted['hvzTagesPreis'],
+                'hvz_gutscheincode' => $arrSubmitted['gutscheincode'],
+                'hvz_rabatt'        => $arrSubmitted['Rabatt'],
+
 				'hvz_ge_vorhanden'  => $genehmigungVorhanden,
 				'hvz_ort'           => $arrSubmitted['Ort'],
 				'hvz_plz'           => $arrSubmitted['PLZ'],
 				'hvz_strasse_nr'    => $arrSubmitted['Strasse'],
-				'hvzTagesPreis'		=> $arrSubmitted['hvzTagesPreis'],
 				'hvz_vom'           => $arrSubmitted['vom'],
 				'hvz_bis'           => $arrSubmitted['bis'],
 				'hvz_vom_time'      => $arrSubmitted['vomUhrzeit'],
@@ -283,8 +378,6 @@ class ModuleHvz extends \Frontend
 				'hvz_meter'         => $arrSubmitted['Meter'],
 				'hvz_fahrzeugart'   => $arrSubmitted['Fahrzeug'],
 				'hvz_zusatzinfos'   => $arrSubmitted['Zusatzinformationen'],
-				'hvz_gutscheincode' => $arrSubmitted['gutscheincode'],
-				'hvz_rabatt'        => $arrSubmitted['Rabatt'],
 				'hvz_grund'         => $arrSubmitted['Grund'],
 				're_anrede'         => $arrSubmitted['Geschlecht'],
 				're_umstid'         => $umstid,
@@ -301,11 +394,11 @@ class ModuleHvz extends \Frontend
 				'orderNumber'		=> $arrSubmitted['orderNumber']
 			);
 
-			\System::getContainer()->get('session')->set('myform',$formDatas);
 
 			$objInsertStmt = $this->Database->prepare("INSERT INTO tl_hvz_orders " . " %s")
 				->set($set)->execute();
 
+			// Send order to API
             $client = new \GuzzleHttp\Client([
                 'base_uri' => 'http://hvb2018-api.projektorientiert.de',
                 'headers'  => [
@@ -341,6 +434,8 @@ class ModuleHvz extends \Frontend
                     'body' => json_encode($data)
                 ]
             );
+
+
 
 		}
 
