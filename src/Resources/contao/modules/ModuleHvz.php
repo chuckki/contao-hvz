@@ -310,7 +310,7 @@ class ModuleHvz extends \Frontend
                 $umstid = $arrSubmitted['umstid'];
             }
 
-            if(empty($arrSubmitted['Rabatt']){
+            if(empty($arrSubmitted['Rabatt'])){
                 $rabatt = '';
             }else{
                 $rabatt = strtolower($arrSubmitted['Rabatt']);
