@@ -310,6 +310,13 @@ class ModuleHvz extends \Frontend
                 $umstid = $arrSubmitted['umstid'];
             }
 
+            if(empty($arrSubmitted['Rabatt']){
+                $rabatt = '';
+            }else{
+                $rabatt = strtolower($arrSubmitted['Rabatt']);
+            }
+
+
             $date = new \DateTime();
             $ts =  $date->format('Y-m-d H:i:s');
             $arrSubmitted['orderNumber'] = $date->format('ym') . dechex(time());
@@ -364,7 +371,7 @@ class ModuleHvz extends \Frontend
 				'hvz_preis'         => $arrSubmitted['Preis'],
                 'hvzTagesPreis'		=> $arrSubmitted['hvzTagesPreis'],
                 'hvz_gutscheincode' => $arrSubmitted['gutscheincode'],
-                'hvz_rabatt'        => $arrSubmitted['Rabatt'],
+                'hvz_rabatt'        => $rabatt,
 
 				'hvz_ge_vorhanden'  => $genehmigungVorhanden,
 				'hvz_ort'           => $arrSubmitted['Ort'],
