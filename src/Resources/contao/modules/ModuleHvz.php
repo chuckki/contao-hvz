@@ -234,7 +234,8 @@ class ModuleHvz extends \Frontend
             $fullPrice = $price + ($anzahlTage - 1) * $objHvz->hvz_extra_tag;
 
             // get Rabatt and calc new
-            $rabattCode = $arrSubmitted['gutscheincode'];
+            $rabattCode = empty($arrSubmitted['gutscheincode']) ? '' : strtolower($arrSubmitted['gutscheincode']);
+            $rabattValue = 0;
             if(!empty($rabattCode)){
 
                 $objRabatt = \Database::getInstance()
@@ -362,6 +363,7 @@ class ModuleHvz extends \Frontend
 
 
 
+
 			$set           = array(
 				'tstamp'            => time(),
 				'user_id'           => $userId,
@@ -370,8 +372,8 @@ class ModuleHvz extends \Frontend
 				'hvz_type_name'     => $arrSubmitted['Genehmigung'],
 				'hvz_preis'         => $arrSubmitted['Preis'],
                 'hvzTagesPreis'		=> $arrSubmitted['hvzTagesPreis'],
-                'hvz_gutscheincode' => $arrSubmitted['gutscheincode'],
-                'hvz_rabatt'        => $rabatt,
+                'hvz_gutscheincode' => $rabattCode,
+                'hvz_rabatt'        => $rabattValue,
 
 				'hvz_ge_vorhanden'  => $genehmigungVorhanden,
 				'hvz_ort'           => $arrSubmitted['Ort'],
@@ -400,7 +402,6 @@ class ModuleHvz extends \Frontend
 				'ts'				=> $ts,
 				'orderNumber'		=> $arrSubmitted['orderNumber']
 			);
-
 
 			$objInsertStmt = $this->Database->prepare("INSERT INTO tl_hvz_orders " . " %s")
 				->set($set)->execute();
