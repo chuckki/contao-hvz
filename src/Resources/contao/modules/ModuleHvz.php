@@ -227,7 +227,7 @@ class ModuleHvz extends \Frontend
                     // todo: logit
             }
 
-            die($price);
+            die("price:".$price." id:".$arrSubmitted['hvzID']);
 
             $anzahlTage = $arrSubmitted['wievieleTage'];
             $arrSubmitted['hvzTagesPreis'] = $objHvz->hvz_extra_tag;
