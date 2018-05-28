@@ -228,7 +228,8 @@ class ModuleHvz extends \Frontend
                 default:
                     // todo: logit
             }
-            
+            dump($objHvz);
+			
             $anzahlTage = $arrSubmitted['wievieleTage'];
             //$arrSubmitted['hvzTagesPreis'] = $objHvz->hvz_extra_tag;
 
