@@ -344,7 +344,7 @@ Hier können Sie einfach und unkompliziert Ihr <b>Halteverbot in <?= $this->ques
 <fieldset id="agb">
   <input type="hidden" value="" name="agbakzeptiert">
   <span>
-    <input type="checkbox" value="1" class="checkbox" id="opt_120_0" name="agbakzeptiert" > <label for="opt_120_0" id="lbl_120_0" style="">Ich erkläre mich mit den <a target="_blank" href="/agb.html">AGB</a> einverstanden</label>
+    <input type="checkbox" value="1" class="checkbox" id="opt_120_0" name="agbakzeptiert" > <label for="opt_120_0" id="lbl_120_0" style="">Ich erkläre mich mit den <a target="_blank" href="/agb.html">AGB</a> und den <a target="_blank" href="/datenschutzerklaerung.html">Datenschutzrichtlinien</a> einverstanden</label>
   </span>
 </fieldset>
   <input type="submit" value="Halteverbot Bestellen" class="btn submit" id="submit">          
