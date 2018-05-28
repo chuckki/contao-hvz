@@ -201,6 +201,8 @@ class ModuleHvz extends \Frontend
 
 	public function saveFormData(&$arrSubmitted, $arrLabels, $objForm)
 	{
+	    dump($arrSubmitted);
+
 		if (!empty($arrSubmitted['type']))
 		{
 			$this->import('Database');
@@ -402,12 +404,14 @@ class ModuleHvz extends \Frontend
 				'orderNumber'		=> $arrSubmitted['orderNumber']
 			);
 
+			dump($set);
+
 			$objInsertStmt = $this->Database->prepare("INSERT INTO tl_hvz_orders " . " %s")
 				->set($set)->execute();
 
 			// Send order to API
             $client = new \GuzzleHttp\Client([
-                'base_uri' => 'http://hvb2018-api.projektorientiert.de',
+                'base_uri' => 'https://backend.halteverbot-beantragen.de',
                 'headers'  => [
                     'Content-Type' => 'application/json',
                     'authorization' => 'Basic dGVzdGluZzpqdXN0b25ldGVzdGZvcm9uZXBhc3N3b3Jk'
