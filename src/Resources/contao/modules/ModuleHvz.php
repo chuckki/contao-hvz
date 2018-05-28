@@ -230,7 +230,7 @@ class ModuleHvz extends \Frontend
             }
             
             $anzahlTage = $arrSubmitted['wievieleTage'];
-            $arrSubmitted['hvzTagesPreis'] = $objHvz->hvz_extra_tag;
+            //$arrSubmitted['hvzTagesPreis'] = $objHvz->hvz_extra_tag;
 
             $fullPrice = $price + ($anzahlTage - 1) * $objHvz->hvz_extra_tag;
 
