@@ -210,7 +210,8 @@ class ModuleHvz extends \Frontend
             //  ************************************
 			//  1. check valid Values - lookup DB for Price
 
-			$objHvz = \HvzModel::findById($arrSubmitted['hvzID']);
+
+            $objHvz = \HvzModel::findPublishedByParentAndIdOrAlias($arrSubmitted['hvzID']);
 
 			switch ($arrSubmitted['type']){
                 case 1:
