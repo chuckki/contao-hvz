@@ -201,9 +201,6 @@ class ModuleHvz extends \Frontend
 
 	public function saveFormData(&$arrSubmitted, $arrLabels, $objForm)
 	{
-	    dump($arrSubmitted);
-
-	    dump($arrSubmitted['hvzID']);
 
 		if (!empty($arrSubmitted['type']))
 		{
@@ -231,10 +228,9 @@ class ModuleHvz extends \Frontend
                 default:
                     // todo: logit
             }
-            dump($objHvz);
-			
+
             $anzahlTage = $arrSubmitted['wievieleTage'];
-            //$arrSubmitted['hvzTagesPreis'] = $objHvz->hvz_extra_tag;
+            $arrSubmitted['hvzTagesPreis'] = $objHvz->hvz_extra_tag;
 
             $fullPrice = $price + ($anzahlTage - 1) * $objHvz->hvz_extra_tag;
 
@@ -408,7 +404,6 @@ class ModuleHvz extends \Frontend
 				'orderNumber'		=> $arrSubmitted['orderNumber']
 			);
 
-			dump($set);
 
 			$objInsertStmt = $this->Database->prepare("INSERT INTO tl_hvz_orders " . " %s")
 				->set($set)->execute();
