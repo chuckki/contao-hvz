@@ -203,6 +203,8 @@ class ModuleHvz extends \Frontend
 	{
 	    dump($arrSubmitted);
 
+	    dump($arrSubmitted['hvzID']);
+
 		if (!empty($arrSubmitted['type']))
 		{
 			$this->import('Database');
@@ -211,7 +213,7 @@ class ModuleHvz extends \Frontend
 			//  1. check valid Values - lookup DB for Price
 
 
-            $objHvz = \HvzModel::findPublishedByParentAndIdOrAlias($arrSubmitted['hvzID']);
+            $objHvz = \HvzModel::findById($arrSubmitted['hvzID']);
 
 			switch ($arrSubmitted['type']){
                 case 1:
