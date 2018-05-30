@@ -21,6 +21,10 @@ $GLOBALS['TL_DCA']['tl_member']['fields']['anrede'] = array
     'sql'       			  => "varchar(8) NOT NULL default ''"
 );
 */
+
+$GLOBALS['TL_DCA']['tl_member']['fields']['street']['label'] = array('Strasse und Hausnummer','');
+
+
 $GLOBALS['TL_DCA']['tl_member']['fields']['zusatzinfo'] = array
 (
 	'label'                   => array('Zusatzinfo','Dies wird immer angezeigt'),
