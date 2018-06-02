@@ -157,7 +157,7 @@ class ModuleHvz extends \Frontend
 
 	public function mergeFamus()
 	{
-		// todo: mergeFamus Hvz´s
+		// todo: mergeFamus Hvz´s !
 		$passw    = $GLOBALS['TL_CONFIG']['dbPass'];
 		$host     = $GLOBALS['TL_CONFIG']['dbHost'];
 		$user     = $GLOBALS['TL_CONFIG']['dbUser'];
