@@ -201,6 +201,7 @@ class ModuleHvz extends \Frontend
 
 	public function saveFormData(&$arrSubmitted, $arrLabels, $objForm)
 	{
+        $logger = static::getContainer()->get('monolog.logger.contao');
 
 		if (!empty($arrSubmitted['type']))
 		{
@@ -226,7 +227,7 @@ class ModuleHvz extends \Frontend
                     $price = $objHvz->hvz_double_og;
                     break;
                 default:
-                    // todo: logit
+                    $logger->log(500, 'HVZ-Type ist ungültig: '.$arrSubmitted['type'],$arrSubmitted);
             }
 
             $anzahlTage = $arrSubmitted['wievieleTage'];
@@ -445,6 +446,9 @@ class ModuleHvz extends \Frontend
                 ]
             );
 
+            if($response->getStatusCode() != 201){
+                $logger->log(500, 'APICall fehlgeschlagen',$data);
+            }
 
 
 		}
