@@ -64,7 +64,7 @@ Hier können Sie einfach und unkompliziert Ihr <b>Halteverbot in <?= $this->ques
       <form enctype="application/x-www-form-urlencoded" method="post" id="f7" action="bestellformular.html">
         <div class="textblock formbody">
           <input type="hidden" value="auto_form_7" name="FORM_SUBMIT">
-          <input type="hidden" name="REQUEST_TOKEN" value="{{request_token}}">
+          <input type="hidden" name="REQUEST_TOKEN" value="<?= \RequestToken::get() ?>">
           <input type="hidden" name="type" value="0">          
           <input type="hidden" name="Preis" id="setprice" value="0">
           <input type="hidden" name="hvzTagesPreis" value="0">
