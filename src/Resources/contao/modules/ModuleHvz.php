@@ -322,7 +322,8 @@ class ModuleHvz extends \Frontend
 
             $date = new \DateTime();
             $ts =  $date->format('Y-m-d H:i:s');
-            $arrSubmitted['orderNumber'] = $date->format('ym') . dechex(time());
+//            $arrSubmitted['orderNumber'] = $date->format('ym') . dechex(time());
+            $arrSubmitted['orderNumber'] = dechex(time());
 
 
             $formDatas = array();
