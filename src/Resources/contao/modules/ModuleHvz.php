@@ -420,6 +420,8 @@ class ModuleHvz extends \Frontend
 
             ]);
 
+            $doubleSide = ($arrSubmitted['type'] % 2 == 1) ? true : false;
+
             // payload with missing value
             $data = array(
                 'uniqueRef' => $arrSubmitted['orderNumber'],
@@ -433,10 +435,11 @@ class ModuleHvz extends \Frontend
                 'dateTo' => $arrSubmitted['bis'],
                 'timeFrom' => $arrSubmitted['vomUhrzeit'].":00",
                 'timeTo' => $arrSubmitted['bisUhrzeit'].":00",
+                'email' => $arrSubmitted['email'],
                 'length' => intval($arrSubmitted['Meter']),
-                'isDoubleSided' => true,
-                'carrier' => $arrSubmitted['Name'],
-                'additionalInfo' => $arrSubmitted['Zusatzinformationen'],
+                'isDoubleSided' => $doubleSide,
+                'carrier' => $arrSubmitted['Vorname']. ' '. $arrSubmitted['Name'],
+                'additionalInfo' => $arrSubmitted['Zusatzinformationen'] . '\nGenehmigung vorhanden:'.$genehmigungVorhanden,
             );
 
             // call create order
