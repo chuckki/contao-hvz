@@ -1,6 +1,14 @@
 HVZ Module
 ================================
 
+
+Version 1.1.1 (2018-)
+---------------------------
+
+### Add
+Add Api-Details (Hvz-Type, Name, E-Mail, Genehmigung vorhanden)
+
+
 Version 1.1.2 (2018-06-09)
 ---------------------------
 
