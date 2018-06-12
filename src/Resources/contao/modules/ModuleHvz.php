@@ -203,6 +203,8 @@ class ModuleHvz extends \Frontend
 	{
         $logger = static::getContainer()->get('monolog.logger.contao');
 
+        $logger->log(500, 'APICall backup',$arrSubmitted);
+
 		if (!empty($arrSubmitted['type']))
 		{
 			$this->import('Database');

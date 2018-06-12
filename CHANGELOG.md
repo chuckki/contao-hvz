@@ -6,6 +6,9 @@ Version 1.1.3 (2018-)
 ---------------------------
 
 ### Add
+OrderSubmit backup via Log for unknown order-mails
+
+### Add
 Add Api-Details (Hvz-Type, Name, E-Mail, Genehmigung vorhanden)
 
 
