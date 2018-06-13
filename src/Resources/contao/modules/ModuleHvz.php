@@ -432,7 +432,7 @@ class ModuleHvz extends \Frontend
                 'city' =>  $arrSubmitted['Ort'],
                 'price' => $arrSubmitted['Preis']."",
                 'streetName' => $arrSubmitted['Strasse'],
-                'streetNumber' => '',
+                'streetNumber' => '00',
                 'dateFrom' => $arrSubmitted['vom'],
                 'dateTo' => $arrSubmitted['bis'],
                 'timeFrom' => $arrSubmitted['vomUhrzeit'].":00",
