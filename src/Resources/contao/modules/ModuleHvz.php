@@ -288,13 +288,13 @@ class ModuleHvz extends \Frontend
             //  ************************************
             //  2. prepare Data
 
-			if ($arrSubmitted['genehmigungVorhanden'] == 1)
+			if ($arrSubmitted['genehmigung_vorhanden'] == 1)
 			{
-				$arrSubmitted['genehmigungVorhanden'] = 'ja';
+				$arrSubmitted['genehmigung_vorhanden'] = 'ja';
 			}else{
-				$arrSubmitted['genehmigungVorhanden'] = 'nein';
+				$arrSubmitted['genehmigung_vorhanden'] = 'nein';
 			}
-            $genehmigungVorhanden = substr($arrSubmitted['genehmigungVorhanden'],0,1);
+            $genehmigungVorhanden = substr($arrSubmitted['genehmigung_vorhanden'],0,1);
 
 
             if (!isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
@@ -432,7 +432,7 @@ class ModuleHvz extends \Frontend
                 'city' =>  $arrSubmitted['Ort'],
                 'price' => $arrSubmitted['Preis']."",
                 'streetName' => $arrSubmitted['Strasse'],
-                'streetNumber' => '00',
+                'streetNumber' => '',
                 'dateFrom' => $arrSubmitted['vom'],
                 'dateTo' => $arrSubmitted['bis'],
                 'timeFrom' => $arrSubmitted['vomUhrzeit'].":00",
@@ -441,7 +441,7 @@ class ModuleHvz extends \Frontend
                 'length' => intval($arrSubmitted['Meter']),
                 'isDoubleSided' => $doubleSide,
                 'carrier' => $arrSubmitted['Vorname']. ' '. $arrSubmitted['Name'],
-                'additionalInfo' => $arrSubmitted['Zusatzinformationen'] . 'Genehmigung vorhanden:'.$arrSubmitted['genehmigungVorhanden'],
+                'additionalInfo' => $arrSubmitted['Zusatzinformationen'] . 'Genehmigung vorhanden:'.$arrSubmitted['genehmigung_vorhanden'],
             );
 
             // call create order
