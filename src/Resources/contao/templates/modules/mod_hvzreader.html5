@@ -107,9 +107,9 @@ Hier können Sie einfach und unkompliziert Ihr <b>Halteverbot in <?= $this->ques
     </div>
     <fieldset class="checkbox_container gotgen" id="ctrl_119" style="display: block;">
       <legend>Genehmigung</legend>
-        <input type="hidden" value="0" name="genehmigung_vorhanden">
+        <input type="hidden" value="0" id="getGen" name="genehmigung_vorhanden">
         <span>
-          <input type="checkbox" value="0" class="checkbox" id="opt_119_0" name="genehmigung_vorhanden"> <label for="opt_119_0" id="lbl_119_0">Hiermit versichere ich, dass ich die Genehmigung für die angegebene Halteverbotszone habe und diese nachreichen werde.</label>
+          <input type="checkbox" class="checkbox" id="opt_119_0" onclick="$('#gotGen').val($(this).prop('checked'));" name="genehmigung_vorhanden"> <label for="opt_119_0" id="lbl_119_0">Hiermit versichere ich, dass ich die Genehmigung für die angegebene Halteverbotszone habe und diese nachreichen werde.</label>
         </span> 
     </fieldset>
  </fieldset>

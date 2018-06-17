@@ -1,6 +1,16 @@
 HVZ Module
 ================================
 
+Version 1.1.8 (2018-)
+---------------------------
+
+### Fixed
+revoke genehmigung_vorhanden
+
+### Add
+api-url-settings
+
+
 Version 1.1.7 (2018-06-12)
 ---------------------------
 

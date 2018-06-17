@@ -11,6 +11,7 @@
 namespace Chuckki\ContaoHvzBundle;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ConnectException;
 
 /**
  * Provide methods regarding HVZs.
@@ -288,7 +289,7 @@ class ModuleHvz extends \Frontend
             //  ************************************
             //  2. prepare Data
 
-			if ($arrSubmitted['genehmigungVorhanden'] == 1)
+			if ($arrSubmitted['genehmigung_vorhanden'] == 'on')
 			{
 				$arrSubmitted['genehmigungVorhanden'] = 'ja';
 			}else{
@@ -337,11 +338,7 @@ class ModuleHvz extends \Frontend
             }
             \System::getContainer()->get('session')->set('myform',$formDatas);
 
-
-
-
             $arrSubmitted['fullNetto'] = number_format(($arrSubmitted['EndPreis'] / 119 * 100), 2);
-
 
 			$type = 0; // anfrage
 			if ($arrSubmitted['Preis'] != 0) {
@@ -363,12 +360,6 @@ class ModuleHvz extends \Frontend
 			}
 
 
-
-
-
-
-
-
 			$set           = array(
 				'tstamp'            => time(),
 				'user_id'           => $userId,
@@ -379,7 +370,6 @@ class ModuleHvz extends \Frontend
                 'hvzTagesPreis'		=> $arrSubmitted['hvzTagesPreis'],
                 'hvz_gutscheincode' => $rabattCode,
                 'hvz_rabatt'        => $rabattValue,
-
 				'hvz_ge_vorhanden'  => $genehmigungVorhanden,
 				'hvz_ort'           => $arrSubmitted['Ort'],
 				'hvz_plz'           => $arrSubmitted['PLZ'],
@@ -412,54 +402,63 @@ class ModuleHvz extends \Frontend
 			$objInsertStmt = $this->Database->prepare("INSERT INTO tl_hvz_orders " . " %s")
 				->set($set)->execute();
 
-			// Send order to API
-            $client = new \GuzzleHttp\Client([
-                'base_uri' => 'https://backend.halteverbot-beantragen.de',
-                'headers'  => [
-                    'Content-Type' => 'application/json',
-                    'authorization' => 'Basic dGVzdGluZzpqdXN0b25ldGVzdGZvcm9uZXBhc3N3b3Jk'
-                ],
 
-            ]);
+            $api_url = $GLOBALS['TL_CONFIG']['hvz_api'];
 
-            $doubleSide = ($arrSubmitted['type'] % 2 == 0) ? true : false;
+            if (!empty($api_url)) {
 
-            // payload with missing value
-            $data = array(
-                'uniqueRef' => $arrSubmitted['orderNumber'],
-                'reason' => $arrSubmitted['Grund'],
-                'plz' => intval($arrSubmitted['PLZ']),
-                'city' =>  $arrSubmitted['Ort'],
-                'price' => $arrSubmitted['Preis']."",
-                'streetName' => $arrSubmitted['Strasse'],
-                'streetNumber' => '00',
-                'dateFrom' => $arrSubmitted['vom'],
-                'dateTo' => $arrSubmitted['bis'],
-                'timeFrom' => $arrSubmitted['vomUhrzeit'].":00",
-                'timeTo' => $arrSubmitted['bisUhrzeit'].":00",
-                'email' => $arrSubmitted['email'],
-                'length' => intval($arrSubmitted['Meter']),
-                'isDoubleSided' => $doubleSide,
-                'carrier' => $arrSubmitted['Vorname']. ' '. $arrSubmitted['Name'],
-                'additionalInfo' => $arrSubmitted['Zusatzinformationen'] . 'Genehmigung vorhanden:'.$arrSubmitted['genehmigungVorhanden'],
-            );
+                // Send order to API
+                $client = new \GuzzleHttp\Client([
+                    'base_uri' => $api_url,
+                    'headers'  => [
+                        'Content-Type'  => 'application/json',
+                        'authorization' => 'Basic dGVzdGluZzpqdXN0b25ldGVzdGZvcm9uZXBhc3N3b3Jk'
+                    ],
 
-            // call create order
-            $response = $client->post(
-                '/v1/order/new',
-                [
-                    'body' => json_encode($data)
-                ]
-            );
+                ]);
 
-            if($response->getStatusCode() != 201){
-                $logger->log(500, 'APICall fehlgeschlagen',$data);
+                $doubleSide = ($arrSubmitted['type'] % 2 == 0) ? true : false;
+
+                // payload with missing value
+                $data = array(
+                    'uniqueRef'      => $arrSubmitted['orderNumber'],
+                    'reason'         => $arrSubmitted['Grund'],
+                    'plz'            => intval($arrSubmitted['PLZ']),
+                    'city'           => $arrSubmitted['Ort'],
+                    'price'          => $arrSubmitted['Preis'] . "",
+                    'streetName'     => $arrSubmitted['Strasse'],
+                    'streetNumber'   => '00',
+                    'dateFrom'       => $arrSubmitted['vom'],
+                    'dateTo'         => $arrSubmitted['bis'],
+                    'timeFrom'       => $arrSubmitted['vomUhrzeit'] . ":00",
+                    'timeTo'         => $arrSubmitted['bisUhrzeit'] . ":00",
+                    'email'          => $arrSubmitted['email'],
+                    'length'         => intval($arrSubmitted['Meter']),
+                    'isDoubleSided'  => $doubleSide,
+                    'carrier'        => $arrSubmitted['Vorname'] . ' ' . $arrSubmitted['Name'],
+                    'additionalInfo' => $arrSubmitted['Zusatzinformationen'] . 'Genehmigung vorhanden:'
+                                        . $arrSubmitted['genehmigungVorhanden'],
+                );
+
+                try {
+
+                    // call create order
+                    $promise = $client->postAsync('/v1/order/new', [
+                            'body' => json_encode($data)
+                        ]);
+
+                    $response = $promise->wait();
+                    if ($response->getStatusCode() != 201) {
+                        $logger->log(500, 'APICall fehlgeschlagen', $data);
+                    }
+
+                } catch (ConnectException $e) {
+                    $logger->log(500, 'APICall not found', $data);
+                }
             }
 
-
-		}
+        }
 
 	}
-
 
 }
