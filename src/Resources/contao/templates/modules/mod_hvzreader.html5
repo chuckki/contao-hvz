@@ -81,25 +81,25 @@ Hier können Sie einfach und unkompliziert Ihr <b>Halteverbot in <?= $this->ques
     <div class="formRow" id="genehmigung">
         <input type="hidden" value="" name="Genehmigung">
         <label for="opt_64_0" class="btn" id="lbl_64_0">
-          <input type="radio" onclick="setPrice(<?= $this->hvz_single ?>, this.value,1);" value="Einfache HVZ mit Genehmigung" class="radio" id="opt_64_0" name="Genehmigung" >
+          <input type="radio" data-price="<?= $this->hvz_single ?>" data-hvztyp="1" onclick="setPrice(<?= $this->hvz_single ?>, this.value,1);" value="Einfache HVZ mit Genehmigung" class="radio" id="opt_64_0" name="Genehmigung" >
           <span class="inlineprice"><?= $this->hvz_single ?>,- €</span>
             <span class="prod">Einfaches Halteverbot<br> mit Genehmigung</span>
         </label>
 
         <label for="opt_64_1" class="btn" id="lbl_64_1">
-          <input type="radio" onclick="setPrice(<?= $this->hvz_double ?>, this.value,2);" value="Doppelte HVZ mit Genehmigung" class="radio" id="opt_64_1" name="Genehmigung" >
+          <input type="radio" data-price="<?= $this->hvz_double ?>" data-hvztyp="2" onclick="setPrice(<?= $this->hvz_double ?>, this.value,2);" value="Doppelte HVZ mit Genehmigung" class="radio" id="opt_64_1" name="Genehmigung" >
           <span class="inlineprice"><?= $this->hvz_double ?>,- €</span>
             <span class="prod">Beidseitiges Halteverbot<br>mit Genehmigung</span>
         </label>
 <?php if ($this->hvz_single_og): ?>
         <label for="opt_64_3" class="btn" id="lbl_64_3">
-          <input type="radio" onclick="setPrice(<?= $this->hvz_single_og ?>, this.value,3);" value="Einfache HVZ ohne Genehmigung" class="radio" id="opt_64_3" name="Genehmigung" >
+          <input type="radio" data-price="<?= $this->hvz_single_og ?>" data-hvztyp="3" onclick="setPrice(<?= $this->hvz_single_og ?>, this.value,3);" value="Einfache HVZ ohne Genehmigung" class="radio" id="opt_64_3" name="Genehmigung" >
           <span class="inlineprice"><?= $this->hvz_single_og ?>,- €</span>
             <span class="prod">Einfaches Halteverbot<br> <u>ohne Genehmigung</u></span>
         </label>
 
         <label for="opt_64_4" class="btn" id="lbl_64_4">
-          <input type="radio" onclick="setPrice(<?= $this->hvz_double_og ?>, this.value,4);" value="Doppelte HVZ ohne Genehmigung" class="radio" id="opt_64_4" name="Genehmigung" >
+          <input type="radio" data-price="<?= $this->hvz_double_og ?>" data-hvztyp="4" onclick="setPrice(<?= $this->hvz_double_og ?>, this.value,4);" value="Doppelte HVZ ohne Genehmigung" class="radio" id="opt_64_4" name="Genehmigung" >
             <span class="inlineprice"><?= $this->hvz_double_og ?>,- €</span>
             <span class="prod">Beidseitiges Halteverbot<br> <u>ohne Genehmigung</u></span>
         </label>
