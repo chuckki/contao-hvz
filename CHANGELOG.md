@@ -5,6 +5,9 @@ Version 1.1.9 (2018-)
 ---------------------------
 
 ### Fixed
+Fix Rechtschreibung
+
+### Fixed
 fix browser back bug (empty orders)
 
 

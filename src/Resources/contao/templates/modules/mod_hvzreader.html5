@@ -356,9 +356,9 @@ Hier können Sie einfach und unkompliziert Ihr <b>Halteverbot in <?= $this->ques
 <div class="mod_hvzreader textblock block ">
   <h2>Nach Ihrer Halteverbotszonenbestellung</h2>
   <div class="ce_text hvz_info block">
-    <p>Nach Eingang Ihrer Bestellung erhalten Sie von uns eine Bestätigungs-Email. In dieser Mail werden Ihre Daten nochmals zusammengefasst. Bitte überprüfen Sie hier Ihre Angaben. Sollten Sie einen Fehler entdecken, so informieren Sie uns bitte unmittelbar via E-Mail.</p>
+    <p>Nach Eingang Ihrer Bestellung erhalten Sie von uns eine Bestätigungs-E-Mail. In dieser E-Mail werden Ihre Daten nochmals zusammengefasst. Bitte überprüfen Sie hier Ihre Angaben. Sollten Sie einen Fehler entdecken, so informieren Sie uns bitte unmittelbar via E-Mail.</p>
     <p>Alle nötigen Schritte, wie die Beantragung der behördlichen Genehmigung in <?= $this->question ?> und fristgerechte Aufstellung der Halteverbotsschilder werden von uns in die Wege geleitet.<br>
-      Spätestens einen Tage vor Gültigkeitsdatum des Halteverbots erhalten Sie alle nötigen Unterlagen von uns via E-Mail. Mit diesen Unterlagen ist es Ihnen sodann möglich eventuelle Falschparker abschleppen zu lassen.</p>
+      Spätestens einen Tag vor Gültigkeitsdatum des Halteverbots erhalten Sie alle nötigen Unterlagen von uns via E-Mail. Mit diesen Unterlagen ist es Ihnen sodann möglich eventuelle Falschparker abschleppen zu lassen.</p>
   </div>
 </div>
 
