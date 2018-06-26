@@ -1,6 +1,13 @@
 HVZ Module
 ================================
 
+Version 1.1.13 (2018-)
+---------------------------
+
+### Feature
+Try do calc missing values in order submit
+
+
 Version 1.1.12 (2018-06-22)
 ---------------------------
 

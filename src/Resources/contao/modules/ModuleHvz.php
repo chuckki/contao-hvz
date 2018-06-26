@@ -206,6 +206,34 @@ class ModuleHvz extends \Frontend
 
         $logger->log(500, 'APICall backup',$arrSubmitted);
 
+        // cleanup - check periodical for errors
+		if (empty($arrSubmitted['type'])){
+            $logger->log(500, 'APICall miss - no type',$arrSubmitted);
+
+            // set type
+            switch ($arrSubmitted['Genehmigung']) {
+                case "Einfache HVZ mit Genehmigung":
+                    $arrSubmitted['type'] = 1;
+                    break;
+                case "Doppelte HVZ mit Genehmigung":
+                    $arrSubmitted['type'] = 2;
+                    break;
+                case "Einfache HVZ ohne Genehmigung":
+                    $arrSubmitted['type'] = 3;
+                    break;
+                case "Doppelte HVZ ohne Genehmigung":
+                    $arrSubmitted['type'] = 4;
+                    break;
+            }
+
+            // set bis
+            $returnValue         = preg_replace('/\\D/', '.', $arrSubmitted['vom'], -1);
+            $curDate             = explode('.', $returnValue);
+            $berechnungsTage     = intval($arrSubmitted['wievieleTage'], 10) - 1;
+            $arrSubmitted['bis'] = date('d.m.Y', mktime(0, 0, 0, intval($curDate[1], 10), (intval($curDate[0], 10) + $berechnungsTage), intval($curDate[2], 10)));
+
+        }
+
 		if (!empty($arrSubmitted['type']))
 		{
 			$this->import('Database');
