@@ -77,7 +77,8 @@ class ModuleHvzReader extends \Module
 
         if (TL_MODE == 'FE') {
             $GLOBALS['TL_JAVASCRIPT'][] = '/bundles/chuckkicontaohvz/js/pikaday.min.js|static';
-            $GLOBALS['TL_BODY'][]= "<script src='/bundles/chuckkicontaohvz/js/validateForm.min.js'></script>";
+            $GLOBALS['TL_JAVASCRIPT'][] = '/bundles/chuckkicontaohvz/js/validateForm.min.js|static';
+            //$GLOBALS['TL_BODY'][]= "<script src='/bundles/chuckkicontaohvz/js/validateForm.min.js'></script>";
         }
 		// Do not index or cache the page if there are no categories
 		if (!is_array($this->hvz_categories) || empty($this->hvz_categories))
