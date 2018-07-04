@@ -5,6 +5,9 @@ Version 1.1.13 (2018-)
 ---------------------------
 
 ### Feature
+js-validate for characters in PLZ-Input
+
+### Feature
 Try do calc missing values in order submit
 
 
