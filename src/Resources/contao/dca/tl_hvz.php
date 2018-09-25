@@ -228,7 +228,7 @@ $GLOBALS['TL_DCA']['tl_hvz'] = array
 			'exclude'                 => true,
 			'inputType'               => 'text',
 			'eval'                    => array('maxlength'=>255,'tl_class'=>'w50'),
-			'sql'                     => "varchar(255) NOT NULL default ''"
+			'sql'                     => "int(10) unsigned NULL"
 		),
 		'hvz_double' => array
 		(
@@ -236,7 +236,7 @@ $GLOBALS['TL_DCA']['tl_hvz'] = array
 			'exclude'                 => true,
 			'inputType'               => 'text',
 			'eval'                    => array('maxlength'=>255,'tl_class'=>'w50'),
-			'sql'                     => "varchar(255) NOT NULL default ''"
+			'sql'                     => "int(10) unsigned NULL"
 		),
 		'hvz_single_og' => array
 		(
@@ -244,7 +244,7 @@ $GLOBALS['TL_DCA']['tl_hvz'] = array
 			'exclude'                 => true,
 			'inputType'               => 'text',
 			'eval'                    => array('maxlength'=>255,'tl_class'=>'w50'),
-			'sql'                     => "varchar(255) NOT NULL default ''"
+			'sql'                     => "int(10) unsigned NULL"
 		),
 		'hvz_double_og' => array
 		(
@@ -252,7 +252,7 @@ $GLOBALS['TL_DCA']['tl_hvz'] = array
 			'exclude'                 => true,
 			'inputType'               => 'text',
 			'eval'                    => array('maxlength'=>255,'tl_class'=>'w50'),
-			'sql'                     => "varchar(255) NOT NULL default ''"
+			'sql'                     => "int(10) unsigned NULL"
 		),
 		'hvz_only' => array
 		(

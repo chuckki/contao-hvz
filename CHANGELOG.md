@@ -4,6 +4,9 @@ HVZ Module
 Version 1.1.13 (2018-)
 ---------------------------
 
+### Fixed
+Switch Prices from Varchar to int
+
 ### Feature
 js-validate for characters in PLZ-Input
 
