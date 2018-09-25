@@ -176,13 +176,6 @@ Hier können Sie einfach und unkompliziert Ihr <b>Halteverbot in <?= $this->ques
         <span class="invisible">Pflichtfeld</span>täglich von
       </label>
       <select id="ctrl_55" name="vomUhrzeit" >
-        <option value="0"> 0 Uhr</option>
-        <option value="1"> 1 Uhr</option>
-        <option value="2"> 2 Uhr</option>
-        <option value="3"> 3 Uhr</option>
-        <option value="4"> 4 Uhr</option>
-        <option value="5"> 5 Uhr</option>
-        <option value="6"> 6 Uhr</option>
         <option value="7" selected> 7 Uhr</option>
         <option value="8"> 8 Uhr</option>
         <option value="9"> 9 Uhr</option>
@@ -197,22 +190,12 @@ Hier können Sie einfach und unkompliziert Ihr <b>Halteverbot in <?= $this->ques
         <option value="18">18 Uhr</option>
         <option value="19">19 Uhr</option>
         <option value="20">20 Uhr</option>
-        <option value="21">21 Uhr</option>
-        <option value="22">22 Uhr</option>
-        <option value="23">23 Uhr</option>
       </select>
       </div>
       <div class="date2">
 
       <label class="mandatory last" for="ctrl_108"><span class="invisible">Pflichtfeld</span>täglich bis </label>
       <select id="ctrl_108" name="bisUhrzeit" >
-        <option value="0"> 0 Uhr</option>
-        <option value="1"> 1 Uhr</option>
-        <option value="2"> 2 Uhr</option>
-        <option value="3"> 3 Uhr</option>
-        <option value="4"> 4 Uhr</option>
-        <option value="5"> 5 Uhr</option>
-        <option value="6"> 6 Uhr</option>
         <option value="7" > 7 Uhr</option>
         <option value="8"> 8 Uhr</option>
         <option value="9"> 9 Uhr</option>
@@ -227,9 +210,6 @@ Hier können Sie einfach und unkompliziert Ihr <b>Halteverbot in <?= $this->ques
         <option value="18">18 Uhr</option>
         <option value="19" selected>19 Uhr</option>
         <option value="20">20 Uhr</option>
-        <option value="21">21 Uhr</option>
-        <option value="22">22 Uhr</option>
-        <option value="23">23 Uhr</option>
       </select>
       </div>
     </div>
