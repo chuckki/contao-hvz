@@ -109,7 +109,7 @@ Hier können Sie einfach und unkompliziert Ihr <b>Halteverbot in <?= $this->ques
       <legend>Genehmigung</legend>
         <input type="hidden" value="0" id="getGen" name="genehmigung_vorhanden">
         <span>
-          <input type="checkbox" class="checkbox" id="opt_119_0" onclick="$('#gotGen').val($(this).prop('checked'));" name="genehmigung_vorhanden"> <label for="opt_119_0" id="lbl_119_0">Hiermit versichere ich, dass ich die Genehmigung für die angegebene Halteverbotszone habe und diese nachreichen werde.</label>
+          <input type="checkbox" class="checkbox" id="opt_119_0" onclick="$('#gotGen').val($(this).prop('checked'));" name="genehmigung_vorhanden"> <label for="opt_119_0" id="lbl_119_0">Hiermit versichere ich, dass ich die Genehmigung für die angegebene Halteverbotszone besitze und diese nachreichen werde.</label>
         </span> 
     </fieldset>
  </fieldset>
@@ -220,18 +220,32 @@ Hier können Sie einfach und unkompliziert Ihr <b>Halteverbot in <?= $this->ques
   <legend>Halteverbot Details</legend>
 
     <div class="formRow" id="grund">
-        <label class="mandatory" for="ctrl_247">
-            <span class="invisible">Pflichtfeld</span> Grund für die Stellung
+        <div class="date1">
+          <label class="mandatory" for="ctrl_247">
+              <span class="invisible">Pflichtfeld</span> Grund für die Stellung
+          </label>
+          <select class="select mandatory" id="ctrl_247" name="Grund" >
+              <option value="" selected="">Bitte wählen Sie</option>
+              <option value="umzug">Umzug</option>
+              <option value="containergestellung">Containergestellung</option>
+              <option value="baustelle">Baustelle</option>
+              <option value="sonstiges">Sonstiges</option>
+          </select>
+        </div>
+        <div class="date2">
+        <label class="mandatory" for="ctrl_62">
+              <span class="invisible">Pflichtfeld</span> Größe in Meter
         </label>
-        <select class="select mandatory" id="ctrl_247" name="Grund" >
-            <option value="" selected="">Bitte wählen Sie</option>
-            <option value="umzug">Umzug</option>
-            <option value="containergestellung">Containergestellung</option>
-            <option value="baustelle">Baustelle</option>
-            <option value="sonstiges">Sonstiges</option>
+        <select class="select mandatory" id="ctrl_62" name="Meter" >
+                <option value="5">5m</option>
+                <option value="10">10m</option>
+                <option selected="" value="15">15m</option>
+                <option value="20">20m</option>
         </select>
+        </div>
     </div>
 
+    <div class="formRow">
     <div id="grundAddon">
         <p>
             <strong>Bitte beachten Sie:</strong><br>
@@ -246,30 +260,18 @@ Hier können Sie einfach und unkompliziert Ihr <b>Halteverbot in <?= $this->ques
             Bitte geben Sie den Grund in den Zusatzinformationen mit an.
         </p>
     </div>
+    </div>
 
-
-    <div class="formRow">
-        <label class="mandatory" for="ctrl_62">
-                <span class="invisible">Pflichtfeld</span> Größe in Meter
-              </label>  
-              <select class="select mandatory" id="ctrl_62" name="Meter" >
-                <option value="5">5m</option>
-                <option value="10">10m</option>
-                <option selected="" value="15">15m</option>
-                <option value="20">20m</option>
-              </select>
-            </div>
-
-            <div class="formRow" id="fahrzeug">
+            <div class="formRow floatme" id="fahrzeug">
                 <span class="expl">für welche Fahrzeugart</span>
                 <input type="hidden" value="" name="Fahrzeug">
 
-                <label for="opt_65_0" id="lbl_65_0" class="btn car">
+                <label for="opt_65_0" id="lbl_65_0" class="btn car floatmeL">
                   <input type="radio" value="Fahrzeug bis 3,5t" class="radio" id="opt_65_0" name="Fahrzeug" > 
                   Fahrzeug bis 3,5t
                 </label>
 
-                <label for="opt_65_1" id="lbl_65_1" class="btn lkw">
+                <label for="opt_65_1" id="lbl_65_1" class="btn lkw floatmeR">
                   <input type="radio" value="Fahrzeug größer 3,5t (LKW)" class="radio" id="opt_65_1" name="Fahrzeug"> 
                   Fahrzeug größer 3,5t
                 </label>
@@ -299,7 +301,7 @@ Hier können Sie einfach und unkompliziert Ihr <b>Halteverbot in <?= $this->ques
             <div class="formRow">
               <label for="ctrl_72">Firma</label>  <input type="text" value="{{user::company}}" placeholder="Firma" class="text" id="ctrl_72" name="firma">
             </div>
-            <div class="formRow" id="umstElement <?= $this->hasUmstid; ?>">
+            <div class="formRow <?= $this->hasUmstid; ?>" id="umstElement">
                 <label for="ctrl_248">USt-IdNr.</label>  <input type="text" value="{{user::umstid}}" placeholder="USt-IdNr. (optional)" class="text" id="ctrl_248" name="umstid">
             </div>
             <div class="formRow">
