@@ -46,6 +46,7 @@ array_insert($GLOBALS['FE_MOD'], 3, array
 ));
 
 
+$GLOBALS['FE_MOD']['faq']['faqreader'] = 'Chuckki\ContaoHvzBundle\ModuleFaqReader';
 
 /**
  * Register hooks
