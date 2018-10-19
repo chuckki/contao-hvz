@@ -102,7 +102,7 @@ class ModuleHvz extends \Frontend
 				$strUrl = $arrProcessed[$objHvz->jumpTo];
 
 				// Get the items
-				$objItems = \HvzModel::findByPid($objHvz->id, array('order' => 'sorting'));
+				$objItems = \HvzModel::findByPid($objHvz->id, array('order' => 'isFamus DESC, sorting'));
 
 				if ($objItems !== null)
 				{
