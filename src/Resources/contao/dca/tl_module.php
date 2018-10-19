@@ -47,15 +47,6 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['hvz_readerModule'] = array
 
 
 /**
- * Add the comments template drop-down menu
- */
-if (in_array('comments', ModuleLoader::getActive()))
-{
-	$GLOBALS['TL_DCA']['tl_module']['palettes']['hvzreader'] = str_replace('{protected_legend:hide}', '{comment_legend:hide},com_template;{protected_legend:hide}', $GLOBALS['TL_DCA']['tl_module']['palettes']['hvzreader']);
-}
-
-
-/**
  * Class tl_module_hvz
  *
  * Provide miscellaneous methods that are used by the data configuration array.
