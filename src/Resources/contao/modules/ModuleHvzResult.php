@@ -62,7 +62,7 @@ class ModuleHvzResult extends \Module
             /***    Redirect to unique result  *****/
             if (sizeof($myResults) == 1) {
                 $url = "halteverbot/".$myResults[0]['alias'].".html";
-                $this->redirect($url, 303);
+                $this->redirect($url, 301);
             }
 
             for ($i = 0; $i < count($myResults); $i++) {
