@@ -1,8 +1,29 @@
 HVZ Module
 ================================
 
-Version 1.1.13 (2018-)
+Version 1.1.13 (2018-10-23)
 ---------------------------
+
+### Feature
+Improved sitemap-build for isFamous
+
+### Fix
+Wrong redirect for search-results (from 303 to 301)
+
+### Feature
+Add isFamous-Feature for FAQ
+
+### Fix
+Date-Picker
+
+### Update
+floating Btns in Order
+
+### Update
+valid time between 7-20Uhr
+
+### Update 
+Validation in form.min.js
 
 ### Fixed
 Switch Prices from Varchar to int
