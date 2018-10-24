@@ -244,12 +244,15 @@ class ModuleHvz extends \Frontend
 
             $objHvz = \HvzModel::findById($arrSubmitted['hvzID']);
 
+            $apiNeedLicence = false;
 			switch ($arrSubmitted['type']){
                 case 1:
                     $price = $objHvz->hvz_single;
+                    $apiNeedLicence = true;
                     break;
                 case 2:
                     $price = $objHvz->hvz_double;
+                    $apiNeedLicence = true;
                     break;
                 case 3:
                     $price = $objHvz->hvz_single_og;
@@ -361,7 +364,9 @@ class ModuleHvz extends \Frontend
             $formDatas['ort'] = $arrSubmitted['Ort'];
             $formDatas['auftragsNr'] = $arrSubmitted['orderNumber'];
             $formDatas['formAnrede'] = 'Sehr geehrte Frau '.$arrSubmitted['Name'];
+            $apiGender = 'female';
             if($arrSubmitted['Geschlecht'] == 'Herr'){
+                $apiGender = 'male';
                 $formDatas['formAnrede'] = 'Sehr geehrter Herr '.$arrSubmitted['Name'];
             }
             \System::getContainer()->get('session')->set('myform',$formDatas);
@@ -467,6 +472,14 @@ class ModuleHvz extends \Frontend
                     'carrier'        => $arrSubmitted['Vorname'] . ' ' . $arrSubmitted['Name'],
                     'additionalInfo' => $arrSubmitted['Zusatzinformationen'] . 'Genehmigung vorhanden:'
                                         . $arrSubmitted['genehmigungVorhanden'],
+                    'firma'         => $arrSubmitted['firma'],
+                    'vorname'         => $arrSubmitted['Vorname'],
+                    'name'         => $arrSubmitted['Name'],
+                    'strasse'         => $arrSubmitted['strasse_rechnung'],
+                    'ort'           => $arrSubmitted['ort_rechnung'],
+                    'telefon'        => $arrSubmitted['Telefon'],
+                    'needLicence'   => $apiNeedLicence,
+                    'gender'        => $apiGender,
                 );
 
                 try {
