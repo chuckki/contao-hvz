@@ -432,6 +432,7 @@ class ModuleHvz extends \Frontend
 
 
             $api_url = $GLOBALS['TL_CONFIG']['hvz_api'];
+            $api_auth = $GLOBALS['TL_CONFIG']['hvz_api_auth'];
 
             if (!empty($api_url)) {
 
@@ -440,7 +441,7 @@ class ModuleHvz extends \Frontend
                     'base_uri' => $api_url,
                     'headers'  => [
                         'Content-Type'  => 'application/json',
-                        'authorization' => 'Basic dGVzdGluZzpqdXN0b25ldGVzdGZvcm9uZXBhc3N3b3Jk'
+                        'authorization' => 'Basic '.$api_auth
                     ],
 
                 ]);
