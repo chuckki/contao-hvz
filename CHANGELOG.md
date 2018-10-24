@@ -1,6 +1,16 @@
 HVZ Module
 ================================
 
+Version 1.1.14 (2018-10-24)
+---------------------------
+
+### Feature
+update via api sending parameters
+
+### Feature
+add api auth as config-parameter
+
+
 Version 1.1.13 (2018-10-23)
 ---------------------------
 
