@@ -1,6 +1,11 @@
 HVZ Module
 ================================
 
+Version 1.1.16 (2018-10-28)
+---------------------------
+
+### Feature
+add api-connection-error-alert via pushme
 
 Version 1.1.15 (2018-10-25)
 ---------------------------
