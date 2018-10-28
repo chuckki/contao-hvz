@@ -482,6 +482,7 @@ class ModuleHvz extends \Frontend
                     'gender'        => $apiGender,
                 );
 
+                $pushMe = '';
                 try {
 
                     // call create order
@@ -492,11 +493,36 @@ class ModuleHvz extends \Frontend
                     $response = $promise->wait();
                     if ($response->getStatusCode() != 201) {
                         $logger->log(500, 'APICall fehlgeschlagen', $data);
+                        $pushMe = "Hvb2Api:".$data['uniqueRef']."\n StatusCode:".$response->getStatusCode()."\nAPICall not found in ModuleHvz.php";
                     }
 
                 } catch (ConnectException $e) {
                     $logger->log(500, 'APICall not found', $data);
+                    $pushMe = "Hvb2Api:".$data['uniqueRef']."\n APICall Catch:". $e->getMessage();
                 }
+
+
+                if($pushMe != ''){
+                    $ch     = curl_init();
+                    curl_setopt($ch, CURLOPT_URL, "https://pushme.projektorientiert.de/");
+                    curl_setopt(
+                        $ch,
+                        CURLOPT_POSTFIELDS,
+                        array(
+                            "Content-Type" => 'application/x-www-form-urlencoded',
+                            "key"          => 2,
+                            "msg"          => $pushMe,
+                            "url"          => 'https://www.halteverbot-beantragen.de/contao',
+                            "hash"         => 'b7050601bca827a1c11264fb05f898e9',
+                        )
+                    );
+                    curl_setopt($ch, CURLOPT_SAFE_UPLOAD, true);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);
+                    curl_exec($ch);
+                    curl_close($ch);
+                }
+
             }
 
         }
