@@ -12,6 +12,7 @@ namespace Chuckki\ContaoHvzBundle;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\RequestException;
 
 /**
  * Provide methods regarding HVZs.
@@ -441,15 +442,6 @@ class ModuleHvz extends \Frontend
 
             if (!empty($api_url)) {
 
-                // Send order to API
-                $client = new \GuzzleHttp\Client([
-                    'base_uri' => $api_url,
-                    'headers'  => [
-                        'Content-Type'  => 'application/json',
-                        'authorization' => 'Basic '.$api_auth
-                    ],
-
-                ]);
 
                 $doubleSide = ($arrSubmitted['type'] % 2 == 0) ? true : false;
 
@@ -485,6 +477,16 @@ class ModuleHvz extends \Frontend
                 $pushMe = '';
                 try {
 
+                    // Send order to API
+                    $client = new \GuzzleHttp\Client([
+                        'base_uri' => $api_url,
+                        'headers'  => [
+                            'Content-Type'  => 'application/json',
+                            'authorization' => 'Basic '.$api_auth
+                        ],
+
+                    ]);
+
                     // call create order
                     $promise = $client->postAsync('/v1/order/new', [
                             'body' => json_encode($data)
@@ -496,7 +498,7 @@ class ModuleHvz extends \Frontend
                         $pushMe = "Hvb2Api:".$data['uniqueRef']."\n StatusCode:".$response->getStatusCode()."\nAPICall not found in ModuleHvz.php";
                     }
 
-                } catch (ConnectException $e) {
+                } catch (RequestException $e) {
                     $logger->log(500, 'APICall not found', $data);
                     $pushMe = "Hvb2Api:".$data['uniqueRef']."\n APICall Catch:". $e->getMessage();
                 }
