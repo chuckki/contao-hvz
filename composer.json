@@ -12,7 +12,9 @@
     ],
     "require":{
         "php":">=7.0",
-		"contao/core-bundle": "~4.3"
+		"contao/core-bundle": "~4.3",
+        "ext-json": "*",
+        "ext-curl": "*"
     },
 	"require-dev": {
 			"contao/manager-plugin": "^2.0"

@@ -242,10 +242,14 @@ class ModuleHvz extends \Frontend
             //  ************************************
 			//  1. check valid Values - lookup DB for Price
 
-
             $objHvz = \HvzModel::findById($arrSubmitted['hvzID']);
 
+            $arrSubmitted['hvzTagesPreis'] = $objHvz->hvz_extra_tag;
+
+
+            // calc fullprice
             $apiNeedLicence = false;
+            $price = 0;
 			switch ($arrSubmitted['type']){
                 case 1:
                     $price = $objHvz->hvz_single;
@@ -264,17 +268,13 @@ class ModuleHvz extends \Frontend
                 default:
                     $logger->log(500, 'HVZ-Type ist ungültig: '.$arrSubmitted['type'],$arrSubmitted);
             }
+            $fullPrice = $price + ($arrSubmitted['wievieleTage'] - 1) * $objHvz->hvz_extra_tag;
 
-            $anzahlTage = $arrSubmitted['wievieleTage'];
-            $arrSubmitted['hvzTagesPreis'] = $objHvz->hvz_extra_tag;
-
-            $fullPrice = $price + ($anzahlTage - 1) * $objHvz->hvz_extra_tag;
 
             // get Rabatt and calc new
             $rabattCode = empty($arrSubmitted['gutscheincode']) ? '' : strtolower($arrSubmitted['gutscheincode']);
             $rabattValue = 0;
             if(!empty($rabattCode)){
-
                 $objRabatt = \Database::getInstance()
                     ->prepare("SELECT
                   rabattProzent,
@@ -284,9 +284,7 @@ class ModuleHvz extends \Frontend
                 WHERE
                   rabattCode=? AND 
                   (start<? OR start='') AND 
-                  (stop>? OR stop='')
-            
-                    ")
+                  (stop>? OR stop='')")
                     ->limit(1)
                     ->execute($rabattCode,time(),time());
 
@@ -295,8 +293,8 @@ class ModuleHvz extends \Frontend
                 }
 
                 $arrSubmitted['Rabatt'] = $rabatt;
-                $netto  = $this->roundTo2($fullPrice/119*100);
 
+                $netto  = $this->roundTo2($fullPrice/119*100);
                 $rabattValue = $this->roundTo2($netto/100*$rabatt);
 
                 $zwischenSummer = $netto - $rabattValue;
@@ -312,10 +310,11 @@ class ModuleHvz extends \Frontend
                     'newMst' => $newMsst,
                     'fullNew' => $newMsst + $zwischenSummer,
                 );
-
-                $arrSubmitted['Preis'] = $newMsst + $zwischenSummer;
+                $fullPrice = $newMsst + $zwischenSummer;
 
             }
+            $arrSubmitted['Preis'] = $fullPrice;
+            $arrSubmitted['fullNetto'] = number_format(($fullPrice / 119 * 100), 2);
 
 
             //  ************************************
@@ -330,23 +329,28 @@ class ModuleHvz extends \Frontend
             $genehmigungVorhanden = substr($arrSubmitted['genehmigungVorhanden'],0,1);
 
 
+			// add client_ip
             if (!isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
                 $client_ip = $_SERVER['REMOTE_ADDR'];
             } else {
                 $client_ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
             };
 
+
+			// add frontend userId
             $userId = 0;
             $this->import('FrontendUser', 'user');
             if (FE_USER_LOGGED_IN) {
                 $userId = $this->user->id;
             }
 
+            // add $umstid
             if(empty($arrSubmitted['umstid'])){
                 $umstid = '';
             }else{
                 $umstid = $arrSubmitted['umstid'];
             }
+
 
             if(empty($arrSubmitted['Rabatt'])){
                 $rabatt = '';
@@ -354,13 +358,13 @@ class ModuleHvz extends \Frontend
                 $rabatt = strtolower($arrSubmitted['Rabatt']);
             }
 
-
+            // create OrderNumber
             $date = new \DateTime();
             $ts =  $date->format('Y-m-d H:i:s');
-//            $arrSubmitted['orderNumber'] = $date->format('ym') . dechex(time());
             $arrSubmitted['orderNumber'] = dechex(time());
 
 
+            // Create Session Data for ResponseView
             $formDatas = array();
             $formDatas['ort'] = $arrSubmitted['Ort'];
             $formDatas['auftragsNr'] = $arrSubmitted['orderNumber'];
@@ -372,8 +376,8 @@ class ModuleHvz extends \Frontend
             }
             \System::getContainer()->get('session')->set('myform',$formDatas);
 
-            $arrSubmitted['fullNetto'] = number_format(($arrSubmitted['EndPreis'] / 119 * 100), 2);
 
+            // decide for order or request and add missing requires for insert
 			$type = 0; // anfrage
 			if ($arrSubmitted['Preis'] != 0) {
 				$type = 1; // bestellung
@@ -392,6 +396,9 @@ class ModuleHvz extends \Frontend
 					$arrSubmitted['bis'] = "-";
 				};
 			}
+
+
+
 
 
 			$set           = array(
@@ -442,7 +449,6 @@ class ModuleHvz extends \Frontend
 
             if (!empty($api_url)) {
 
-
                 $doubleSide = ($arrSubmitted['type'] % 2 == 0) ? true : false;
 
                 // payload with missing value
@@ -451,7 +457,7 @@ class ModuleHvz extends \Frontend
                     'reason'         => $arrSubmitted['Grund'],
                     'plz'            => intval($arrSubmitted['PLZ']),
                     'city'           => $arrSubmitted['Ort'],
-                    'price'          => $arrSubmitted['Preis'] . "",
+                    'price'          => $fullPrice . "",
                     'streetName'     => $arrSubmitted['Strasse'],
                     'streetNumber'   => '00',
                     'dateFrom'       => $arrSubmitted['vom'],
