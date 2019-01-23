@@ -480,6 +480,11 @@ class ModuleHvz extends \Frontend
                     'gender'        => $apiGender,
                 );
 
+                if($userId =! 0){
+                    $data['customerId'] = 'hvb_'.$userId;
+                }
+
+
                 $pushMe = '';
                 try {
 
