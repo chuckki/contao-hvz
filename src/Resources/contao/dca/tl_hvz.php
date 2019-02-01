@@ -132,7 +132,7 @@ $GLOBALS['TL_DCA']['tl_hvz'] = array
 	'palettes' => array
 	(
 		'__selector__'                => array('addImage', 'addEnclosure'),
-		'default'                     => '{title_legend},question,alias,bundesland,kreis,land,descOrt,seitentitel,plz;{hvzinfo_preise},hvz_single,hvz_double,hvz_single_og,hvz_double_og,hvz_extra_tag,hvz_only;{hvzzusatz},hvzzusatz;{hvzinfo_legend},hvzinfo;{image_legend},addImage;{enclosure_legend:hide},addEnclosure;{publish_legend},published,featured'
+		'default'                     => '{title_legend},question,alias,bundesland,kreis,land,lk,descOrt,seitentitel;{hvzinfo_preise},hvz_single,hvz_double,hvz_single_og,hvz_double_og,hvz_extra_tag,hvz_only;{hvzzusatz},hvzzusatz;{hvzinfo_legend},hvzinfo;{image_legend},addImage;{enclosure_legend:hide},addEnclosure;{publish_legend},published,featured'
 	),
 	// Subpalettes
 	'subpalettes' => array
@@ -296,12 +296,20 @@ $GLOBALS['TL_DCA']['tl_hvz'] = array
 			'eval'                    => array('maxlength'=>255, 'tl_class'=>'w50'),
 			'sql'                     => "varchar(255) NOT NULL default ''"
 		),
+		'lk' => array
+		(
+			'label'                   => array('Länderkennzeichen','ALPHA-2 <a href="https://de.wikipedia.org/wiki/ISO-3166-1-Kodierliste">https://de.wikipedia.org/wiki/ISO-3166-1-Kodierliste</a>'),
+			'exclude'                 => true,
+			'inputType'               => 'text',
+			'eval'                    => array('mandatory'=>true, 'maxlength'=>2,'tl_class'=>'w50'),
+			'sql'                     => "varchar(2) NOT NULL default ''"
+		),
 		'land' => array
 		(
 			'label'                   => array('Land','Land'),
 			'exclude'                 => true,
-			'inputType'               => 'select',
-      		'options'                 => array('Deutschland','Frankreich','Österreich','Schweiz'),
+			'inputType'               => 'text',
+			'eval'                    => array('mandatory'=>true, 'tl_class'=>'w50'),
 			'sql'                     => "varchar(255) NOT NULL default ''"
 		),
 		'plz' => array
