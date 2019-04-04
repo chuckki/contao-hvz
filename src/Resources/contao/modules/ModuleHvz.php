@@ -9,207 +9,216 @@
  */
 
 namespace Chuckki\ContaoHvzBundle;
-
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\RequestException;
+use HvzModel;
+use Contao\Frontend;
+use Contao\Database;
+use Contao\System;
+use Contao\Config;
+use Contao\PageModel;
+use mysqli;
+use Date;
+use Exception;
+use DateTime;
+use Psr\Log\LoggerInterface;
 
 /**
  * Provide methods regarding HVZs.
  *
  * @author Dennis Esken
  */
-class ModuleHvz extends \Frontend
+class ModuleHvz extends Frontend
 {
 
-	/**
-	 * Add HVZs to the indexer
-	 *
-	 * @param array   $arrPages
-	 * @param integer $intRoot
-	 * @param boolean $blnIsSitemap
-	 *
-	 * @return array
-	 */
-	public function getSearchablePages($arrPages, $intRoot=0, $blnIsSitemap=false)
-	{
-		$arrRoot = array();
+    /**
+     * @var LoggerInterface
+     */
+    private $logger = null;
 
-		if ($intRoot > 0)
-		{
-			$arrRoot = $this->Database->getChildRecords($intRoot, 'tl_page');
-		}
+    /**
+     * Add HVZs to the indexer
+     *
+     * @param array   $arrPages
+     * @param integer $intRoot
+     * @param boolean $blnIsSitemap
+     *
+     * @return array
+     */
+    public function getSearchablePages($arrPages, $intRoot = 0, $blnIsSitemap = false)
+    {
+        $arrRoot = array();
 
-		$arrProcessed = array();
-		$time = \Date::floorToMinute();
+        if ($intRoot > 0) {
+            $arrRoot = $this->Database->getChildRecords($intRoot, 'tl_page');
+        }
 
-		// Get all categories
-		$objHvz = \HvzCategoryModel::findAll();
+        $arrProcessed = array();
+        $time         = Date::floorToMinute();
 
-		// Walk through each category
-		if ($objHvz !== null)
-		{
-			while ($objHvz->next())
-			{
-				// Skip HVZs without target page
-				if (!$objHvz->jumpTo)
-				{
-					continue;
-				}
+        // Get all categories
+        $objHvz = \HvzCategoryModel::findAll();
 
-				// Skip HVZs outside the root nodes
-				if (!empty($arrRoot) && !in_array($objHvz->jumpTo, $arrRoot))
-				{
-					continue;
-				}
+        // Walk through each category
+        if ($objHvz !== null) {
+            while ($objHvz->next()) {
+                // Skip HVZs without target page
+                if (!$objHvz->jumpTo) {
+                    continue;
+                }
 
-				// Get the URL of the jumpTo page
-				if (!isset($arrProcessed[$objHvz->jumpTo]))
-				{
-					$objParent = \PageModel::findWithDetails($objHvz->jumpTo);
+                // Skip HVZs outside the root nodes
+                if (!empty($arrRoot) && !in_array($objHvz->jumpTo, $arrRoot)) {
+                    continue;
+                }
 
-					// The target page does not exist
-					if ($objParent === null)
-					{
-						continue;
-					}
+                // Get the URL of the jumpTo page
+                if (!isset($arrProcessed[$objHvz->jumpTo])) {
+                    $objParent = PageModel::findWithDetails($objHvz->jumpTo);
 
-					// The target page has not been published (see #5520)
-					if (!$objParent->published || ($objParent->start != '' && $objParent->start > $time) || ($objParent->stop != '' && $objParent->stop <= ($time + 60)))
-					{
-						continue;
-					}
+                    // The target page does not exist
+                    if ($objParent === null) {
+                        continue;
+                    }
 
-					if ($blnIsSitemap)
-					{
-						// The target page is protected (see #8416)
-						if ($objParent->protected)
-						{
-							continue;
-						}
+                    // The target page has not been published (see #5520)
+                    if (!$objParent->published || ($objParent->start != '' && $objParent->start > $time)
+                        || ($objParent->stop != '' && $objParent->stop <= ($time + 60))) {
+                        continue;
+                    }
 
-						// The target page is exempt from the sitemap (see #6418)
-						if ($objParent->sitemap == 'map_never')
-						{
-							continue;
-						}
-					}
+                    if ($blnIsSitemap) {
+                        // The target page is protected (see #8416)
+                        if ($objParent->protected) {
+                            continue;
+                        }
 
-					// Generate the URL
-					$arrProcessed[$objHvz->jumpTo] = $objParent->getAbsoluteUrl(\Config::get('useAutoItem') ? '/%s' : '/items/%s');
+                        // The target page is exempt from the sitemap (see #6418)
+                        if ($objParent->sitemap == 'map_never') {
+                            continue;
+                        }
+                    }
 
-				}
+                    // Generate the URL
+                    $arrProcessed[$objHvz->jumpTo] =
+                        $objParent->getAbsoluteUrl(Config::get('useAutoItem') ? '/%s' : '/items/%s');
 
-				$strUrl = $arrProcessed[$objHvz->jumpTo];
+                }
 
-				// Get the items
-				$objItems = \HvzModel::findByPid($objHvz->id, array('order' => 'isFamus DESC, sorting'));
+                $strUrl = $arrProcessed[$objHvz->jumpTo];
 
-				if ($objItems !== null)
-				{
-					while ($objItems->next())
-					{
-						$arrPages[] = sprintf($strUrl, ($objItems->alias ?: $objItems->id));
-					}
-				}
-			}
-		}
+                // Get the items
+                $objItems = HvzModel::findByPid($objHvz->id, array('order' => 'isFamus DESC, sorting'));
 
-		// add sites from BL and Kreis
-		$objParent = \PageModel::findWithDetails(29);
+                if ($objItems !== null) {
+                    while ($objItems->next()) {
+                        $arrPages[] = sprintf($strUrl, ($objItems->alias ?: $objItems->id));
+                    }
+                }
+            }
+        }
 
-		$bLand_alias = array(
-			'baden-wuerttemberg',
-			'bayern',
-			'berlin',
-			'brandenburg',
-			'bremen',
-			'hamburg',
-			'hessen',
-			'mecklenburg-vorpommern',
-			'niedersachsen',
-			'nordrhein-westfalen',
-			'rheinland-Pfalz',
-			'saarland',
-			'sachsen',
-			'sachsen-anhalt',
-			'schleswig-holstein',
-			'thueringen',
-		);
+        // add sites from BL and Kreis
+        $objParent = PageModel::findWithDetails(29);
 
-		foreach ($bLand_alias as $site)
-		{
-			$arrPages[] =  $objParent->getAbsoluteUrl("/bundesland/" . $site);
-		}
+        $bLand_alias = array(
+            'baden-wuerttemberg',
+            'bayern',
+            'berlin',
+            'brandenburg',
+            'bremen',
+            'hamburg',
+            'hessen',
+            'mecklenburg-vorpommern',
+            'niedersachsen',
+            'nordrhein-westfalen',
+            'rheinland-Pfalz',
+            'saarland',
+            'sachsen',
+            'sachsen-anhalt',
+            'schleswig-holstein',
+            'thueringen',
+        );
 
-		$this->import('Database');
+        foreach ($bLand_alias as $site) {
+            $arrPages[] = $objParent->getAbsoluteUrl("/bundesland/" . $site);
+        }
 
-		$result_plz = $this->Database
-			->prepare("SELECT kreis FROM tl_hvz where land like 'Deutschland' group by kreis order by kreis asc")
-			->execute();
+        $this->import('Database');
 
-		while ($result_plz->next())
-		{
-			$stdKreis   = standardize($result_plz->kreis);
-			$arrPages[] =  $objParent->getAbsoluteUrl("/kreis/" . $stdKreis);
-		}
+        $result_plz =
+            $this->Database->prepare("SELECT kreis FROM tl_hvz where land like 'Deutschland' group by kreis order by kreis asc")
+                ->execute();
 
-		return $arrPages;
-	}
+        while ($result_plz->next()) {
+            $stdKreis   = standardize($result_plz->kreis);
+            $arrPages[] = $objParent->getAbsoluteUrl("/kreis/" . $stdKreis);
+        }
 
-	public function mergeFamus()
-	{
-		// todo: mergeFamus Hvz´s ! tag 1.1
-		$passw    = $GLOBALS['TL_CONFIG']['dbPass'];
-		$host     = $GLOBALS['TL_CONFIG']['dbHost'];
-		$user     = $GLOBALS['TL_CONFIG']['dbUser'];
-		$database = $GLOBALS['TL_CONFIG']['dbDatabase'];
-
-		$db = new \mysqli($host, $user, $passw, $database);
-		if ($db->connect_errno > 0) {
-			die('Unable to connect to database [' . $db->connect_error . ']');
-		}
-		$db->set_charset('utf8');
-
-		$sql    = "select isFamus as myid , count(isFamus) as anzahl from tl_hvz group by isFamus order by isFamus";
-		$result = $db->query($sql);
-
-		$counter = 1;
-		$log     = "";
-		$allSql  = "";
-
-		while ($group = $result->fetch_assoc()) {
-			$sql    = "update tl_hvz set isFamus=" . $counter++ . " where isFamus=" . $group['myid'] . "; ";
-			$allSql .= $sql;
-			$log    .= $sql . "<br>";
-		}
-
-		$result2 = $db->multi_query($allSql);
-		if ($result2) {
-			$counter--;
-		} else {
-			$counter = "Error with merging";
-		}
-		$db->close();
-
-		$myString = date('Ymd H:i') . "::merged::" . $counter . "\n";
-		$file     = TL_ROOT . '/merge-log.txt';
-		file_put_contents($file, $myString, FILE_APPEND);
-	}
-
-	private function roundTo2($value){
-	    return round(round($value,3),2);
+        return $arrPages;
     }
 
-	public function saveFormData(&$arrSubmitted, $arrLabels, $objForm)
-	{
-        $logger = static::getContainer()->get('monolog.logger.contao');
+    public function mergeFamus()
+    {
+        // todo: mergeFamus Hvz´s ! tag 1.1
+        $passw    = $GLOBALS['TL_CONFIG']['dbPass'];
+        $host     = $GLOBALS['TL_CONFIG']['dbHost'];
+        $user     = $GLOBALS['TL_CONFIG']['dbUser'];
+        $database = $GLOBALS['TL_CONFIG']['dbDatabase'];
 
-        $logger->log(500, 'APICall backup',$arrSubmitted);
+        $db = new mysqli($host, $user, $passw, $database);
+        if ($db->connect_errno > 0) {
+            die('Unable to connect to database [' . $db->connect_error . ']');
+        }
+        $db->set_charset('utf8');
+
+        $sql    = "select isFamus as myid , count(isFamus) as anzahl from tl_hvz group by isFamus order by isFamus";
+        $result = $db->query($sql);
+
+        $counter = 1;
+        $log     = "";
+        $allSql  = "";
+
+        while ($group = $result->fetch_assoc()) {
+            $sql    = "update tl_hvz set isFamus=" . $counter++ . " where isFamus=" . $group['myid'] . "; ";
+            $allSql .= $sql;
+            $log    .= $sql . "<br>";
+        }
+
+        $result2 = $db->multi_query($allSql);
+        if ($result2) {
+            $counter--;
+        } else {
+            $counter = "Error with merging";
+        }
+        $db->close();
+
+        $myString = date('Ymd H:i') . "::merged::" . $counter . "\n";
+        $file     = TL_ROOT . '/merge-log.txt';
+        file_put_contents($file, $myString, FILE_APPEND);
+
+    }
+
+    private function roundTo2($value)
+    {
+        return round(round($value, 3), 2);
+    }
+
+    /**
+     * @param $arrSubmitted
+     * @param $arrLabels
+     * @param $objForm
+     *
+     * @throws Exception
+     */
+    public function saveFormData(&$arrSubmitted, $arrLabels, $objForm)
+    {
+        $this->logger = static::getContainer()->get('monolog.logger.contao');
+        $this->logger->log(500, 'APICall backup', $arrSubmitted);
 
         // cleanup - check periodical for errors
-		if (empty($arrSubmitted['type'])){
-            $logger->log(500, 'APICall miss - no type',$arrSubmitted);
+        if (empty($arrSubmitted['type'])) {
+            $this->logger->log(500, 'APICall miss - no type', $arrSubmitted);
 
             // set type
             switch ($arrSubmitted['Genehmigung']) {
@@ -231,52 +240,154 @@ class ModuleHvz extends \Frontend
             $returnValue         = preg_replace('/\\D/', '.', $arrSubmitted['vom'], -1);
             $curDate             = explode('.', $returnValue);
             $berechnungsTage     = intval($arrSubmitted['wievieleTage'], 10) - 1;
-            $arrSubmitted['bis'] = date('d.m.Y', mktime(0, 0, 0, intval($curDate[1], 10), (intval($curDate[0], 10) + $berechnungsTage), intval($curDate[2], 10)));
+            $arrSubmitted['bis'] = date('d.m.Y',
+                mktime(0, 0, 0, intval($curDate[1], 10), (intval($curDate[0], 10) + $berechnungsTage),
+                    intval($curDate[2], 10)));
 
         }
 
-		if (!empty($arrSubmitted['type']))
-		{
-			$this->import('Database');
 
-            //  ************************************
-			//  1. check valid Values - lookup DB for Price
+        if (!empty($arrSubmitted['type'])) {
 
-            $objHvz = \HvzModel::findById($arrSubmitted['hvzID']);
+            $this->cleanUpSubmit($arrSubmitted);
 
-            $arrSubmitted['hvzTagesPreis'] = $objHvz->hvz_extra_tag;
+            $arrSubmitted['orderNumber'] = $this->sendNewOrderToBackend($arrSubmitted);
 
-
-            // calc fullprice
-            $apiNeedLicence = false;
-            $price = 0;
-			switch ($arrSubmitted['type']){
-                case 1:
-                    $price = $objHvz->hvz_single;
-                    $apiNeedLicence = true;
-                    break;
-                case 2:
-                    $price = $objHvz->hvz_double;
-                    $apiNeedLicence = true;
-                    break;
-                case 3:
-                    $price = $objHvz->hvz_single_og;
-                    break;
-                case 4:
-                    $price = $objHvz->hvz_double_og;
-                    break;
-                default:
-                    $logger->log(500, 'HVZ-Type ist ungültig: '.$arrSubmitted['type'],$arrSubmitted);
+            if (!empty($arrSubmitted['orderNumber'])) {
+                $arrSubmitted['orderNumber'] = '<i>wird nachgereicht</i>';
+                $this->pushMe('HvbOnline2Backend -> Keine Auftragsnummer: ' . $arrSubmitted['ts']);
             }
-            $fullPrice = $price + ($arrSubmitted['wievieleTage'] - 1) * $objHvz->hvz_extra_tag;
+
+            // Create Session Data for ResponseView
+            $formDatas                 = array();
+            $formDatas['ort']          = $arrSubmitted['Ort'];
+            $formDatas['auftragsNr']   = $arrSubmitted['orderNumber'];
+            $formDatas['formAnrede']   = 'Sehr geehrte Frau ' . $arrSubmitted['Name'];
+            $arrSubmitted['apiGender'] = 'female';
+            if ($arrSubmitted['Geschlecht'] == 'Herr') {
+                $arrSubmitted['apiGender'] = 'male';
+                $formDatas['formAnrede']   = 'Sehr geehrter Herr ' . $arrSubmitted['Name'];
+            }
+            System::getContainer()->get('session')->set('myform', $formDatas);
 
 
-            // get Rabatt and calc new
-            $rabattCode = empty($arrSubmitted['gutscheincode']) ? '' : strtolower($arrSubmitted['gutscheincode']);
-            $rabattValue = 0;
-            if(!empty($rabattCode)){
-                $objRabatt = \Database::getInstance()
-                    ->prepare("SELECT
+            $this->saveNewOrderToDatabase($arrSubmitted);
+
+        }
+
+    }
+
+
+
+    private function cleanUpSubmit(&$arrSubmitted)
+    {
+        $this->calcValidPrices($arrSubmitted);
+
+        //  ************************************
+        //  2. prepare Data
+
+        if ($arrSubmitted['genehmigung_vorhanden'] == 'on') {
+            $arrSubmitted['genehmigungVorhanden'] = 'ja';
+        } else {
+            $arrSubmitted['genehmigungVorhanden'] = 'nein';
+        }
+
+        // add client_ip
+        if (!isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $arrSubmitted['client_ip'] = $_SERVER['REMOTE_ADDR'];
+        } else {
+            $arrSubmitted['client_ip'] = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        };
+
+
+        // add frontend userId
+        $arrSubmitted['customerId'] = 'www';
+        $this->import('FrontendUser', 'user');
+        if (FE_USER_LOGGED_IN) {
+            $arrSubmitted['customerId'] = $this->user->id;
+        }
+
+        // add $umstid
+        if (empty($arrSubmitted['umstid'])) {
+            $arrSubmitted['umstid'] = '';
+        }
+
+
+        // create OrderNumber temp OrderNumber
+        $date                        = new DateTime();
+        $arrSubmitted['ts'] = $date->format('Y-m-d H:i:s');
+        $arrSubmitted['orderNumber'] = dechex(time());
+
+
+        // decide for order or request and add missing requires for insert
+        $arrSubmitted['submitType'] = 0; // anfrage
+        if ($arrSubmitted['Preis'] != 0) {
+            $arrSubmitted['submitType'] = 1; // bestellung
+        } else {
+            $arrSubmitted['StrasseRechnung'] = '';
+            $arrSubmitted['OrtRechnung']     = '';
+            $arrSubmitted['Preis']           = 0;
+            $arrSubmitted['hvzTagesPreis']   = 0;
+            $arrSubmitted['agbakzeptiert']   = "";
+            try {
+                $returnValue         = preg_replace('/\\D/', '.', $arrSubmitted['vom'], -1);
+                $curDate             = explode('.', $returnValue);
+                $berechnungsTage     = intval($arrSubmitted['wievieleTage'], 10) - 1;
+                $arrSubmitted['bis'] = date('d.m.Y',
+                    mktime(0, 0, 0, intval($curDate[1], 10), (intval($curDate[0], 10) + $berechnungsTage),
+                        intval($curDate[2], 10)));
+            } catch (Exception $e) {
+                $arrSubmitted['bis'] = "-";
+            };
+        }
+
+
+    }
+
+    private function calcValidPrices(&$arrSubmitted){
+
+        $this->import('Database');
+
+        //************************************
+        //  1. check valid Values - lookup DB for Price and Calc
+
+        $objHvz = HvzModel::findById($arrSubmitted['hvzID']);
+        $arrSubmitted['hvzTagesPreis'] = $objHvz->hvz_extra_tag;
+
+        //************************************
+        //  2. calc valid price
+        $arrSubmitted['apiNeedLicence'] = false;
+        $price          = 0;
+        switch ($arrSubmitted['type']) {
+            case 1:
+                $price          = $objHvz->hvz_single;
+                $arrSubmitted['apiNeedLicence'] = true;
+                break;
+            case 2:
+                $price          = $objHvz->hvz_double;
+                $arrSubmitted['apiNeedLicence'] = true;
+                break;
+            case 3:
+                $price = $objHvz->hvz_single_og;
+                break;
+            case 4:
+                $price = $objHvz->hvz_double_og;
+                break;
+            default:
+                $this->logger->log(500, 'HVZ-Type ist ungültig: ' . $arrSubmitted['type'], $arrSubmitted);
+        }
+        $arrSubmitted['fullPrice'] = $price + ($arrSubmitted['wievieleTage'] - 1) * $objHvz->hvz_extra_tag;
+
+        //************************************
+        //  3. calc valid rabatt
+
+
+        // get Rabatt and calc new
+        $arrSubmitted['rabattCode'] = empty($arrSubmitted['gutscheincode']) ? '' : strtolower($arrSubmitted['gutscheincode']);
+        $arrSubmitted['rabattValue'] = 0;
+        $arrSubmitted['Rabatt'] = '';
+        if (!empty($arrSubmitted['rabattCode'])) {
+            $objRabatt = Database::getInstance()->prepare("SELECT
                   rabattProzent,
                   rabattCode
                 FROM 
@@ -284,261 +395,179 @@ class ModuleHvz extends \Frontend
                 WHERE
                   rabattCode=? AND 
                   (start<? OR start='') AND 
-                  (stop>? OR stop='')")
-                    ->limit(1)
-                    ->execute($rabattCode,time(),time());
+                  (stop>? OR stop='')")->limit(1)->execute($arrSubmitted['rabattCode'], time(), time());
 
-                while($objRabatt->next()){
-                    $rabatt = $objRabatt->rabattProzent;
-                }
-
-                $arrSubmitted['Rabatt'] = $rabatt;
-
-                $netto  = $this->roundTo2($fullPrice/119*100);
-                $rabattValue = $this->roundTo2($netto/100*$rabatt);
-
-                $zwischenSummer = $netto - $rabattValue;
-                $newMsst = $this->roundTo2($zwischenSummer * 0.19);
-
-                $arr = array(
-                    'brutto' => $fullPrice,
-                    'netto' => $netto,
-                    'rabatt' => $rabatt,
-                    'rabattValue' => $rabattValue,
-                    'rabatCode' =>$rabattCode,
-                    'zwischenSumme' => $zwischenSummer,
-                    'newMst' => $newMsst,
-                    'fullNew' => $newMsst + $zwischenSummer,
-                );
-                $fullPrice = $newMsst + $zwischenSummer;
-
-            }
-            $arrSubmitted['Preis'] = $fullPrice;
-            $arrSubmitted['fullNetto'] = number_format(($fullPrice / 119 * 100), 2);
-
-
-            //  ************************************
-            //  2. prepare Data
-
-			if ($arrSubmitted['genehmigung_vorhanden'] == 'on')
-			{
-				$arrSubmitted['genehmigungVorhanden'] = 'ja';
-			}else{
-				$arrSubmitted['genehmigungVorhanden'] = 'nein';
-			}
-            $genehmigungVorhanden = substr($arrSubmitted['genehmigungVorhanden'],0,1);
-
-
-			// add client_ip
-            if (!isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-                $client_ip = $_SERVER['REMOTE_ADDR'];
-            } else {
-                $client_ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-            };
-
-
-			// add frontend userId
-            $userId = 0;
-            $this->import('FrontendUser', 'user');
-            if (FE_USER_LOGGED_IN) {
-                $userId = $this->user->id;
+            while ($objRabatt->next()) {
+                $rabatt = $objRabatt->rabattProzent;
             }
 
-            // add $umstid
-            if(empty($arrSubmitted['umstid'])){
-                $umstid = '';
-            }else{
-                $umstid = $arrSubmitted['umstid'];
-            }
+            $arrSubmitted['Rabatt'] = $rabatt;
 
+            $netto       = $this->roundTo2($arrSubmitted['fullPrice'] / 119 * 100);
+            $arrSubmitted['rabattValue'] = $this->roundTo2($netto / 100 * $rabatt);
 
-            if(empty($arrSubmitted['Rabatt'])){
-                $rabatt = '';
-            }else{
-                $rabatt = strtolower($arrSubmitted['Rabatt']);
-            }
+            $zwischenSummer = $netto - $arrSubmitted['rabattValue'];
+            $newMsst        = $this->roundTo2($zwischenSummer * 0.19);
 
-            // create OrderNumber
-            $date = new \DateTime();
-            $ts =  $date->format('Y-m-d H:i:s');
-            $arrSubmitted['orderNumber'] = dechex(time());
-
-
-            // Create Session Data for ResponseView
-            $formDatas = array();
-            $formDatas['ort'] = $arrSubmitted['Ort'];
-            $formDatas['auftragsNr'] = $arrSubmitted['orderNumber'];
-            $formDatas['formAnrede'] = 'Sehr geehrte Frau '.$arrSubmitted['Name'];
-            $apiGender = 'female';
-            if($arrSubmitted['Geschlecht'] == 'Herr'){
-                $apiGender = 'male';
-                $formDatas['formAnrede'] = 'Sehr geehrter Herr '.$arrSubmitted['Name'];
-            }
-            \System::getContainer()->get('session')->set('myform',$formDatas);
-
-
-            // decide for order or request and add missing requires for insert
-			$type = 0; // anfrage
-			if ($arrSubmitted['Preis'] != 0) {
-				$type = 1; // bestellung
-			} else {
-				$arrSubmitted['StrasseRechnung'] = '';
-				$arrSubmitted['OrtRechnung']     = '';
-				$arrSubmitted['Preis']           = 0;
-				$arrSubmitted['hvzTagesPreis']   = 0;
-				$arrSubmitted['agbakzeptiert']   = "";
-				try {
-					$returnValue         = preg_replace('/\\D/', '.', $arrSubmitted['vom'], -1);
-					$curDate             = explode('.', $returnValue);
-					$berechnungsTage     = intval($arrSubmitted['wievieleTage'], 10) - 1;
-					$arrSubmitted['bis'] = date('d.m.Y', mktime(0, 0, 0, intval($curDate[1], 10), (intval($curDate[0], 10) + $berechnungsTage), intval($curDate[2], 10)));
-				} catch (\Exception $e) {
-					$arrSubmitted['bis'] = "-";
-				};
-			}
-
-
-
-
-
-			$set           = array(
-				'tstamp'            => time(),
-				'user_id'           => $userId,
-				'type'              => $type,
-				'hvz_type'          => $arrSubmitted['type'],
-				'hvz_type_name'     => $arrSubmitted['Genehmigung'],
-				'hvz_preis'         => $arrSubmitted['Preis'],
-                'hvzTagesPreis'		=> $arrSubmitted['hvzTagesPreis'],
-                'hvz_gutscheincode' => $rabattCode,
-                'hvz_rabatt'        => $rabattValue,
-				'hvz_ge_vorhanden'  => $genehmigungVorhanden,
-				'hvz_ort'           => $arrSubmitted['Ort'],
-				'hvz_plz'           => $arrSubmitted['PLZ'],
-				'hvz_strasse_nr'    => $arrSubmitted['Strasse'],
-				'hvz_vom'           => $arrSubmitted['vom'],
-				'hvz_bis'           => $arrSubmitted['bis'],
-				'hvz_vom_time'      => $arrSubmitted['vomUhrzeit'],
-				'hvz_vom_bis'       => $arrSubmitted['bisUhrzeit'],
-				'hvz_anzahl_tage'   => $arrSubmitted['wievieleTage'],
-				'hvz_meter'         => $arrSubmitted['Meter'],
-				'hvz_fahrzeugart'   => $arrSubmitted['Fahrzeug'],
-				'hvz_zusatzinfos'   => $arrSubmitted['Zusatzinformationen'],
-				'hvz_grund'         => $arrSubmitted['Grund'],
-				're_anrede'         => $arrSubmitted['Geschlecht'],
-				're_umstid'         => $umstid,
-				're_firma'          => $arrSubmitted['firma'],
-				're_name'           => $arrSubmitted['Name'],
-				're_vorname'        => $arrSubmitted['Vorname'],
-				're_strasse_nr'     => $arrSubmitted['strasse_rechnung'],
-				're_ort_plz'        => $arrSubmitted['ort_rechnung'],
-				're_email'          => $arrSubmitted['email'],
-				're_telefon'        => $arrSubmitted['Telefon'],
-				're_ip'             => $client_ip,
-				're_agb_akzeptiert' => $arrSubmitted['agbakzeptiert'],
-				'ts'				=> $ts,
-				'orderNumber'		=> $arrSubmitted['orderNumber']
-			);
-
-
-			$objInsertStmt = $this->Database->prepare("INSERT INTO tl_hvz_orders " . " %s")
-				->set($set)->execute();
-
-
-            $api_url = $GLOBALS['TL_CONFIG']['hvz_api'];
-            $api_auth = $GLOBALS['TL_CONFIG']['hvz_api_auth'];
-
-            if (!empty($api_url)) {
-
-                $doubleSide = ($arrSubmitted['type'] % 2 == 0) ? true : false;
-
-                // payload with missing value
-                $data = array(
-                    'uniqueRef'      => $arrSubmitted['orderNumber'],
-                    'reason'         => $arrSubmitted['Grund'],
-                    'plz'            => intval($arrSubmitted['PLZ']),
-                    'city'           => $arrSubmitted['Ort'],
-                    'price'          => $fullPrice . "",
-                    'streetName'     => $arrSubmitted['Strasse'],
-                    'streetNumber'   => '00',
-                    'dateFrom'       => $arrSubmitted['vom'],
-                    'dateTo'         => $arrSubmitted['bis'],
-                    'timeFrom'       => $arrSubmitted['vomUhrzeit'] . ":00",
-                    'timeTo'         => $arrSubmitted['bisUhrzeit'] . ":00",
-                    'email'          => $arrSubmitted['email'],
-                    'length'         => intval($arrSubmitted['Meter']),
-                    'isDoubleSided'  => $doubleSide,
-                    'carrier'        => $arrSubmitted['Vorname'] . ' ' . $arrSubmitted['Name'],
-                    'additionalInfo' => $arrSubmitted['Zusatzinformationen'] . 'Genehmigung vorhanden:'
-                                        . $arrSubmitted['genehmigungVorhanden'],
-                    'firma'         => $arrSubmitted['firma'],
-                    'vorname'         => $arrSubmitted['Vorname'],
-                    'name'         => $arrSubmitted['Name'],
-                    'strasse'         => $arrSubmitted['strasse_rechnung'],
-                    'ort'           => $arrSubmitted['ort_rechnung'],
-                    'telefon'        => $arrSubmitted['Telefon'],
-                    'needLicence'   => $apiNeedLicence,
-                    'gender'        => $apiGender,
-                );
-
-                if($userId != 0){
-                    $data['customerId'] = 'hvb_'.$userId;
-                }
-
-                $pushMe = '';
-                try {
-
-                    // Send order to API
-                    $client = new \GuzzleHttp\Client([
-                        'base_uri' => $api_url,
-                        'headers'  => [
-                            'Content-Type'  => 'application/json',
-                            'authorization' => 'Basic '.$api_auth
-                        ],
-
-                    ]);
-
-                    // call create order
-                    $promise = $client->postAsync('/v1/order/new', [
-                            'body' => json_encode($data)
-                        ]);
-
-                    $response = $promise->wait();
-                    if ($response->getStatusCode() != 201) {
-                        $logger->log(500, 'APICall fehlgeschlagen', $data);
-                        $pushMe = "Hvb2Api:".$data['uniqueRef']."\n StatusCode:".$response->getStatusCode()."\nAPICall not found in ModuleHvz.php";
-                    }
-
-                } catch (RequestException $e) {
-                    $logger->log(500, 'APICall not found', $data);
-                    $pushMe = "Hvb2Api:".$data['uniqueRef']."\n APICall Catch:". $e->getMessage();
-                }
-
-
-                if($pushMe != ''){
-                    $ch     = curl_init();
-                    curl_setopt($ch, CURLOPT_URL, "https://pushme.projektorientiert.de/");
-                    curl_setopt(
-                        $ch,
-                        CURLOPT_POSTFIELDS,
-                        array(
-                            "Content-Type" => 'application/x-www-form-urlencoded',
-                            "key"          => 2,
-                            "msg"          => $pushMe,
-                            "url"          => 'https://www.halteverbot-beantragen.de/contao',
-                            "hash"         => 'b7050601bca827a1c11264fb05f898e9',
-                        )
-                    );
-                    curl_setopt($ch, CURLOPT_SAFE_UPLOAD, true);
-                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                    curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);
-                    curl_exec($ch);
-                    curl_close($ch);
-                }
-
-            }
+            $arr       = array(
+                'brutto'        => $arrSubmitted['fullPrice'],
+                'netto'         => $netto,
+                'rabatt'        => $rabatt,
+                'rabattValue'   => $arrSubmitted['rabattValue'],
+                'rabatCode'     => $arrSubmitted['rabattCode'],
+                'zwischenSumme' => $zwischenSummer,
+                'newMst'        => $newMsst,
+                'fullNew'       => $newMsst + $zwischenSummer,
+            );
+            $arrSubmitted['fullPrice'] = $newMsst + $zwischenSummer;
 
         }
 
-	}
+        $arrSubmitted['Preis']     = $arrSubmitted['fullPrice'];
+        $arrSubmitted['fullNetto'] = number_format(($arrSubmitted['fullPrice'] / 119 * 100), 2);
+
+
+
+    }
+
+    private function saveNewOrderToDatabase(&$arrSubmitted)
+    {
+        $set = array(
+            'tstamp'            => time(),
+            'user_id'           => $arrSubmitted['customerId'],
+            'type'              => $arrSubmitted['submitType'],
+            'hvz_type'          => $arrSubmitted['type'],
+            'hvz_type_name'     => $arrSubmitted['Genehmigung'],
+            'hvz_preis'         => $arrSubmitted['Preis'],
+            'hvzTagesPreis'     => $arrSubmitted['hvzTagesPreis'],
+            'hvz_gutscheincode' => $arrSubmitted['rabattCode'],
+            'hvz_rabatt'        => $arrSubmitted['rabattValue'],
+            'hvz_ge_vorhanden'  => substr($arrSubmitted['genehmigungVorhanden'], 0, 1),
+            'hvz_ort'           => $arrSubmitted['Ort'],
+            'hvz_plz'           => $arrSubmitted['PLZ'],
+            'hvz_strasse_nr'    => $arrSubmitted['Strasse'],
+            'hvz_vom'           => $arrSubmitted['vom'],
+            'hvz_bis'           => $arrSubmitted['bis'],
+            'hvz_vom_time'      => $arrSubmitted['vomUhrzeit'],
+            'hvz_vom_bis'       => $arrSubmitted['bisUhrzeit'],
+            'hvz_anzahl_tage'   => $arrSubmitted['wievieleTage'],
+            'hvz_meter'         => $arrSubmitted['Meter'],
+            'hvz_fahrzeugart'   => $arrSubmitted['Fahrzeug'],
+            'hvz_zusatzinfos'   => $arrSubmitted['Zusatzinformationen'],
+            'hvz_grund'         => $arrSubmitted['Grund'],
+            're_anrede'         => $arrSubmitted['Geschlecht'],
+            're_umstid'         => $arrSubmitted['umstid'],
+            're_firma'          => $arrSubmitted['firma'],
+            're_name'           => $arrSubmitted['Name'],
+            're_vorname'        => $arrSubmitted['Vorname'],
+            're_strasse_nr'     => $arrSubmitted['strasse_rechnung'],
+            're_ort_plz'        => $arrSubmitted['ort_rechnung'],
+            're_email'          => $arrSubmitted['email'],
+            're_telefon'        => $arrSubmitted['Telefon'],
+            're_ip'             => $arrSubmitted['client_ip'],
+            're_agb_akzeptiert' => $arrSubmitted['agbakzeptiert'],
+            'ts'                => $arrSubmitted['ts'],
+            'orderNumber'       => $arrSubmitted['orderNumber']
+        );
+
+        $objInsertStmt = $this->Database->prepare("INSERT INTO tl_hvz_orders " . " %s")
+            ->set($set)->execute();
+    }
+
+    private function sendNewOrderToBackend(&$arrSubmitted){
+
+        $api_url  = $GLOBALS['TL_CONFIG']['hvz_api'];
+        $api_auth = $GLOBALS['TL_CONFIG']['hvz_api_auth'];
+
+        if (!empty($api_url)) {
+
+            $doubleSide = ($arrSubmitted['type'] % 2 == 0) ? true : false;
+
+            // payload with missing value
+            $data = array(
+                'uniqueRef'      => $arrSubmitted['orderNumber'],
+                'reason'         => $arrSubmitted['Grund'],
+                'plz'            => intval($arrSubmitted['PLZ']),
+                'city'           => $arrSubmitted['Ort'],
+                'price'          => $arrSubmitted['fullPrice'] . "",
+                'streetName'     => $arrSubmitted['Strasse'],
+                'streetNumber'   => '00',
+                'dateFrom'       => $arrSubmitted['vom'],
+                'dateTo'         => $arrSubmitted['bis'],
+                'timeFrom'       => $arrSubmitted['vomUhrzeit'] . ":00",
+                'timeTo'         => $arrSubmitted['bisUhrzeit'] . ":00",
+                'email'          => $arrSubmitted['email'],
+                'length'         => intval($arrSubmitted['Meter']),
+                'isDoubleSided'  => $doubleSide,
+                'carrier'        => $arrSubmitted['Vorname'] . ' ' . $arrSubmitted['Name'],
+                'additionalInfo' => $arrSubmitted['Zusatzinformationen'] . 'Genehmigung vorhanden:'
+                                    . $arrSubmitted['genehmigungVorhanden'],
+                'firma'          => $arrSubmitted['firma'],
+                'vorname'        => $arrSubmitted['Vorname'],
+                'name'           => $arrSubmitted['Name'],
+                'strasse'        => $arrSubmitted['strasse_rechnung'],
+                'ort'            => $arrSubmitted['ort_rechnung'],
+                'telefon'        => $arrSubmitted['Telefon'],
+                'needLicence'    => $arrSubmitted['apiNeedLicence'],
+                'gender'         => $arrSubmitted['apiGender'],
+                'customerId'     => 'hvb_' . $arrSubmitted['customerId'],
+            );
+
+            $pushMe = '';
+            try {
+                // Send order to API
+                $client = new Client([
+                    'base_uri' => $api_url,
+                    'headers'  => [
+                        'Content-Type'  => 'application/json',
+                        'authorization' => 'Basic ' . $api_auth
+                    ],
+                ]);
+
+                $response = $client->post('/v1/order/new', ['body' => json_encode($data)]);
+
+                if ($response->getStatusCode() !== 201) {
+                    $this->logger->log(500, 'APICall fehlgeschlagen', $data);
+                    $pushMe = "Hvb2Api:" . $data['uniqueRef'] . "\n StatusCode:" . $response->getStatusCode()
+                              . "\nAPICall not found in ModuleHvz.php";
+                } else {
+                    $responseArray = json_decode($response->getBody(), true);
+                    if (!empty($responseArray['data']['uniqueRef'])) {
+                        return $responseArray['data']['uniqueRef'];
+                    }
+                }
+            } catch (RequestException $e) {
+                $this->logger->log(500, 'APICall not found', $data);
+                $pushMe = "Hvb2Api:" . $data['uniqueRef'] . "\n APICall Catch:" . $e->getMessage();
+            }
+
+            if ($pushMe != '') {
+                $this->pushMe($pushMe);
+            }
+        }
+        return null;
+    }
+
+    private function pushMe($msg)
+    {
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, "https://pushme.projektorientiert.de/");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, array(
+            "Content-Type" => 'application/x-www-form-urlencoded',
+            "key"          => 2,
+            "msg"          => $msg,
+            "url"          => 'https://www.halteverbot-beantragen.de/contao',
+            "hash"         => 'b7050601bca827a1c11264fb05f898e9',
+        ));
+        curl_setopt($ch, CURLOPT_SAFE_UPLOAD, true);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);
+        curl_exec($ch);
+        curl_close($ch);
+    }
 
 }
+
+
+
