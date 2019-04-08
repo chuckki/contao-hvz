@@ -253,7 +253,7 @@ class ModuleHvz extends Frontend
 
             $arrSubmitted['orderNumber'] = $this->sendNewOrderToBackend($arrSubmitted);
 
-            if (!empty($arrSubmitted['orderNumber'])) {
+            if (empty($arrSubmitted['orderNumber'])) {
                 $arrSubmitted['orderNumber'] = '<i>wird nachgereicht</i>';
                 $this->pushMe('HvbOnline2Backend -> Keine Auftragsnummer: ' . $arrSubmitted['ts']);
             }
@@ -270,11 +270,8 @@ class ModuleHvz extends Frontend
             }
             System::getContainer()->get('session')->set('myform', $formDatas);
 
-
             $this->saveNewOrderToDatabase($arrSubmitted);
-
         }
-
     }
 
 
