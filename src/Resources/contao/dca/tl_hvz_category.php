@@ -80,14 +80,6 @@ $GLOBALS['TL_DCA']['tl_hvz_category'] = array
 				'icon'                => 'copy.gif',
 				'button_callback'     => array('tl_hvz_category', 'copyCategory')
 			),
-			'delete' => array
-			(
-				'label'               => &$GLOBALS['TL_LANG']['tl_hvz_category']['delete'],
-				'href'                => 'act=delete',
-				'icon'                => 'delete.gif',
-				'attributes'          => 'onclick="if(!confirm(\'' . $GLOBALS['TL_LANG']['tl_hvz_category']['deleteConfirm'] . '\'))return false;Backend.getScrollOffset()"',
-				'button_callback'     => array('tl_hvz_category', 'deleteCategory')
-			),
 			'show' => array
 			(
 				'label'               => &$GLOBALS['TL_LANG']['tl_hvz_category']['show'],
