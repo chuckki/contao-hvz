@@ -22,7 +22,7 @@
   <<?= $this->hl ?> id="hvzlistdropdown"><?= $title ?></<?= $this->hl ?>>
 <?php endif; ?>
 
-<input type="text" placeholder="Name oder PLZ der Stadt eintragen" value="<?= $_REQUEST['suche'] ?>" id="tags">
+<input type="text" placeholder="Name oder PLZ der Stadt eintragen" value="<?= $_REQUEST['suche'] ?>" id="tags" >
 <div class="sexp">
     Suchen Sie nach den folgenden Mustern: "<b>Berlin</b>", "<b>10115 Berlin</b>" oder "<b>10115</b>"
 </div>

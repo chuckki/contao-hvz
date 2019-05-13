@@ -54,16 +54,10 @@ $GLOBALS['FE_MOD']['faq']['faqreader'] = 'Chuckki\ContaoHvzBundle\ModuleFaqReade
 
 $GLOBALS['TL_HOOKS']['replaceInsertTags'][] = array('Chuckki\ContaoHvzBundle\ModuleHvzReplaceInsertTag', 'replaceCuInsertTags');
 $GLOBALS['TL_HOOKS']['getSearchablePages'][] = array('Chuckki\ContaoHvzBundle\ModuleHvz', 'getSearchablePages');
-
-//if( count($GLOBALS['TL_HOOKS']['processFormData']) == 0){
-    $GLOBALS['TL_HOOKS']['processFormData'][] = array('Chuckki\ContaoHvzBundle\ModuleHvz', 'saveFormData');
-//}else{
-//    array_unshift($GLOBALS['TL_HOOKS']['processFormData'], array('ModuleHvz', 'saveFormData'));
-//}
+$GLOBALS['TL_HOOKS']['processFormData'][] = array('Chuckki\ContaoHvzBundle\ModuleHvz', 'saveFormData');
 
 
 $GLOBALS['TL_CRON']['monthly'][]   = array('Chuckki\ContaoHvzBundle\ModuleHvz', 'mergeFamus');
-
 
 
 /**

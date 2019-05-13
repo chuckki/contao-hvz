@@ -28,7 +28,7 @@ use Psr\Log\LoggerInterface;
  *
  * @author Dennis Esken
  */
-class ModuleHvz extends Frontend
+class ModuleHvz extends \Frontend
 {
 
     /**
@@ -49,47 +49,56 @@ class ModuleHvz extends Frontend
     {
         $arrRoot = array();
 
-        if ($intRoot > 0) {
+        if ($intRoot > 0)
+        {
             $arrRoot = $this->Database->getChildRecords($intRoot, 'tl_page');
         }
 
         $arrProcessed = array();
-        $time         = Date::floorToMinute();
+        $time         = \Date::floorToMinute();
 
         // Get all categories
         $objHvz = \HvzCategoryModel::findAll();
 
         // Walk through each category
-        if ($objHvz !== null) {
-            while ($objHvz->next()) {
+        if ($objHvz !== null)
+        {
+            while ($objHvz->next())
+            {
                 // Skip HVZs without target page
-                if (!$objHvz->jumpTo) {
+                if (!$objHvz->jumpTo)
+                {
                     continue;
                 }
 
                 // Skip HVZs outside the root nodes
-                if (!empty($arrRoot) && !in_array($objHvz->jumpTo, $arrRoot)) {
+                if (!empty($arrRoot) && !\in_array($objHvz->jumpTo, $arrRoot))
+                {
                     continue;
                 }
 
                 // Get the URL of the jumpTo page
-                if (!isset($arrProcessed[$objHvz->jumpTo])) {
-                    $objParent = PageModel::findWithDetails($objHvz->jumpTo);
+                if (!isset($arrProcessed[$objHvz->jumpTo]))
+                {
+                    $objParent = \PageModel::findWithDetails($objHvz->jumpTo);
 
                     // The target page does not exist
-                    if ($objParent === null) {
+                    if ($objParent === null)
+                    {
                         continue;
                     }
 
                     // The target page has not been published (see #5520)
-                    if (!$objParent->published || ($objParent->start != '' && $objParent->start > $time)
-                        || ($objParent->stop != '' && $objParent->stop <= ($time + 60))) {
+                    if (!$objParent->published || ($objParent->start != '' && $objParent->start > $time) || ($objParent->stop != '' && $objParent->stop <= ($time + 60)))
+                    {
                         continue;
                     }
 
-                    if ($blnIsSitemap) {
+                    if ($blnIsSitemap)
+                    {
                         // The target page is protected (see #8416)
-                        if ($objParent->protected) {
+                        if ($objParent->protected)
+                        {
                             continue;
                         }
 
@@ -101,7 +110,7 @@ class ModuleHvz extends Frontend
 
                     // Generate the URL
                     $arrProcessed[$objHvz->jumpTo] =
-                        $objParent->getAbsoluteUrl(Config::get('useAutoItem') ? '/%s' : '/items/%s');
+                        $objParent->getAbsoluteUrl(\Config::get('useAutoItem') ? '/%s' : '/items/%s');
 
                 }
 
@@ -110,8 +119,10 @@ class ModuleHvz extends Frontend
                 // Get the items
                 $objItems = HvzModel::findByPid($objHvz->id, array('order' => 'isFamus DESC, sorting'));
 
-                if ($objItems !== null) {
-                    while ($objItems->next()) {
+                if ($objItems !== null)
+                {
+                    while ($objItems->next())
+                    {
                         $arrPages[] = sprintf($strUrl, ($objItems->alias ?: $objItems->id));
                     }
                 }

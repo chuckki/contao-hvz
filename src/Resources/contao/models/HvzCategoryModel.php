@@ -8,7 +8,9 @@
  */
 
 //namespace Chuckki\ContaoHvzBundle;
-namespace Contao;
+//namespace Contao;
+namespace Chuckki\ContaoHvzBundle;
+
 
 /**
  * Reads and writes Hvz categories
