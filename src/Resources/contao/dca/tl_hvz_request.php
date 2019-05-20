@@ -1,76 +1,57 @@
 <?php
 
-/**
- * Contao Open Source CMS
+/*
+ * This file is part of backend-hvb.
  *
- * Copyright (c) 2005-2014 Leo Feyer
+ * (c) Dennis Esken - callme@projektorientiert.de
  *
- * @package Core
- * @link    https://contao.org
- * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
+ * @license NO LICENSE - So dont use it without permission (it could be expensive..)
  */
 
-
 /**
- * Table tl_plz
+ * Table tl_plz.
  */
-$GLOBALS['TL_DCA']['tl_hvz_request'] = array
-(
+$GLOBALS['TL_DCA']['tl_hvz_request'] = [
+    // Config
+    'config' => [
+        'sql' => [
+            'keys' => [
+                'id' => 'primary',
+            ],
+        ],
+    ],
 
-	// Config
-	'config' => array
-	(
-		'sql' => array
-		(
-			'keys' => array
-			(
-				'id' => 'primary'
-			)
-		)
-	),
-
-	// Fields
-	'fields' => array
-	(
-		'id' => array
-		(
-			'sql'                     => "int(10) unsigned NOT NULL auto_increment"
-		),
-		'tstamp' => array
-		(
-			'sql'                     => "int(10) unsigned NOT NULL default '0'"
-		),
-		'anfrage' => array
-		(
-			'sql'                     => "varchar(255) NOT NULL default ''"
-		),
-		'msg' => array
-		(
-			'sql'                     => "varchar(255) NOT NULL default ''"
-		),
-		'hits' => array
-		(
-			'sql'                     => "int(10) NOT NULL default '0'"
-		),
-		're_ip' => array
-		(
-			'sql'                     => "varchar(255) NOT NULL default ''"
-		),
-		'agent' => array
-		(
-			'sql'                     => "varchar(255) NOT NULL default ''"
-		),
-		'isbot' => array
-		(
-			'sql'                     => "int(10) NOT NULL default '0'"
-		),
-		'user_id' => array
-		(
-			'sql'                     => "int(10) unsigned NOT NULL default '0'"
-		),
-		'ts' => array
-		(
-			'sql'                     => "timestamp NOT NULL default CURRENT_TIMESTAMP"
-		)
-	)
-);
+    // Fields
+    'fields' => [
+        'id' => [
+            'sql' => 'int(10) unsigned NOT NULL auto_increment',
+        ],
+        'tstamp' => [
+            'sql' => "int(10) unsigned NOT NULL default '0'",
+        ],
+        'anfrage' => [
+            'sql' => "varchar(255) NOT NULL default ''",
+        ],
+        'msg' => [
+            'sql' => "varchar(255) NOT NULL default ''",
+        ],
+        'hits' => [
+            'sql' => "int(10) NOT NULL default '0'",
+        ],
+        're_ip' => [
+            'sql' => "varchar(255) NOT NULL default ''",
+        ],
+        'agent' => [
+            'sql' => "varchar(255) NOT NULL default ''",
+        ],
+        'isbot' => [
+            'sql' => "int(10) NOT NULL default '0'",
+        ],
+        'user_id' => [
+            'sql' => "int(10) unsigned NOT NULL default '0'",
+        ],
+        'ts' => [
+            'sql' => 'timestamp NOT NULL default CURRENT_TIMESTAMP',
+        ],
+    ],
+];

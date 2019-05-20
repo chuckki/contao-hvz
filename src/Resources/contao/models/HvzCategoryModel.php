@@ -1,33 +1,33 @@
 <?php
 
-/**
- * Contao Open Source CMS
+/*
+ * This file is part of backend-hvb.
  *
- * @package Hvz
- * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
+ * (c) Dennis Esken - callme@projektorientiert.de
+ *
+ * @license NO LICENSE - So dont use it without permission (it could be expensive..)
  */
 
 //namespace Chuckki\ContaoHvzBundle;
-//namespace Contao;
+
 namespace Chuckki\ContaoHvzBundle;
 
-
 /**
- * Reads and writes Hvz categories
+ * Reads and writes Hvz categories.
  *
- * @property integer $id
- * @property integer $tstamp
- * @property string  $title
- * @property string  $headline
- * @property integer $jumpTo
- * @property boolean $allowComments
- * @property string  $notify
- * @property string  $sortOrder
- * @property integer $perPage
- * @property boolean $moderate
- * @property boolean $bbcode
- * @property boolean $requireLogin
- * @property boolean $disableCaptcha
+ * @property int    $id
+ * @property int    $tstamp
+ * @property string $title
+ * @property string $headline
+ * @property int    $jumpTo
+ * @property bool   $allowComments
+ * @property string $notify
+ * @property string $sortOrder
+ * @property int    $perPage
+ * @property bool   $moderate
+ * @property bool   $bbcode
+ * @property bool   $requireLogin
+ * @property bool   $disableCaptcha
  *
  * @method static HvzCategoryModel|null findById($id, $opt=array())
  * @method static HvzCategoryModel|null findByPk($id, $opt=array())
@@ -45,7 +45,6 @@ namespace Chuckki\ContaoHvzBundle;
  * @method static HvzCategoryModel|null findOneByBbcode($val, $opt=array())
  * @method static HvzCategoryModel|null findOneByRequireLogin($val, $opt=array())
  * @method static HvzCategoryModel|null findOneByDisableCaptcha($val, $opt=array())
- *
  * @method static Model\Collection|HvzCategoryModel[]|HvzCategoryModel|null findByTstamp($val, $opt=array())
  * @method static Model\Collection|HvzCategoryModel[]|HvzCategoryModel|null findByTitle($val, $opt=array())
  * @method static Model\Collection|HvzCategoryModel[]|HvzCategoryModel|null findByHeadline($val, $opt=array())
@@ -61,7 +60,6 @@ namespace Chuckki\ContaoHvzBundle;
  * @method static Model\Collection|HvzCategoryModel[]|HvzCategoryModel|null findMultipleByIds($val, $opt=array())
  * @method static Model\Collection|HvzCategoryModel[]|HvzCategoryModel|null findBy($col, $val, $opt=array())
  * @method static Model\Collection|HvzCategoryModel[]|HvzCategoryModel|null findAll($opt=array())
- *
  * @method static integer countById($id, $opt=array())
  * @method static integer countByTstamp($val, $opt=array())
  * @method static integer countByTitle($val, $opt=array())
@@ -80,11 +78,10 @@ namespace Chuckki\ContaoHvzBundle;
  */
 class HvzCategoryModel extends \Model
 {
-
-	/**
-	 * Table name
-	 * @var string
-	 */
-	protected static $strTable = 'tl_hvz_category';
-
+    /**
+     * Table name.
+     *
+     * @var string
+     */
+    protected static $strTable = 'tl_hvz_category';
 }

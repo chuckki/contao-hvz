@@ -1,55 +1,53 @@
 <?php
 
-/**
- * Contao Open Source CMS
+/*
+ * This file is part of backend-hvb.
  *
- * @package Hvz
- * @link    https://contao.org
- * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
+ * (c) Dennis Esken - callme@projektorientiert.de
+ *
+ * @license NO LICENSE - So dont use it without permission (it could be expensive..)
  */
-
 
 namespace Chuckki\ContaoHvzBundle;
 
 use Contao\CoreBundle\Exception\PageNotFoundException;
 use Patchwork\Utf8;
 
-
 /**
- * Class ModuleHvzList
+ * Class ModuleHvzList.
  *
- * @property array    $hvz_categories
+ * @property array $hvz_categories
  *
  * @author Dennis Esken
  */
 class ModuleHvzList extends \Module
 {
-
     /**
-     * Template
+     * Template.
+     *
      * @var string
      */
     protected $strTemplate = 'mod_hvzlist';
 
     /**
-     * Target pages
+     * Target pages.
+     *
      * @var array
      */
-    protected $arrTargets = array();
-
+    protected $arrTargets = [];
 
     /**
-     * Display a wildcard in the back end
+     * Display a wildcard in the back end.
+     *
      * @return string
      */
     public function generate()
     {
-        if (TL_MODE == 'BE')
-        {
-			/** @var \BackendTemplate|object $objTemplate */
+        if (TL_MODE === 'BE') {
+            /** @var \BackendTemplate|object $objTemplate */
             $objTemplate = new \BackendTemplate('be_wildcard');
 
-			$objTemplate->wildcard = '### ' . Utf8::strtoupper($GLOBALS['TL_LANG']['FMD']['hvzlist'][0]) . ' ###';
+            $objTemplate->wildcard = '### '.Utf8::strtoupper($GLOBALS['TL_LANG']['FMD']['hvzlist'][0]).' ###';
 
             $objTemplate->title = $this->headline;
             $objTemplate->id = $this->id;
@@ -59,24 +57,20 @@ class ModuleHvzList extends \Module
             return $objTemplate->parse();
         }
 
-
         // Set the item from the auto_item parameter
-        if (!isset($_GET['items']) && $GLOBALS['TL_CONFIG']['useAutoItem'] && isset($_GET['auto_item']))
-        {
+        if (!isset($_GET['items']) && $GLOBALS['TL_CONFIG']['useAutoItem'] && isset($_GET['auto_item'])) {
             \Input::setGet('items', \Input::get('auto_item'));
         }
 
         return parent::generate();
     }
 
-
     /**
-     * Generate the module
+     * Generate the module.
      */
     protected function compile()
     {
-
-        $bLand = array(
+        $bLand = [
             'Baden-Württemberg',
             'Bayern',
             'Berlin',
@@ -93,8 +87,8 @@ class ModuleHvzList extends \Module
             'Sachsen-Anhalt',
             'Schleswig-Holstein',
             'Thüringen',
-        );
-        $bLand_alias = array(
+        ];
+        $bLand_alias = [
             'baden-wuerttemberg',
             'bayern',
             'berlin',
@@ -111,64 +105,57 @@ class ModuleHvzList extends \Module
             'sachsen-anhalt',
             'schleswig-holstein',
             'thueringen',
-        );
+        ];
 
-        $pageTitle = "Halteverbote und Absperrungen deutschlandweit";
-        $pageDisc = "Halteverbote deutschlandweit in allen Bundesländern verfügbar. Wir stellen für Sie Ihre Schilder auf und schaffen Ihnen Platz.";
+        $pageTitle = 'Halteverbote und Absperrungen deutschlandweit';
+        $pageDisc = 'Halteverbote deutschlandweit in allen Bundesländern verfügbar. Wir stellen für Sie Ihre Schilder auf und schaffen Ihnen Platz.';
         $headline = 'Halteverbote und Absperrungen deutschlandweit';
         $teaser = '<p>Halteverbote für Ihren Umzug, Ihre Anlieferung oder Baustelle können wir in allen Bundesländern für Sie fachgerecht einrichten. Natürlich kümmern wir uns in den einzelnen Bundesländern und dessen Städten auch um die behördlichen Genehmigungen. Untenstehenden erhalten Sie eine Zusammenfassung aller Kreise und dessen Städten in welchen wir Ihr Halteverbot deutschlandweit einrichten können.</p><p>Sollte Sie ein Halteverbot in einer Stadt benötigen, welche sich nicht in unsere Auflistung befindet, so senden Sie uns einfach eine <a href="halteverbot-anfrage.html" title="Halteverbotsanfrage">Halteverbotsanfrage</a>. Sie erhalten dann zeitnah von uns ein entsprechendes Angebot.</p>';
-
 
         $this->import('Database');
 
         $bundesland = \Input::get('bundesland');
         $kreis = \Input::get('kreis');
 
-        $myReturn = array();
+        $myReturn = [];
 
         // no request => Bundesland
-        if (empty($bundesland) and empty($kreis))
-        {
-            $myReturn['title'] = "Haltevebote in allen Bundesländern bestellen";
-            $myReturn['items'] = array();
+        if (empty($bundesland) and empty($kreis)) {
+            $myReturn['title'] = 'Haltevebote in allen Bundesländern bestellen';
+            $myReturn['items'] = [];
 
             // Add HVZs
-            foreach ($bLand as $key => $value)
-            {
-                $arrTemp = array();
+            foreach ($bLand as $key => $value) {
+                $arrTemp = [];
                 $arrTemp['title'] = \StringUtil::specialchars($value, true);
                 $arrTemp['href'] = $this->generateHvzLink('bundesland/'.$bLand_alias[$key]);
                 $myReturn['items'][] = $arrTemp;
             }
         }
 
-        if (!empty($bundesland))
-        {
-
-            $blParm = array_search($bundesland, $bLand_alias);
+        if (!empty($bundesland)) {
+            $blParm = array_search($bundesland, $bLand_alias, true);
             $myReturn['title'] = $bLand[$blParm];
 
-            $blParm += 1;
+            ++$blParm;
             $result_plz = $this->Database
-                ->prepare("SELECT kreis FROM tl_hvz where bundesland = ? group by kreis order by kreis asc")
+                ->prepare('SELECT kreis FROM tl_hvz where bundesland = ? group by kreis order by kreis asc')
                 ->execute($blParm);
 
-            while ($result_plz->next())
-			{
-                $arrTemp = array();
+            while ($result_plz->next()) {
+                $arrTemp = [];
                 $arrTemp['title'] = \StringUtil::specialchars($result_plz->kreis, true);
                 $stdKreis = \StringUtil::standardize($result_plz->kreis);
                 $arrTemp['href'] = $this->generateHvzLink('kreis/'.$stdKreis);
                 $myReturn['items'][] = $arrTemp;
             }
-            $blParm -= 1;
-            $pageTitle = "Halteverbot in ".$bLand[$blParm]." bestellen";
-            $pageDisc = "Halteverbot in ".$bLand[$blParm]." bestellen. Wir stellen für Sie Ihre Schilder in ".$bLand[$blParm]." auf und schaffen Ihnen Platz.";
-            $headline = "Halteverbot in ".$bLand[$blParm]." bestellen";
+            --$blParm;
+            $pageTitle = 'Halteverbot in '.$bLand[$blParm].' bestellen';
+            $pageDisc = 'Halteverbot in '.$bLand[$blParm].' bestellen. Wir stellen für Sie Ihre Schilder in '.$bLand[$blParm].' auf und schaffen Ihnen Platz.';
+            $headline = 'Halteverbot in '.$bLand[$blParm].' bestellen';
             $teaser = '<p>Nachfolgend finden Sie alle Kreise in '.$bLand[$blParm].', in denen wir Halteverbotzonen anbieten. Falls Ihr Kreis in der unten aufgeführten Liste nicht enthalten ist, schicken Sie uns eine <a href="halteverbot-anfrage.html" title="Halteverbot Anfrage">Anfrage</a>. Nach dem Erhalt Ihrer Anfrage, stellen wir Ihnen umgehend ein Angebot zusammen.</p>';
 
-            switch ($blParm)
-			{
+            switch ($blParm) {
                 case 0:
                     $teaser = '<p>Nachfolgend finden Sie eine Auflistung aller Kreise in Baden-Württemberg. Halteverbote in den zugehörigen Städten können Sie bei uns schnell und unkompliziert bestellen. Die Kosten bei einem Halteverbot variieren nicht nur von Bundesland zu Bundesland, sondern auch von Stadt zu Stadt. Dies liegt daran, dass die Städte in Baden-Württemberg unterschiedliche Gebühren erheben. Eine genaue Preisübersicht entnehmen Sie bitte unserer Halteverbot-Preisliste.  Bedingt durch die Bevölkerung in diesem Bundeland von ca. 10 Millionen Menschen ist das Verkehrsaufkommen hier hoch und damit die Parkplatzsituation begrenzt. Um ausreichend Platz zur Verfügung zu stellen ist es unabdingbar zu buchen!</p>';
                     break;
@@ -182,55 +169,45 @@ class ModuleHvzList extends \Module
                     $teaser = '<p>Hier erhalten Sie einen Überblick für Halteverbote in allen Kreisen im Bundesland Brandenburg. Das Bundesland Brandenburg besteht aus 18 Kreisen. Ein Halteverbot in allen zugehörigen Städten kann durch das Team von Halteverbot-beantragen kompetent und terminsicher gewährleistet werden. Egal ob in der Landeshauptstadt Potsdam oder Cottbus, machen Sie die Sicherstellung einer Haltezone nicht zum Glückspiel. Stellen Sie schon vor Ihrem Umzug oder Ihrer Anlieferung ausreichend Platz durch ein Halteverbot sicher. So können andere Anwohner sich an dieses für Sie eingereichtes Halteverbot halten und Ihren Arbeiten steht nichts mehr im Weg.</p>';
                     break;
             }
-
         }
 
         // request = bl => Kreise
-        if (!empty($kreis))
-        {
+        if (!empty($kreis)) {
             $currentKreis = '';
             $firstLetterKreis = substr($kreis, 0, 1).'%';
 
             $result_plz = $this->Database
-                ->prepare("SELECT kreis FROM tl_hvz where lower(kreis) like ? group by kreis order by kreis asc")
+                ->prepare('SELECT kreis FROM tl_hvz where lower(kreis) like ? group by kreis order by kreis asc')
                 ->execute($firstLetterKreis);
 
-            while ($result_plz->next())
-			{
-                if (\StringUtil::standardize($result_plz->kreis) == $kreis)
-                {
+            while ($result_plz->next()) {
+                if (\StringUtil::standardize($result_plz->kreis) === $kreis) {
                     $currentKreis = $result_plz->kreis;
                     break;
                 }
             }
 
-            if (empty($currentKreis))
-            {
-				throw new PageNotFoundException('Page not found: ' . \Environment::get('uri'));
+            if (empty($currentKreis)) {
+                throw new PageNotFoundException('Page not found: '.\Environment::get('uri'));
             }
 
             $myReturn['title'] = $currentKreis;
 
-
             $result_plz = $this->Database
-                ->prepare("SELECT question,alias FROM tl_hvz where kreis = ? group by alias order by question asc")
+                ->prepare('SELECT question,alias FROM tl_hvz where kreis = ? group by alias order by question asc')
                 ->execute($currentKreis);
 
-
-            while ($result_plz->next())
-			{
-                $arrTemp = array();
+            while ($result_plz->next()) {
+                $arrTemp = [];
                 $arrTemp['title'] = \StringUtil::specialchars($result_plz->question, true);
                 $arrTemp['href'] = '/halteverbot/'.$result_plz->alias.'.html';
                 $myReturn['items'][] = $arrTemp;
             }
 
-            $pageTitle = "Halteverbot in ".$currentKreis." bestellen";
-            $pageDisc = "Halteverbot in ".$currentKreis." bestellen. Wir stellen für Sie Ihre Schilder in ".$currentKreis." auf und schaffen Ihnen Platz.";
-            $headline = "Halteverbot in ".$currentKreis." bestellen";
+            $pageTitle = 'Halteverbot in '.$currentKreis.' bestellen';
+            $pageDisc = 'Halteverbot in '.$currentKreis.' bestellen. Wir stellen für Sie Ihre Schilder in '.$currentKreis.' auf und schaffen Ihnen Platz.';
+            $headline = 'Halteverbot in '.$currentKreis.' bestellen';
             $teaser = '<p>Nachfolgend finden Sie alle Städte und Dörfer im Kreis '.$currentKreis.', in denen wir Halteverbotzonen anbieten. Falls Ihr Kreis in der unten aufgeführten Liste nicht enthalten ist, schicken Sie uns eine <a href="halteverbot-anfrage.html" title="Halteverbot Anfrage">Anfrage</a>. Nach dem Erhalt Ihrer Anfrage, stellen wir Ihnen umgehend ein Angebot zusammen.</p>';
-
-
         }
 
         // request = kreis => Orte
@@ -245,15 +222,17 @@ class ModuleHvzList extends \Module
         $this->Template->hvz = $myReturn;
     }
 
-
     /**
-     * Create links and remember pages that have been processed
+     * Create links and remember pages that have been processed.
+     *
      * @param object
+     * @param mixed $objHvz
+     *
      * @return string
      */
     protected function generateHvzLink($objHvz)
     {
-		/** @var \PageModel $objPage */
+        /* @var \PageModel $objPage */
         global $objPage;
         $myUrl = '/'.$objPage->alias.'/'.$objHvz.'.html';
 

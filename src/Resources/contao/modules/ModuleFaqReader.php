@@ -1,12 +1,13 @@
 <?php
 
 /*
- * This file is part of Contao.
+ * This file is part of backend-hvb.
  *
- * (c) Leo Feyer
+ * (c) Dennis Esken - callme@projektorientiert.de
  *
- * @license LGPL-3.0-or-later
+ * @license NO LICENSE - So dont use it without permission (it could be expensive..)
  */
+
 namespace Chuckki\ContaoHvzBundle;
 
 use Contao\PageModel;
@@ -18,24 +19,21 @@ use Contao\PageModel;
  */
 class ModuleFaqReader extends \Contao\ModuleFaqReader
 {
+    /**
+     * Generate the module.
+     */
+    protected function compile()
+    {
+        /* @var PageModel $objPage */
+        global $objPage;
 
-/**
-	 * Generate the module
-	 */
-	protected function compile()
-	{
-		/** @var PageModel $objPage */
-		global $objPage;
-
-		$objFaq = \FaqModel::findPublishedByParentAndIdOrAlias(\Input::get('items'), $this->faq_categories);
-		if (null !== $objFaq)
-		{
-            $updateFamus = intval($objFaq->isFamus) + 1;
+        $objFaq = \FaqModel::findPublishedByParentAndIdOrAlias(\Input::get('items'), $this->faq_categories);
+        if (null !== $objFaq) {
+            $updateFamus = (int) ($objFaq->isFamus) + 1;
             $this->import('Database');
-            $objUpdate = $this->Database->prepare("UPDATE tl_faq set isFamus = ? where id = ?")
+            $objUpdate = $this->Database->prepare('UPDATE tl_faq set isFamus = ? where id = ?')
                 ->execute($updateFamus, $objFaq->id);
-		}
+        }
         $buffer = parent::compile();
-	}
-
+    }
 }

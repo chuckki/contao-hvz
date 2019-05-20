@@ -1,55 +1,42 @@
 <?php
 
-/**
- * Contao Open Source CMS
+/*
+ * This file is part of backend-hvb.
  *
- * Copyright (c) 2005-2014 Leo Feyer
+ * (c) Dennis Esken - callme@projektorientiert.de
  *
- * @package Core
- * @link    https://contao.org
- * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
+ * @license NO LICENSE - So dont use it without permission (it could be expensive..)
  */
 
-
 /**
- * Table tl_plz
+ * Table tl_plz.
  */
-$GLOBALS['TL_DCA']['tl_plz'] = array
-(
+$GLOBALS['TL_DCA']['tl_plz'] = [
+    // Config
+    'config' => [
+        'sql' => [
+            'keys' => [
+                'id' => 'primary',
+                'plzS' => 'index',
+                'plz' => 'index',
+                'ortid' => 'index',
+            ],
+        ],
+    ],
 
-	// Config
-	'config' => array
-	(
-		'sql' => array
-		(
-			'keys' => array
-			(
-				'id' => 'primary',
-				'plzS' => 'index',
-				'plz' => 'index',
-				'ortid' => 'index'
-			)
-		)
-	),
-
-	// Fields
-	'fields' => array
-	(
-		'id' => array
-		(
-			'sql'                     => "int(10) unsigned NOT NULL auto_increment"
-		),
-		'ortid' => array
-		(
-			'sql'                     => "int(10) unsigned NOT NULL default '0'"
-		),
-		'plz' => array
-		(
-			'sql'                     => "int(10) unsigned NOT NULL default '0'"
-		),
-		'plzS' => array
-		(
-			'sql'                     => "varchar(10) NOT NULL"
-		)
-	)
-);
+    // Fields
+    'fields' => [
+        'id' => [
+            'sql' => 'int(10) unsigned NOT NULL auto_increment',
+        ],
+        'ortid' => [
+            'sql' => "int(10) unsigned NOT NULL default '0'",
+        ],
+        'plz' => [
+            'sql' => "int(10) unsigned NOT NULL default '0'",
+        ],
+        'plzS' => [
+            'sql' => 'varchar(10) NOT NULL',
+        ],
+    ],
+];

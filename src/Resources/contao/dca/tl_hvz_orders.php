@@ -1,180 +1,135 @@
 <?php
 
-/**
- * Contao Open Source CMS
+/*
+ * This file is part of backend-hvb.
  *
- * Copyright (c) 2005-2014 Leo Feyer
+ * (c) Dennis Esken - callme@projektorientiert.de
  *
- * @package Core
- * @link    https://contao.org
- * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
+ * @license NO LICENSE - So dont use it without permission (it could be expensive..)
  */
 
-
 /**
- * Table tl_plz
+ * Table tl_plz.
  */
-$GLOBALS['TL_DCA']['tl_hvz_orders'] = array
-(
+$GLOBALS['TL_DCA']['tl_hvz_orders'] = [
+    // Config
+    'config' => [
+        'sql' => [
+            'keys' => [
+                'id' => 'primary',
+            ],
+        ],
+    ],
 
-	// Config
-	'config' => array
-	(
-		'sql' => array
-		(
-			'keys' => array
-			(
-				'id' => 'primary'
-			)
-		)
-	),
-
-	// Fields
-	'fields' => array
-	(
-		'id' => array
-		(
-			'sql'                     => "int(10) unsigned NOT NULL auto_increment"
-		),
-		'tstamp' => array
-		(
-			'sql'                     => "int(10) unsigned NOT NULL default '0'"
-		),
-		'type' => array
-		(
-			'sql'                     => "smallint(5) unsigned NOT NULL"
-		),
-		'hvz_type' => array
-		(
-			'sql'                     => "smallint(5) unsigned NOT NULL default '0'"
-		),
-		'hvz_type_name' => array
-		(
-			'sql'                     => "varchar(255) NOT NULL default ''"
-		),
-		'hvz_preis' => array
-		(
-			'sql'                     => "smallint(5) unsigned NOT NULL default '0'"
-		),
-		'hvzTagesPreis' => array
-		(
-			'sql'                     => "smallint(6) unsigned NOT NULL default '0'"
-		),
-		'hvz_ge_vorhanden' => array
-		(
-			'sql'                     => "char(1) NOT NULL default ''"
-		),
-		'hvz_ort' => array
-		(
-			'sql'                     => "varchar(255) NOT NULL default ''"
-		),
-		'hvz_plz' => array
-		(
-			'sql'                     => "varchar(255) NOT NULL default ''"
-		),
-		'hvz_strasse_nr' => array
-		(
-			'sql'                     => "varchar(255) NOT NULL default ''"
-		),
-		'hvz_vom' => array
-		(
-			'sql'                     => "varchar(32) NOT NULL default ''"
-		),
-		'hvz_bis' => array
-		(
-			'sql'                     => "varchar(32) NOT NULL default ''"
-		),
-		'hvz_vom_time' => array
-		(
-			'sql'                     => "varchar(32) NOT NULL default ''"
-		),
-		'hvz_vom_bis' => array
-		(
-			'sql'                     => "varchar(32) NOT NULL default ''"
-		),
-		'hvz_anzahl_tage' => array
-		(
-			'sql'                     => "int(10) unsigned NOT NULL default '0'"
-		),
-		'user_id' => array
-		(
-			'sql'                     => "int(10) unsigned NOT NULL default '0'"
-		),
-		'hvz_meter' => array
-		(
-			'sql'                     => "varchar(64) NOT NULL default ''"
-		),
-		'hvz_fahrzeugart' => array
-		(
-			'sql'                     => "varchar(64) NOT NULL default ''"
-		),
-		'hvz_zusatzinfos' => array
-		(
-			'sql'                     => "text NOT NULL"
-		),
-		'hvz_gutscheincode' => array
-		(
-			'sql'                     => "varchar(64) NOT NULL default ''"
-		),
-		'hvz_rabatt' => array
-		(
-			'sql'                     => "int(11) unsigned NOT NULL default '0'"
-		),
-        'hvz_grund' => array
-        (
-            'sql'                     => "varchar(255) NOT NULL default ''"
-        ),
-		're_anrede' => array
-		(
-			'sql'                     => "varchar(32) NOT NULL default ''"
-		),
-		're_firma' => array
-		(
-			'sql'                     => "varchar(255) NOT NULL default ''"
-		),
-        're_umstid' => array
-        (
-            'sql'                     => "varchar(255) NOT NULL default ''"
-        ),
-		're_name' => array
-		(
-			'sql'                     => "varchar(255) NOT NULL default ''"
-		),
-		're_vorname' => array
-		(
-			'sql'                     => "varchar(255) NOT NULL default ''"
-		),
-		're_strasse_nr' => array
-		(
-			'sql'                     => "varchar(255) NOT NULL default ''"
-		),
-		're_ort_plz' => array
-		(
-			'sql'                     => "varchar(255) NOT NULL default ''"
-		),
-		're_email' => array
-		(
-			'sql'                     => "varchar(255) NOT NULL default ''"
-		),
-		're_telefon' => array
-		(
-			'sql'                     => "varchar(255) NOT NULL default ''"
-		),
-		're_agb_akzeptiert' => array
-		(
-			'sql'                     => "char(1) NOT NULL default ''"
-		),
-		're_ip' => array
-		(
-			'sql'                     => "varchar(255) NOT NULL default ''"
-		),
-		'ts' => array
-		(
-			'sql'                     => "timestamp NOT NULL default CURRENT_TIMESTAMP"
-		),
-		'orderNumber' => array
-		(
-			'sql'                     => "varchar(255) NOT NULL default '0'"
-		)
-	)
-);
+    // Fields
+    'fields' => [
+        'id' => [
+            'sql' => 'int(10) unsigned NOT NULL auto_increment',
+        ],
+        'tstamp' => [
+            'sql' => "int(10) unsigned NOT NULL default '0'",
+        ],
+        'type' => [
+            'sql' => 'smallint(5) unsigned NOT NULL',
+        ],
+        'hvz_type' => [
+            'sql' => "smallint(5) unsigned NOT NULL default '0'",
+        ],
+        'hvz_type_name' => [
+            'sql' => "varchar(255) NOT NULL default ''",
+        ],
+        'hvz_preis' => [
+            'sql' => "smallint(5) unsigned NOT NULL default '0'",
+        ],
+        'hvzTagesPreis' => [
+            'sql' => "smallint(6) unsigned NOT NULL default '0'",
+        ],
+        'hvz_ge_vorhanden' => [
+            'sql' => "char(1) NOT NULL default ''",
+        ],
+        'hvz_ort' => [
+            'sql' => "varchar(255) NOT NULL default ''",
+        ],
+        'hvz_plz' => [
+            'sql' => "varchar(255) NOT NULL default ''",
+        ],
+        'hvz_strasse_nr' => [
+            'sql' => "varchar(255) NOT NULL default ''",
+        ],
+        'hvz_vom' => [
+            'sql' => "varchar(32) NOT NULL default ''",
+        ],
+        'hvz_bis' => [
+            'sql' => "varchar(32) NOT NULL default ''",
+        ],
+        'hvz_vom_time' => [
+            'sql' => "varchar(32) NOT NULL default ''",
+        ],
+        'hvz_vom_bis' => [
+            'sql' => "varchar(32) NOT NULL default ''",
+        ],
+        'hvz_anzahl_tage' => [
+            'sql' => "int(10) unsigned NOT NULL default '0'",
+        ],
+        'user_id' => [
+            'sql' => "int(10) unsigned NOT NULL default '0'",
+        ],
+        'hvz_meter' => [
+            'sql' => "varchar(64) NOT NULL default ''",
+        ],
+        'hvz_fahrzeugart' => [
+            'sql' => "varchar(64) NOT NULL default ''",
+        ],
+        'hvz_zusatzinfos' => [
+            'sql' => 'text NOT NULL',
+        ],
+        'hvz_gutscheincode' => [
+            'sql' => "varchar(64) NOT NULL default ''",
+        ],
+        'hvz_rabatt' => [
+            'sql' => "int(11) unsigned NOT NULL default '0'",
+        ],
+        'hvz_grund' => [
+            'sql' => "varchar(255) NOT NULL default ''",
+        ],
+        're_anrede' => [
+            'sql' => "varchar(32) NOT NULL default ''",
+        ],
+        're_firma' => [
+            'sql' => "varchar(255) NOT NULL default ''",
+        ],
+        're_umstid' => [
+            'sql' => "varchar(255) NOT NULL default ''",
+        ],
+        're_name' => [
+            'sql' => "varchar(255) NOT NULL default ''",
+        ],
+        're_vorname' => [
+            'sql' => "varchar(255) NOT NULL default ''",
+        ],
+        're_strasse_nr' => [
+            'sql' => "varchar(255) NOT NULL default ''",
+        ],
+        're_ort_plz' => [
+            'sql' => "varchar(255) NOT NULL default ''",
+        ],
+        're_email' => [
+            'sql' => "varchar(255) NOT NULL default ''",
+        ],
+        're_telefon' => [
+            'sql' => "varchar(255) NOT NULL default ''",
+        ],
+        're_agb_akzeptiert' => [
+            'sql' => "char(1) NOT NULL default ''",
+        ],
+        're_ip' => [
+            'sql' => "varchar(255) NOT NULL default ''",
+        ],
+        'ts' => [
+            'sql' => 'timestamp NOT NULL default CURRENT_TIMESTAMP',
+        ],
+        'orderNumber' => [
+            'sql' => "varchar(255) NOT NULL default '0'",
+        ],
+    ],
+];

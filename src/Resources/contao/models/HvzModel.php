@@ -1,55 +1,54 @@
 <?php
 
-/**
- * Contao Open Source CMS
+/*
+ * This file is part of backend-hvb.
  *
+ * (c) Dennis Esken - callme@projektorientiert.de
  *
- * @package Hvz
- * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
+ * @license NO LICENSE - So dont use it without permission (it could be expensive..)
  */
 
-//namespace Chuckki\ContaoHvzBundle;
-namespace Contao;
+namespace Chuckki\ContaoHvzBundle;
+
+//namespace Contao;
 
 /**
- * Reads and writes Hvzs
+ * Reads and writes Hvzs.
  *
- * @property integer $id
- * @property integer $pid
- * @property integer $sorting
- * @property integer $tstamp
- * @property string  $question
- * @property string  $alias
- *
- * @property string  $descOrt
- * @property string  $seitentitel
- * @property string  $hvzinfo
- * @property string  $hvzzusatz
- * @property string  $hvz_single
- * @property string  $hvz_double
- * @property string  $hvz_double_og
- * @property string  $hvz_single_og
- * @property string  $hvz_only
- * @property string  $hvz_extra_tag
- * @property string  $isFamus
- * @property string  $bundesland
- * @property string  $kreis
- * @property string  $land
- * @property string  $plz
- * @property string  $featured
- *
- * @property boolean $addImage
- * @property string  $singleSRC
- * @property string  $alt
- * @property string  $size
- * @property string  $imagemargin
- * @property string  $imageUrl
- * @property boolean $fullsize
- * @property string  $caption
- * @property string  $floating
- * @property boolean $addEnclosure
- * @property string  $enclosure
- * @property boolean $published
+ * @property int    $id
+ * @property int    $pid
+ * @property int    $sorting
+ * @property int    $tstamp
+ * @property string $question
+ * @property string $alias
+ * @property string $descOrt
+ * @property string $seitentitel
+ * @property string $hvzinfo
+ * @property string $hvzzusatz
+ * @property string $hvz_single
+ * @property string $hvz_double
+ * @property string $hvz_double_og
+ * @property string $hvz_single_og
+ * @property string $hvz_only
+ * @property string $hvz_extra_tag
+ * @property string $isFamus
+ * @property string $bundesland
+ * @property string $kreis
+ * @property string $land
+ * @property string $plz
+ * @property string $featured
+ * @property bool   $addImage
+ * @property string $singleSRC
+ * @property string $alt
+ * @property string $size
+ * @property string $imagemargin
+ * @property string $imageUrl
+ * @property bool   $fullsize
+ * @property string $caption
+ * @property string $floating
+ * @property bool   $addEnclosure
+ * @property string $enclosure
+ * @property bool   $published
  *
  * @method static HvzModel|null findById($id, $opt=array())
  * @method static HvzModel|null findByPk($id, $opt=array())
@@ -75,7 +74,6 @@ namespace Contao;
  * @method static HvzModel|null findOneByEnclosure($val, $opt=array())
  * @method static HvzModel|null findOneByNoComments($val, $opt=array())
  * @method static HvzModel|null findOneByPublished($val, $opt=array())
- *
  * @method static Model\Collection|HvzModel[]|HvzModel|null findByPid($val, $opt=array())
  * @method static Model\Collection|HvzModel[]|HvzModel|null findBySorting($val, $opt=array())
  * @method static Model\Collection|HvzModel[]|HvzModel|null findByTstamp($val, $opt=array())
@@ -99,7 +97,6 @@ namespace Contao;
  * @method static Model\Collection|HvzModel[]|HvzModel|null findMultipleByIds($val, $opt=array())
  * @method static Model\Collection|HvzModel[]|HvzModel|null findBy($col, $val, $opt=array())
  * @method static Model\Collection|HvzModel[]|HvzModel|null findAll($opt=array())
- *
  * @method static integer countById($id, $opt=array())
  * @method static integer countByPid($val, $opt=array())
  * @method static integer countBySorting($val, $opt=array())
@@ -126,126 +123,113 @@ namespace Contao;
  */
 class HvzModel extends \Model
 {
+    /**
+     * Table name.
+     *
+     * @var string
+     */
+    protected static $strTable = 'tl_hvz';
 
-	/**
-	 * Table name
-	 * @var string
-	 */
-	protected static $strTable = 'tl_hvz';
+    /**
+     * Find a published HVZ from one or more categories by its ID or alias.
+     *
+     * @param mixed $varId      The numeric ID or alias name
+     * @param array $arrPids    An array of parent IDs
+     * @param array $arrOptions An optional options array
+     *
+     * @return HvzModel|null The model or null if there is no FAQ
+     */
+    public static function findPublishedByParentAndIdOrAlias($varId, $arrPids, array $arrOptions = [])
+    {
+        if (!\is_array($arrPids) || empty($arrPids)) {
+            return null;
+        }
 
+        $t = static::$strTable;
+        $arrColumns = ["($t.id=? OR $t.alias=?) AND pid IN(".implode(',', array_map('intval', $arrPids)).')'];
 
-	/**
-	 * Find a published HVZ from one or more categories by its ID or alias
-	 *
-	 * @param mixed $varId      The numeric ID or alias name
-	 * @param array $arrPids    An array of parent IDs
-	 * @param array $arrOptions An optional options array
-	 *
-	 * @return HvzModel|null The model or null if there is no FAQ
-	 */
-	public static function findPublishedByParentAndIdOrAlias($varId, $arrPids, array $arrOptions=array())
-	{
-		if (!is_array($arrPids) || empty($arrPids))
-		{
-			return null;
-		}
+        if (isset($arrOptions['ignoreFePreview']) || !BE_USER_LOGGED_IN) {
+            $arrColumns[] = "$t.published='1'";
+        }
 
-		$t = static::$strTable;
-		$arrColumns = array("($t.id=? OR $t.alias=?) AND pid IN(" . implode(',', array_map('intval', $arrPids)) . ")");
+        return static::findOneBy($arrColumns, [(is_numeric($varId) ? $varId : 0), $varId], $arrOptions);
+    }
 
-		if (isset($arrOptions['ignoreFePreview']) || !BE_USER_LOGGED_IN)
-		{
-			$arrColumns[] = "$t.published='1'";
-		}
+    /**
+     * Find all published HVZs by their parent IDs.
+     *
+     * @param array $arrPids    An array of parent IDs
+     * @param array $arrOptions An optional options array
+     *
+     * @return Model\Collection|HvzModel[]|HvzModel|null A collection of models or null if there are no Hvzs
+     */
+    public static function findPublishedByFeatured($arrPids, array $arrOptions = [])
+    {
+        if (!\is_array($arrPids) || empty($arrPids)) {
+            return null;
+        }
 
-		return static::findOneBy($arrColumns, array((is_numeric($varId) ? $varId : 0), $varId), $arrOptions);
-	}
+        $t = static::$strTable;
+        $arrColumns = ["$t.pid IN(".implode(',', array_map('intval', $arrPids)).')'];
 
+        $arrColumns[] = "$t.published=1 and $t.featured='1'";
 
-	/**
-	 * Find all published HVZs by their parent IDs
-	 *
-	 * @param array $arrPids    An array of parent IDs
-	 * @param array $arrOptions An optional options array
-	 *
-	 * @return Model\Collection|HvzModel[]|HvzModel|null A collection of models or null if there are no Hvzs
-	 */
-	public static function findPublishedByFeatured($arrPids, array $arrOptions=array())
-	{
-		if (!is_array($arrPids) || empty($arrPids))
-		{
-			return null;
-		}
+        if (!isset($arrOptions['order'])) {
+            $arrOptions['order'] = "$t.alias";
+        }
 
-		$t = static::$strTable;
-		$arrColumns = array("$t.pid IN(" . implode(',', array_map('intval', $arrPids)) . ")");
+        return static::findBy($arrColumns, null, $arrOptions);
+    }
 
-			$arrColumns[] = "$t.published=1 and $t.featured='1'";
+    /**
+     * Find all published Hvzs by their parent ID.
+     *
+     * @param int   $intPid     The parent ID
+     * @param array $arrOptions An optional options array
+     *
+     * @return Model\Collection|HvzModel[]|HvzModel|null A collection of models or null if there are no Hvzs
+     */
+    public static function findPublishedByPid($intPid, array $arrOptions = [])
+    {
+        $t = static::$strTable;
+        $arrColumns = ["$t.pid=?"];
 
-		if (!isset($arrOptions['order']))
-		{
-			$arrOptions['order'] = "$t.alias";
-		}
+        if (isset($arrOptions['ignoreFePreview']) || !BE_USER_LOGGED_IN) {
+            $arrColumns[] = "$t.published='1'";
+        }
 
-		return static::findBy($arrColumns, null, $arrOptions);
-	}
+        if (!isset($arrOptions['order'])) {
+            $arrOptions['order'] = "$t.alias";
+        }
 
+        return static::findBy($arrColumns, $intPid, $arrOptions);
+    }
 
-	/**
-	 * Find all published Hvzs by their parent ID
-	 *
-	 * @param int   $intPid     The parent ID
-	 * @param array $arrOptions An optional options array
-	 *
-	 * @return Model\Collection|HvzModel[]|HvzModel|null A collection of models or null if there are no Hvzs
-	 */
-	public static function findPublishedByPid($intPid, array $arrOptions=array())
-	{
-		$t = static::$strTable;
-		$arrColumns = array("$t.pid=?");
+    /**
+     * Find all published HVZs by their parent IDs.
+     *
+     * @param array $arrPids    An array of HVZ category IDs
+     * @param array $arrOptions An optional options array
+     *
+     * @return Model\Collection|HvzModel[]|HvzModel|null A collection of models or null if there are no Hvzs
+     */
+    public static function findPublishedByPids($arrPids, array $arrOptions = [])
+    {
+        if (!\is_array($arrPids) || empty($arrPids)) {
+            return null;
+        }
 
-		if (isset($arrOptions['ignoreFePreview']) || !BE_USER_LOGGED_IN)
-		{
-			$arrColumns[] = "$t.published='1'";
-		}
+        $t = static::$strTable;
+        $arrColumns = ["$t.pid IN(".implode(',', array_map('intval', $arrPids)).')'];
 
-		if (!isset($arrOptions['order']))
-		{
-			$arrOptions['order'] = "$t.alias";
-		}
+        if (isset($arrOptions['ignoreFePreview']) || !BE_USER_LOGGED_IN) {
+            $arrColumns[] = "$t.published='1'";
+        }
 
-		return static::findBy($arrColumns, $intPid, $arrOptions);
-	}
+        if (!isset($arrOptions['order'])) {
+            $arrOptions['order'] = "$t.alias";
+        }
 
-
-	/**
-	 * Find all published HVZs by their parent IDs
-	 *
-	 * @param array $arrPids    An array of HVZ category IDs
-	 * @param array $arrOptions An optional options array
-	 *
-	 * @return Model\Collection|HvzModel[]|HvzModel|null A collection of models or null if there are no Hvzs
-	 */
-	public static function findPublishedByPids($arrPids, array $arrOptions=array())
-	{
-		if (!is_array($arrPids) || empty($arrPids))
-		{
-			return null;
-		}
-
-		$t = static::$strTable;
-		$arrColumns = array("$t.pid IN(" . implode(',', array_map('intval', $arrPids)) . ")");
-
-		if (isset($arrOptions['ignoreFePreview']) || !BE_USER_LOGGED_IN)
-		{
-			$arrColumns[] = "$t.published='1'";
-		}
-
-		if (!isset($arrOptions['order']))
-		{
-			$arrOptions['order'] = "$t.alias";
-		}
-
-		return static::findBy($arrColumns, null, $arrOptions);
-	}
+        return static::findBy($arrColumns, null, $arrOptions);
+    }
 }

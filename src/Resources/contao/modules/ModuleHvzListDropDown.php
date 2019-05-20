@@ -1,55 +1,51 @@
 <?php
 
-/**
- * Contao Open Source CMS
+/*
+ * This file is part of backend-hvb.
  *
- * @package Hvz
- * @link    https://contao.org
- * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
+ * (c) Dennis Esken - callme@projektorientiert.de
+ *
+ * @license NO LICENSE - So dont use it without permission (it could be expensive..)
  */
-
 
 namespace Chuckki\ContaoHvzBundle;
 
-use Patchwork\Utf8;
-
-
 /**
- * Class ModuleHvzList
+ * Class ModuleHvzList.
  *
- * @property string   $com_template
- * @property array    $hvz_categories
+ * @property string $com_template
+ * @property array  $hvz_categories
  *
  * @author Dennis Esken
  */
 class ModuleHvzListDropDown extends \Module
 {
-
     /**
-     * Template
+     * Template.
+     *
      * @var string
      */
     protected $strTemplate = 'mod_hvzlistdropdown';
 
     /**
-     * Target pages
+     * Target pages.
+     *
      * @var array
      */
-    protected $arrTargets = array();
-
+    protected $arrTargets = [];
 
     /**
-     * Display a wildcard in the back end
+     * Display a wildcard in the back end.
+     *
      * @return string
      */
     public function generate()
     {
-        if (TL_MODE == 'BE')
-        {
-			/** @var \BackendTemplate|object $objTemplate */
+        if (TL_MODE === 'BE') {
+            /** @var \BackendTemplate|object $objTemplate */
             $objTemplate = new \BackendTemplate('be_wildcard');
 
-			$objTemplate->wildcard = '### HvzListDropDown ###';
+            $objTemplate->wildcard = '### HvzListDropDown ###';
             $objTemplate->title = $this->headline;
             $objTemplate->id = $this->id;
             $objTemplate->link = $this->name;
@@ -58,8 +54,7 @@ class ModuleHvzListDropDown extends \Module
             return $objTemplate->parse();
         }
 
-        if (TL_MODE == 'FE')
-        {
+        if (TL_MODE === 'FE') {
             $GLOBALS['TL_JAVASCRIPT'][] = '/bundles/chuckkicontaohvz/js/typeahead.bundle.min.js|static';
             $GLOBALS['TL_JAVASCRIPT'][] = '/bundles/chuckkicontaohvz/js/searchlist.min.js|static';
         }
@@ -67,41 +62,39 @@ class ModuleHvzListDropDown extends \Module
         $this->hvz_categories = \StringUtil::deserialize($this->hvz_categories);
 
         // Return if there are no categories
-        if (!is_array($this->hvz_categories) || empty($this->hvz_categories))
-        {
+        if (!\is_array($this->hvz_categories) || empty($this->hvz_categories)) {
             return '';
         }
 
         // Show the HVZ reader if an item has been selected
-        if ($this->hvz_readerModule > 0 && (isset($_GET['items']) || ($GLOBALS['TL_CONFIG']['useAutoItem'] && isset($_GET['auto_item']))))
-        {
+        if ($this->hvz_readerModule > 0 && (isset($_GET['items']) || ($GLOBALS['TL_CONFIG']['useAutoItem'] && isset($_GET['auto_item'])))) {
             return $this->getFrontendModule($this->hvz_readerModule, $this->strColumn);
         }
 
         return parent::generate();
     }
 
-
     /**
-     * Generate the module
+     * Generate the module.
      */
     protected function compile()
     {
-		/** @var \PageModel $objPage */
+        /* @var \PageModel $objPage */
         global $objPage;
         $this->Template->suche = \Input::get('suche');
     }
 
-
     /**
-     * Create links and remember pages that have been processed
+     * Create links and remember pages that have been processed.
+     *
      * @param object
+     * @param mixed $objHvz
+     *
      * @return string
      */
     protected function generateHvzLink($objHvz)
     {
-        $jumpTo = intval($objHvz->getRelated('pid')->jumpTo);
-
+        $jumpTo = (int) ($objHvz->getRelated('pid')->jumpTo);
 
         // Get the URL from the jumpTo page of the category
         if (!isset($this->arrTargets[$jumpTo])) {
@@ -110,7 +103,7 @@ class ModuleHvzListDropDown extends \Module
             if ($jumpTo > 0) {
                 $objTarget = \PageModel::findByPk($jumpTo);
 
-                if ($objTarget !== null) {
+                if (null !== $objTarget) {
                     $this->arrTargets[$jumpTo] = ampersand(
                         $this->generateFrontendUrl(
                             $objTarget->row(),
@@ -123,7 +116,7 @@ class ModuleHvzListDropDown extends \Module
 
         return sprintf(
             $this->arrTargets[$jumpTo],
-            ((!$GLOBALS['TL_CONFIG']['disableAlias'] && $objHvz->alias != '') ? $objHvz->alias : $objHvz->id)
+            ((!$GLOBALS['TL_CONFIG']['disableAlias'] && '' !== $objHvz->alias) ? $objHvz->alias : $objHvz->id)
         );
     }
 }

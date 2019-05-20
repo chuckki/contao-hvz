@@ -1,10 +1,18 @@
 <?php
+
+/*
+ * This file is part of backend-hvb.
+ *
+ * (c) Dennis Esken - callme@projektorientiert.de
+ *
+ * @license NO LICENSE - So dont use it without permission (it could be expensive..)
+ */
+
 namespace Chuckki\ContaoHvzBundle;
 
 class ModuleHvzResult extends \Module
 {
-
-    protected $bLand = array(
+    protected $bLand = [
         '',
         'Baden-Württemberg',
         'Bayern',
@@ -22,19 +30,20 @@ class ModuleHvzResult extends \Module
         'Sachsen-Anhalt',
         'Schleswig-Holstein',
         'Thüringen',
-    );
+    ];
+
+    /**
+     * Template.
+     *
+     * @var string
+     */
+    protected $strTemplate = 'mod_hvzresult';
+    protected $error;
+    protected $zahlen = '';
 
     public function __construct()
     {
     }
-
-    /**
-     * Template
-     * @var string
-     */
-    protected $strTemplate = 'mod_hvzresult';
-    protected $error = null;
-    protected $zahlen = '';
 
     /**
      * @return string
@@ -44,45 +53,12 @@ class ModuleHvzResult extends \Module
         return parent::generate();
     }
 
-    protected function compile()
-    {
-        $this->import('FrontendUser', 'User');
-        $this->Template->userGender = $this->User->gender;
-        $this->import('Database');
-        $request = trim($this->Input->get('suche'));
-        $request = mb_strtolower($request, 'UTF-8');
-        //$request = htmlspecialchars($request, ENT_QUOTES, 'UTF-8');
-
-        $myResults = $this->searchMe($request);
-
-        $this->logRequest($request, count($myResults), '');
-
-        if (!empty($myResults)) {
-            $myResults = array_unique($myResults, SORT_REGULAR);
-            /***    Redirect to unique result  *****/
-            if (sizeof($myResults) == 1) {
-                $url = "halteverbot/".$myResults[0]['alias'].".html";
-                $this->redirect($url, 301);
-            }
-
-            for ($i = 0; $i < count($myResults); $i++) {
-                $myResults[$i]['bundesland'] = $this->bLand[$myResults[$i]['bundesland']];
-            }
-        }
-        if ($_REQUEST['suche'] != "" and $_REQUEST['suche'] != null) {
-            $this->Template->suche = $_REQUEST['suche'];
-        }
-        $this->Template->searchResult = $myResults;
-        $this->Template->ergAnzahl = count($myResults);
-        $this->Template->error = $this->error;
-    }
-
     public function searchMe($request, $logging = true)
     {
-        $searchPLZ = array();
+        $searchPLZ = [];
         $cleanPLZ = null;
         $havePlz = false;
-        $myResults = array();
+        $myResults = [];
         $this->import('Database');
 
         //	Prepare REQUEST
@@ -92,16 +68,17 @@ class ModuleHvzResult extends \Module
             $request = trim($request);
             $danger = '/^([a-zA-Z0-9öäüßÖÄÜß,.() \n\r-]+)$/is';
             if (!preg_match($danger, $request)) {
-                $this->error = "Bitte benutzen Sie keine Sonderzeichen bei Ihrer Eingabe.";
+                $this->error = 'Bitte benutzen Sie keine Sonderzeichen bei Ihrer Eingabe.';
                 if ($logging) {
                     $this->logRequest($request, -1, 'Sonderzeichen enthalten');
                 }
+
                 return null;
             }
 
             // replace shortcut
-            $umlautev = array("st.", '(', ')');
-            $umlaute = array("sankt", ' ', ' ');
+            $umlautev = ['st.', '(', ')'];
+            $umlaute = ['sankt', ' ', ' '];
             $request = str_replace($umlautev, $umlaute, $request);
 
             // get possible PLZ
@@ -119,16 +96,16 @@ class ModuleHvzResult extends \Module
             }
 
             // multi PLZ -> die()
-            if (count($searchPLZ) > 1 AND $havePlz) {
-                $mulitPLZ = "";
+            if (\count($searchPLZ) > 1 and $havePlz) {
+                $mulitPLZ = '';
                 foreach ($searchPLZ as $plz) {
-                    $mulitPLZ .= $plz." vs ";
+                    $mulitPLZ .= $plz.' vs ';
                 }
                 $mulitPLZ = substr($mulitPLZ, 0, -4);
                 if ($logging) {
                     $this->logRequest($request, -1, 'Doppelte PLZ gefunden');
                 }
-                $this->error = "Das System konnte keine eindeutige Postleitzahl bestimmen (".$mulitPLZ.")";
+                $this->error = 'Das System konnte keine eindeutige Postleitzahl bestimmen ('.$mulitPLZ.')';
                 die($this->error);
             }
         }
@@ -137,10 +114,10 @@ class ModuleHvzResult extends \Module
         if ($havePlz) {
             $result_plz = $this->Database
                 ->prepare(
-                    "SELECT alias,question,bundesland,kreis,hvz_single_og,isFamus  FROM tl_hvz as a inner join tl_plz as b on a.id = b.ortid where b.plzS=? group by alias order by isFamus desc, question asc LIMIT 0, 15"
+                    'SELECT alias,question,bundesland,kreis,hvz_single_og,isFamus  FROM tl_hvz as a inner join tl_plz as b on a.id = b.ortid where b.plzS=? group by alias order by isFamus desc, question asc LIMIT 0, 15'
                 )
                 ->execute($cleanPLZ);
-            $tmpArray = array();
+            $tmpArray = [];
             while ($result_plz->next()) {
                 $tmpArray[] = $result_plz->row();
             }
@@ -148,31 +125,30 @@ class ModuleHvzResult extends \Module
         }
 
         // get single Result for PLZ
-        if (count($myResults) == 1) {
+        if (1 === \count($myResults)) {
             return $myResults;
         }
 
         // build new Results based on PLZ with string parts
-        if (count($myResults) > 1) {
-
+        if (\count($myResults) > 1) {
             // split request
             $splitAnfrage = explode($searchPLZ[0], $request);
 
             // clean up splits
-            $tmp = array();
+            $tmp = [];
             foreach ($splitAnfrage as $part) {
                 $part = trim($part);
                 if (empty($part)) {
                     continue;
                 }
-                $umlautev = array(" ");
-                $umlaute = array('%');
+                $umlautev = [' '];
+                $umlaute = ['%'];
                 $part = str_replace($umlautev, $umlaute, $part);
                 $tmp[] = $part;
             }
             $splitAnfrage = $tmp;
 
-            $tmpArray = array();
+            $tmpArray = [];
 
             foreach ($splitAnfrage as $anfrage) {
                 $tmpArray = array_merge($this->lookupPLZandString($cleanPLZ, $anfrage.'%'), $tmpArray);
@@ -182,14 +158,13 @@ class ModuleHvzResult extends \Module
             }
 
             return $myResults;
-
         }
 
         // KEINE PLZ VORHANDEN
         // ORT ONLY but EXACT
-        $request = preg_replace("/[0-9]|\.|,|-|\(|\)/", " ", $request);
+        $request = preg_replace("/[0-9]|\.|,|-|\(|\)/", ' ', $request);
         $res = explode(' ', $request);
-        $cleanParts = array();
+        $cleanParts = [];
         foreach ($res as $part) {
             $part = trim($part);
             if (!empty($part)) {
@@ -199,22 +174,21 @@ class ModuleHvzResult extends \Module
         $res = $cleanParts;
 
         // 2 oder mehr strings *****/
-        if (count($res) > 1) {
-            $tmpArray = array();
+        if (\count($res) > 1) {
+            $tmpArray = [];
             $srequest = implode('%', $cleanParts);
             foreach ($this->getAlternate($srequest) as $anfrage) {
                 $tmpArray = array_merge($this->lookupPLZandString('', $anfrage.'%'), $tmpArray);
             }
             $myResults = array_unique($tmpArray, SORT_REGULAR);
-            if (count($myResults) == 1) {
+            if (1 === \count($myResults)) {
                 return $myResults;
             }
-
         }
 
         // ORT ONLY but EXACT
         $requestFirst = $res[0];
-        $tmpArray = array();
+        $tmpArray = [];
         // first check original request with replacements for results
         foreach ($this->getAlternate($requestFirst) as $anfrage) {
             $tmpArray = array_merge($this->lookupPLZandString('', $anfrage), $tmpArray);
@@ -223,24 +197,23 @@ class ModuleHvzResult extends \Module
         $myResults = array_merge($myResults, $tmpArray);
         $myResults = array_unique($myResults, SORT_REGULAR);
 
-        if (count($myResults) == 0) {
+        if (0 === \count($myResults)) {
             foreach ($this->getAlternate($requestFirst) as $anfrage) {
                 $tmpArray = array_merge($this->lookupPLZandString('', $anfrage.'%'), $tmpArray);
             }
             $myResults = array_merge($myResults, $tmpArray);
             $myResults = array_unique($myResults, SORT_REGULAR);
         }
-        if (count($myResults) != 0) {
+        if (0 !== \count($myResults)) {
             return $myResults;
         }
 
         // replace whitespaces with %
-        if (count($myResults) == 0)
-        {
-            $tmpArray = array();
+        if (0 === \count($myResults)) {
+            $tmpArray = [];
             $danger = '/^([a-zA-ZöäüßÖÄÜß,.() \n\r-]+)$/is';
             if (preg_match($danger, $request)) {
-                $such = array('-', ',', '.');
+                $such = ['-', ',', '.'];
                 $request = str_replace($such, '%', $request);
                 $myparts = explode(' ', $request);
                 foreach ($myparts as $part) {
@@ -249,7 +222,7 @@ class ModuleHvzResult extends \Module
                     }
                 }
                 $myResults = array_unique($tmpArray, SORT_REGULAR);
-                if (count($myResults) == 0) {
+                if (0 === \count($myResults)) {
                     foreach ($myparts as $part) {
                         foreach ($this->getAlternate($part) as $anfrage) {
                             $tmpArray = array_merge($this->lookupPLZandString('', $anfrage.'%'), $tmpArray);
@@ -259,49 +232,60 @@ class ModuleHvzResult extends \Module
                     }
                 }
             } else {
-                $this->zahlen .= $request."<br>";
+                $this->zahlen .= $request.'<br>';
             }
-		}
+        }
 
         // split request and try alone
         // comibine all results
-        for ($i = 0; $i < sizeof($myResults); $i++) {
+        for ($i = 0; $i < count($myResults); ++$i) {
             $myResults[$i]['bundesland'] = $this->bLand[$myResults[$i]['bundesland']];
         }
 
         return $myResults;
     }
 
-	// sqp with plz and string
-    private function lookupPLZandString($plz, $string)
+    protected function compile()
     {
-        $anfrage = strtolower($string);
-        if (empty($plz))
-        {
-            $result_plz = $this->Database
-                ->prepare("SELECT alias,question,bundesland,kreis,hvz_single_og,isFamus FROM tl_hvz where LOWER(question) like ? group by alias order by isFamus desc, question asc LIMIT 0, 15")
-                ->execute($anfrage);
-        } else {
-            $result_plz = $this->Database
-                ->prepare("SELECT * from (SELECT alias,question,bundesland,kreis,hvz_single_og,isFamus  FROM tl_hvz as a inner join tl_plz as b on a.id = b.ortid where b.plzS=? group by alias order by isFamus desc, question asc LIMIT 0, 15) as a where LOWER(question) like ?")
-                ->execute($plz, $anfrage);
-        }
+        $this->import('FrontendUser', 'User');
+        $this->Template->userGender = $this->User->gender;
+        $this->import('Database');
+        $request = trim($this->Input->get('suche'));
+        $request = mb_strtolower($request, 'UTF-8');
+        //$request = htmlspecialchars($request, ENT_QUOTES, 'UTF-8');
 
-        $tmpArray = array();
-        while ($result_plz->next()) {
-            $tmpArray[] = $result_plz->row();
+        $myResults = $this->searchMe($request);
+
+        $this->logRequest($request, \count($myResults), '');
+
+        if (!empty($myResults)) {
+            $myResults = array_unique($myResults, SORT_REGULAR);
+            /***    Redirect to unique result  *****/
+            if (1 === count($myResults)) {
+                $url = 'halteverbot/'.$myResults[0]['alias'].'.html';
+                $this->redirect($url, 301);
+            }
+
+            for ($i = 0; $i < \count($myResults); ++$i) {
+                $myResults[$i]['bundesland'] = $this->bLand[$myResults[$i]['bundesland']];
+            }
         }
-        return $tmpArray;
+        if ('' !== $_REQUEST['suche'] and null !== $_REQUEST['suche']) {
+            $this->Template->suche = $_REQUEST['suche'];
+        }
+        $this->Template->searchResult = $myResults;
+        $this->Template->ergAnzahl = \count($myResults);
+        $this->Template->error = $this->error;
     }
 
-     // Log Request
+    // Log Request
     protected function logRequest($request, $results, $msg = '')
     {
         if (!isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
             $client_ip = $_SERVER['REMOTE_ADDR'];
         } else {
             $client_ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-        };
+        }
 
         $thisAgent = $_SERVER['HTTP_USER_AGENT'];
 
@@ -311,10 +295,10 @@ class ModuleHvzResult extends \Module
             $userId = $this->User->id;
         }
 
-        $isbot = (strpos(strtolower($thisAgent), 'bot') !== false) ? 1 : 0;
+        $isbot = (false !== strpos(strtolower($thisAgent), 'bot')) ? 1 : 0;
 
-        if (!empty($_GET["suche"])) {
-            $set = array(
+        if (!empty($_GET['suche'])) {
+            $set = [
                 'tstamp' => time(),
                 're_ip' => $client_ip,
                 'hits' => $results,
@@ -322,23 +306,45 @@ class ModuleHvzResult extends \Module
                 'agent' => $thisAgent,
                 'isbot' => $isbot,
                 'msg' => $msg,
-                'anfrage' => $_GET["suche"],
-				'ts' => date("Y-m-d H:i:s")
-            );
-            $objInsertStmt = $this->Database->prepare("INSERT INTO tl_hvz_request "." %s")
+                'anfrage' => $_GET['suche'],
+                'ts' => date('Y-m-d H:i:s'),
+            ];
+            $objInsertStmt = $this->Database->prepare('INSERT INTO tl_hvz_request '.' %s')
                 ->set($set)
                 ->execute();
         }
     }
 
-     // Alternativen für Request
+    // sqp with plz and string
+    private function lookupPLZandString($plz, $string)
+    {
+        $anfrage = strtolower($string);
+        if (empty($plz)) {
+            $result_plz = $this->Database
+                ->prepare('SELECT alias,question,bundesland,kreis,hvz_single_og,isFamus FROM tl_hvz where LOWER(question) like ? group by alias order by isFamus desc, question asc LIMIT 0, 15')
+                ->execute($anfrage);
+        } else {
+            $result_plz = $this->Database
+                ->prepare('SELECT * from (SELECT alias,question,bundesland,kreis,hvz_single_og,isFamus  FROM tl_hvz as a inner join tl_plz as b on a.id = b.ortid where b.plzS=? group by alias order by isFamus desc, question asc LIMIT 0, 15) as a where LOWER(question) like ?')
+                ->execute($plz, $anfrage);
+        }
+
+        $tmpArray = [];
+        while ($result_plz->next()) {
+            $tmpArray[] = $result_plz->row();
+        }
+
+        return $tmpArray;
+    }
+
+    // Alternativen für Request
     private function getAlternate($request)
     {
-        $retArray = array();
+        $retArray = [];
         $mainRes = $request;
         $retArray[] = $mainRes;
-        $umlaute = array("ü", "ö", "ä");
-        $umlautev = array("ue", "oe", "ae");
+        $umlaute = ['ü', 'ö', 'ä'];
+        $umlautev = ['ue', 'oe', 'ae'];
         $alt0 = str_replace($umlautev, $umlaute, $mainRes);
         $alt1 = str_replace($umlaute, $umlautev, $mainRes);
         $retArray[] = $alt0;
@@ -356,5 +362,4 @@ class ModuleHvzResult extends \Module
 
         return $retArray;
     }
-
 }
