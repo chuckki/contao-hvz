@@ -505,8 +505,8 @@ class tl_hvz extends Backend
     {
         /*
                         $objFile = new \File('share/locations.json', true);
-        
-        
+
+
                         $objDatabase = \Database::getInstance();
                         $objLocations = $objDatabase->execute("SELECT question, alias FROM tl_hvz WHERE published=1");
                         // Return if there are no pages
@@ -514,7 +514,7 @@ class tl_hvz extends Backend
                         {
                             return;
                         }
-        
+
                         $objFile->truncate();
                         $content = '[';
                         $counter = 0;
@@ -524,14 +524,14 @@ class tl_hvz extends Backend
                                 $content .= ',';
                             }
                             $content .= '{"ort":"'.$objLocations->question.'","alias":"'.$objLocations->alias.'"}';
-        
+
                         }
-        
+
                         $content .= ']';
                         $objFile->append($content);
                         $objFile->close();
                         $objFile2 = \File::putContent('share/locations.json.gz', gzencode(file_get_contents(TL_ROOT . '/share/locations.json'), 9));
-        
+
                         // Add a log entry
                         $this->log('Generated Locations JS from tl_hvz', __METHOD__, TL_CRON);
         */

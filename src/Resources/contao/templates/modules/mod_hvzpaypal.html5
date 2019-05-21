@@ -1,0 +1,16 @@
+
+<div id="ppplus">
+</div>
+<script src="https://www.paypalobjects.com/webstatic/ppplus/ppplus.min.js" type="text/javascript">
+</script>
+
+<script type="application/javascript">
+    var ppp = PAYPAL.apps.PPP({
+        "approvalUrl": "<?php echo $this->approvalUrl['link']; ?>",
+        "placeholder": "ppplus",
+        "mode": "sandbox",
+        "language": "de_DE",
+        "country": "DE",
+/*        "preselection": "Vorkasse"*/
+    });
+</script>

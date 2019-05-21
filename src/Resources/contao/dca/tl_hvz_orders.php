@@ -131,5 +131,15 @@ $GLOBALS['TL_DCA']['tl_hvz_orders'] = [
         'orderNumber' => [
             'sql' => "varchar(255) NOT NULL default '0'",
         ],
+
+        'paypal_paymentId' => [
+            'sql' => "varchar(255) NOT NULL default ''",
+        ],
+        'paypal_token' => [
+            'sql' => "varchar(255) NOT NULL default ''",
+        ],
+        'paypal_PayerID' => [
+            'sql' => "varchar(255) NOT NULL default ''",
+        ],
     ],
 ];

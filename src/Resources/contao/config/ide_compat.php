@@ -19,6 +19,9 @@ namespace  {
     class HvzModel extends \Chuckki\ContaoHvzBundle\HvzModel
     {
     }
+    class HvzOrderModel extends \Chuckki\ContaoHvzBundle\HvzOrderModel
+    {
+    }
     class ModuleHvz extends \Chuckki\ContaoHvzBundle\ModuleHvz
     {
     }
@@ -35,6 +38,9 @@ namespace  {
     {
     }
     class ModuleHvzTeaser extends \Chuckki\ContaoHvzBundle\ModuleHvzTeaser
+    {
+    }
+    class ModuleHvzPaypal extends \Chuckki\ContaoHvzBundle\ModuleHvzPaypal
     {
     }
 }

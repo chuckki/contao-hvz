@@ -238,7 +238,7 @@ class ModuleHvzResult extends \Module
 
         // split request and try alone
         // comibine all results
-        for ($i = 0; $i < count($myResults); ++$i) {
+        for ($i = 0; $i < \count($myResults); ++$i) {
             $myResults[$i]['bundesland'] = $this->bLand[$myResults[$i]['bundesland']];
         }
 
@@ -261,7 +261,7 @@ class ModuleHvzResult extends \Module
         if (!empty($myResults)) {
             $myResults = array_unique($myResults, SORT_REGULAR);
             /***    Redirect to unique result  *****/
-            if (1 === count($myResults)) {
+            if (1 === \count($myResults)) {
                 $url = 'halteverbot/'.$myResults[0]['alias'].'.html';
                 $this->redirect($url, 301);
             }

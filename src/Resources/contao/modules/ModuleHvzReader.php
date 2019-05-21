@@ -101,7 +101,7 @@ class ModuleHvzReader extends \Module
         $this->Template->referer = 'javascript:history.go(-1)';
 
         /** @var ModuleHvz $objHvz */
-        $objHvz = \HvzModel::findPublishedByParentAndIdOrAlias(\Input::get('items'), $this->hvz_categories);
+        $objHvz = HvzModel::findPublishedByParentAndIdOrAlias(\Input::get('items'), $this->hvz_categories);
 
         if (null === $objHvz) {
             // Do not index or cache the page
@@ -117,7 +117,7 @@ class ModuleHvzReader extends \Module
             $myResults = $hvzResult->searchMe($request);
             $myResults = array_unique($myResults, SORT_REGULAR);
 
-            if (1 === count($myResults)) {
+            if (1 === \count($myResults)) {
                 $url = 'halteverbot/'.$myResults[0]['alias'].'.html';
                 $this->redirect($url, 301);
                 exit;
@@ -142,10 +142,12 @@ class ModuleHvzReader extends \Module
         $this->Template->hvz_extra_tag = $objHvz->hvz_extra_tag;
         $this->Template->hvzzusatz = $objHvz->hvzzusatz;
         $this->Template->hvzinfo = $objHvz->hvzinfo;
+        $this->Template->isUser = false;
 
         // import FrontEndUser Data
         $this->import('FrontendUser', 'user');
         if (FE_USER_LOGGED_IN) {
+            $this->Template->isUser = true;
             $this->Template->userGender = $this->user->gender;
             $this->Template->userStreNum = $this->user->postal.' '.$this->user->city;
             $this->Template->hasUmstid = '';

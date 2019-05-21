@@ -26,6 +26,7 @@ if ('BE' === TL_MODE) {
 }
 
 $GLOBALS['TL_MODELS']['tl_hvz'] = \Chuckki\ContaoHvzBundle\HvzModel::class;
+$GLOBALS['TL_MODELS']['tl_hvz_orders'] = \Chuckki\ContaoHvzBundle\HvzOrderModel::class;
 $GLOBALS['TL_MODELS']['tl_hvz_category'] = \Chuckki\ContaoHvzBundle\HvzCategoryModel::class;
 
 /*
@@ -38,6 +39,7 @@ array_insert($GLOBALS['FE_MOD'], 3, [
         'hvzlistdropdown' => 'Chuckki\ContaoHvzBundle\ModuleHvzListDropDown',
         'hvzreader' => 'Chuckki\ContaoHvzBundle\ModuleHvzReader',
         'hvzresult' => 'Chuckki\ContaoHvzBundle\ModuleHvzResult',
+        'hvzpaypal' => 'Chuckki\ContaoHvzBundle\ModuleHvzPaypal',
     ],
 ]);
 

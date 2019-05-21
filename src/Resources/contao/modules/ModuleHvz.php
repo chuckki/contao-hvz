@@ -55,7 +55,7 @@ class ModuleHvz extends \Frontend
         $time = \Date::floorToMinute();
 
         // Get all categories
-        $objHvz = \HvzCategoryModel::findAll();
+        $objHvz = HvzCategoryModel::findAll();
 
         // Walk through each category
         if (null !== $objHvz) {
@@ -198,11 +198,15 @@ class ModuleHvz extends \Frontend
      * @param $arrSubmitted
      * @param $arrLabels
      * @param $objForm
+     * @param mixed $arrData
+     * @param mixed $arrFiles
      *
      * @throws Exception
      */
-    public function saveFormData(&$arrSubmitted, $arrLabels, $objForm)
+    public function saveFormData(&$arrSubmitted, $arrData, $arrFiles, $arrLabels, $objForm)
     {
+        $redirect = null;
+
         $this->logger = static::getContainer()->get('monolog.logger.contao');
         $this->logger->log(500, 'APICall backup', $arrSubmitted);
 
@@ -257,7 +261,21 @@ class ModuleHvz extends \Frontend
             }
             System::getContainer()->get('session')->set('myform', $formDatas);
 
+            if (!empty(\Input::post('Payment'))) {
+                $paymentObj = HvzPaypal::generatePayment($arrSubmitted);
+                $arrSubmitted['paypal_id'] = $paymentObj->getId();
+                System::getContainer()->get('session')->set('ApprovalLink', ['link' => $paymentObj->getApprovalLink()]);
+
+                // todo: make config ;)
+                $redirect = 43;
+            }
+
             $this->saveNewOrderToDatabase($arrSubmitted);
+
+            if (!empty($redirect)) {
+                $this->redirectToFrontendPage($redirect);
+            }
+            die;
         }
     }
 
@@ -391,20 +409,25 @@ class ModuleHvz extends \Frontend
             $newMsst = $this->roundTo2($zwischenSummer * 0.19);
 
             $arr = [
-                'brutto' => $arrSubmitted['fullPrice'],
+                'brutto' => number_format($arrSubmitted['fullPrice'], 2),
                 'netto' => $netto,
                 'rabatt' => $rabatt,
                 'rabattValue' => $arrSubmitted['rabattValue'],
-                'rabatCode' => $arrSubmitted['rabattCode'],
                 'zwischenSumme' => $zwischenSummer,
                 'newMst' => $newMsst,
                 'fullNew' => $newMsst + $zwischenSummer,
             ];
+
+            foreach ($arr as $key => $item) {
+                $arr[$key] = number_format($item, 2);
+            }
+
             $arrSubmitted['fullPrice'] = $newMsst + $zwischenSummer;
         }
 
         $arrSubmitted['Preis'] = $arrSubmitted['fullPrice'];
         $arrSubmitted['fullNetto'] = number_format(($arrSubmitted['fullPrice'] / 119 * 100), 2);
+        $arrSubmitted['preisDetaisl'] = $arr;
     }
 
     private function saveNewOrderToDatabase(&$arrSubmitted)
@@ -445,6 +468,7 @@ class ModuleHvz extends \Frontend
             're_agb_akzeptiert' => $arrSubmitted['agbakzeptiert'],
             'ts' => $arrSubmitted['ts'],
             'orderNumber' => $arrSubmitted['orderNumber'],
+            'paypal_paymentId' => $arrSubmitted['paypal_id'],
         ];
 
         $objInsertStmt = $this->Database->prepare('INSERT INTO tl_hvz_orders '.' %s')
