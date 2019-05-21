@@ -27,9 +27,9 @@ class HvzPaypal
     public static function generatePayment(array $arrSubmitted): Payment
     {
         $apiContext =
-            new ApiContext(new OAuthTokenCredential('ASddZjQ8AbeJ-2tAgopOngzmw3sFQzTheRcLPTMkTFDgrgnJOI5Wn-XigOZFkg7mKCbt4Bf2Od913yOl',
-                // ClientID
-                'ENLqp1u71TGJ6dE_kwA_j_CmUD_7xHWfydOi1BgmF1Bb9BQqZfMwwlXFwY-Dtu-k2qEE0wUCPPSpkXOl'      // ClientSecret
+            new ApiContext(new OAuthTokenCredential(
+                getenv('CLIENT_ID'),
+                getenv('CLIENT_SECRET')
             ));
 
         // 3. Lets try to create a Payment
