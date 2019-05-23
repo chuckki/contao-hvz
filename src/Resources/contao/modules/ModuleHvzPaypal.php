@@ -12,6 +12,8 @@ namespace Chuckki\ContaoHvzBundle;
 
 use Contao\Input;
 use Contao\System;
+use PayPal\Api\Payment;
+use PayPal\Api\PaymentExecution;
 
 /**
  * @author Dennis Esken
@@ -64,24 +66,35 @@ class ModuleHvzPaypal extends \Module
         if (!empty(System::getContainer()->get('session')->get('ApprovalLink'))) {
             $this->Template->approvalUrl = System::getContainer()->get('session')->get('ApprovalLink');
             System::getContainer()->get('session')->clear();
-        }
+        } else {
+            // End Payment
+            $paymentId = Input::get('paymentId');
+            if (!empty($paymentId)) {
+                $this->strTemplate = null;
+                $orderObj          = HvzOrderModel::findBy('paypal_paymentId', $paymentId);
+                dump($orderObj);
+                if (empty($orderObj)) {
+                    dump('nix gefunden');
+                    // todo: log it or pushme it
+                } else {
+                    $orderObj->paypal_PayerID = Input::get('PayerID');
+                    $orderObj->paypal_token   = Input::get('token');
+                    $orderObj->save();
+                }
 
-        // End Payment
-        $paymentId = Input::get('paymentId');
-        if (!empty($paymentId)) {
-            $orderObj = HvzOrderModel::findBy('paypal_paymentId', $paymentId);
-            if (empty($orderObj)) {
-                dump('nix gefunden');
-            // todo: log it or pushme it
-            } else {
-                $orderObj->paypal_PayerID = Input::get('PayerID');
-                $orderObj->paypal_token = Input::get('token');
-                $orderObj->save();
+                $payment = HvzPaypal::executePayment($paymentId, $orderObj->paypal_PayerID);
+
+                if($payment){
+//                    $orderObj->paypal_first_name = $payment->getPayer()->getPayerInfo()->
+                }
+
+                //die;
+                // safe data
+                //order -> field
+                // do confirm
+                
+                
             }
-            die;
-            // safe data
-            //order -> field
-            // do confirm
         }
     }
 }

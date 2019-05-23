@@ -1,4 +1,5 @@
 
+<?php if(!empty($this->approvalUrl)): ?>
 <div id="ppplus">
 </div>
 <script src="https://www.paypalobjects.com/webstatic/ppplus/ppplus.min.js" type="text/javascript">
@@ -11,6 +12,6 @@
         "mode": "sandbox",
         "language": "de_DE",
         "country": "DE",
-/*        "preselection": "Vorkasse"*/
     });
 </script>
+<?php endif; ?>
