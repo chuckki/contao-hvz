@@ -141,5 +141,17 @@ $GLOBALS['TL_DCA']['tl_hvz_orders'] = [
         'paypal_PayerID' => [
             'sql' => "varchar(255) NOT NULL default ''",
         ],
+        'klarna_client_token' => [
+            'sql' => "text NOT NULL default ''",
+        ],
+        'klarna_session_id' => [
+            'sql' => "text NOT NULL default ''",
+        ],
+        'choosen_payment' => [
+            'sql' => "varchar(16) NOT NULL default ''",
+        ],
+        'hvzID' =>[
+            'sql' => "int(10) unsigned NOT NULL default '0'",
+        ]
     ],
 ];

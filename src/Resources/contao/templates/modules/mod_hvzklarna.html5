@@ -1,0 +1,54 @@
+
+<?php if(!empty($this->clientToken)): ?>
+<script>
+    window.klarnaAsyncCallback = function () {
+
+        $("#confirm").click(function() {
+            Klarna.Payments.authorize({
+                instance_id: 'klarna-payments-instance',
+                payment_method_category: "pay_later"
+            }, {
+
+            }, function(res) {
+                console.debug(res);
+                if(res['approved'] === true){
+//                    console.debug(window.location.href + "?auth=" + res['authorization_token'])
+                    window.location.href = window.location.href + "?auth=" + res['authorization_token'] + "";
+                }else{
+                    alert(res['authorization_token']);
+                }
+            })
+
+        });
+
+
+        Klarna.Payments.init({
+            client_token: '<?php echo $this->clientToken; ?>'
+        })
+
+
+        Klarna.Payments.load({
+            container: '#klarna_container',
+            instance_id: 'klarna-payments-instance',
+            payment_method_category: 'pay_later'
+        }, function (res) {
+            console.debug(res);
+        })
+
+
+
+// Success -> {authorization_token: "b4bd3423-24e3", approved: true, show_form: true}
+// Error in update → {approved: false, show_form: true, error: {invalid_fields: ["billing_address.email"]}}
+// Other customer resolvable error → {approved: false, show_form: true}
+// None resolvable error (hide payment option) → {approved: false, show_form: false}
+    };
+
+
+</script>
+<script src="https://x.klarnacdn.net/kp/lib/v1/api.js" async></script>
+
+    <div id="klarna_container"></div>
+
+    <button id="confirm">go</button>
+
+<?php endif; ?>

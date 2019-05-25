@@ -81,7 +81,7 @@ Hier können Sie einfach und unkompliziert Ihr <b>Halteverbot in <?= $this->ques
     <div class="formRow" id="genehmigung">
         <input type="hidden" value="" name="Genehmigung">
         <label for="opt_64_0" class="btn" id="lbl_64_0">
-          <input type="radio" data-price="<?= $this->hvz_single ?>" data-hvztyp="1" onclick="setPrice(<?= $this->hvz_single ?>, this.value,1);" value="Einfache HVZ mit Genehmigung" class="radio" id="opt_64_0" name="Genehmigung" >
+          <input checked="checked" type="radio" data-price="<?= $this->hvz_single ?>" data-hvztyp="1" onclick="setPrice(<?= $this->hvz_single ?>, this.value,1);" value="Einfache HVZ mit Genehmigung" class="radio" id="opt_64_0" name="Genehmigung" >
           <span class="inlineprice"><?= $this->hvz_single ?>,- €</span>
             <span class="prod">Einfaches Halteverbot<br> mit Genehmigung</span>
         </label>
@@ -127,14 +127,14 @@ Hier können Sie einfach und unkompliziert Ihr <b>Halteverbot in <?= $this->ques
     <label class="mandatory" for="ctrl_50">
       <span class="invisible">Pflichtfeld</span> PLZ<span class="mandatory">*</span>
     </label>
-    <input type="tel" value="" class="text mandatory" id="ctrl_50" name="PLZ"  placeholder="PLZ von <?= $this->question ?>">
+    <input type="tel" value="23453" class="text mandatory" id="ctrl_50" name="PLZ"  placeholder="PLZ von <?= $this->question ?>">
   </div>
 
   <div class="formRow">
     <label class="mandatory" for="ctrl_51">
       <span class="invisible">Pflichtfeld</span> Straße/Hausnummer<span class="mandatory">*</span>
     </label>
-    <input type="text" value="" class="text mandatory" id="ctrl_51" name="Strasse" placeholder="Straße und Hausnummer" >
+    <input type="text" value="asdfasdf 123" class="text mandatory" id="ctrl_51" name="Strasse" placeholder="Straße und Hausnummer" >
   </div>
 </fieldset>
 
@@ -225,8 +225,8 @@ Hier können Sie einfach und unkompliziert Ihr <b>Halteverbot in <?= $this->ques
               <span class="invisible">Pflichtfeld</span> Grund für die Stellung
           </label>
           <select class="select mandatory" id="ctrl_247" name="Grund" >
-              <option value="" selected="">Bitte wählen Sie</option>
-              <option value="umzug">Umzug</option>
+              <option value="">Bitte wählen Sie</option>
+              <option value="umzug" selected="">Umzug</option>
               <option value="containergestellung">Containergestellung</option>
               <option value="baustelle">Baustelle</option>
               <option value="sonstiges">Sonstiges</option>
@@ -267,7 +267,7 @@ Hier können Sie einfach und unkompliziert Ihr <b>Halteverbot in <?= $this->ques
                 <input type="hidden" value="" name="Fahrzeug">
 
                 <label for="opt_65_0" id="lbl_65_0" class="btn car floatmeL">
-                  <input type="radio" value="Fahrzeug bis 3,5t" class="radio" id="opt_65_0" name="Fahrzeug" > 
+                  <input type="radio" value="Fahrzeug bis 3,5t" class="radio" id="opt_65_0" checked="checked" name="Fahrzeug" >
                   Fahrzeug bis 3,5t
                 </label>
 
@@ -328,15 +328,22 @@ Hier können Sie einfach und unkompliziert Ihr <b>Halteverbot in <?= $this->ques
                 <fieldset id="payment_field">
                     <legend>Bezahlung</legend>
                     <div class="formRow" id="payments">
-                        <label for="pay_offline" class=""><input type="radio" value="invoice" class="radio" id="pay_offline" checked="checked" name="Payment">Bezahlen via Rechnung</label>
-                        <label for="pay_online" class=""><input type="radio" value="paypal" class="radio" id="pay_online" name="Payment">Online Bezahlen (Paypal/SEPA-Lastschrift/Kreditkarte)</label>
+                        <label for="pay_offline" class="pay_offline btn"><input type="radio" value="invoice" class="radio" id="pay_offline" name="Payment">Bezahlen via Rechnung</label>
+                        <label for="pay_paypal" class="pay_paypal btn"><input type="radio" value="paypal" class="radio" id="pay_paypal" name="Payment">
+                            Paypal
+                            <img id="paypal_logo" src="bundles/chuckkicontaohvz/img/paypalplus/de-pp_plus-logo-quer_ohne_PUI_365x60px.png" alt="Online Bezahlen (Paypal/SEPA-Lastschrift/Kreditkarte)" ></label>
+                        <label for="pay_klarna" class="pay_klarna btn"><input type="radio" value="klarna" class="radio" id="pay_klarna" checked="checked" name="Payment">
+                            Sofortüberweisung
+                            <img  id="paynow_logo" alt="Pay now. by Klarna" src="https://cdn.klarna.com/1.0/shared/image/generic/badge/de_de/pay_now/descriptive/horizontal/pink.svg" >
+                        </label>
                     </div>
                 </fieldset>
             <?php else: ?>
                 <fieldset id="payment_field">
                     <legend>Bezahlung</legend>
                     <div class="formRow" id="payments">
-                        <label for="pay_online" class=""><input type="radio" value="paypal" class="radio" id="pay_online" checked="checked" name="Payment">Online Bezahlen (Paypal/SEPA-Lastschrift/Kreditkarte)</label>
+                        <label for="pay_online" class="btn"><input type="radio" value="paypal" class="radio" id="pay_online" checked="checked" name="Payment">Online Bezahlen (Paypal/SEPA-Lastschrift/Kreditkarte)</label>
+                        <label for="pay_klarna" class="btn"><input type="radio" value="klarna" class="radio" id="pay_klarna" name="Payment">Sofortüberweisung</label>
                     </div>
                 </fieldset>
             <?php endif; ?>

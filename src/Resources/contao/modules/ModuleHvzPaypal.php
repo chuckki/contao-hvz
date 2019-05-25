@@ -62,16 +62,18 @@ class ModuleHvzPaypal extends \Module
      */
     protected function compile()
     {
-        // Start Payment
-        if (!empty(System::getContainer()->get('session')->get('ApprovalLink'))) {
-            $this->Template->approvalUrl = System::getContainer()->get('session')->get('ApprovalLink');
+        if (!empty(System::getContainer()->get('session')->get('paypal_approval_link')))
+        {
+            // Start Payment
+            $this->Template->approvalUrl = System::getContainer()->get('session')->get('paypal_approval_link');
             System::getContainer()->get('session')->clear();
         } else {
+
             // End Payment
             $paymentId = Input::get('paymentId');
             if (!empty($paymentId)) {
                 $this->strTemplate = null;
-                $orderObj          = HvzOrderModel::findBy('paypal_paymentId', $paymentId);
+                $orderObj          = HvzOrderModel::findOneBy('paypal_paymentId', $paymentId);
                 dump($orderObj);
                 if (empty($orderObj)) {
                     dump('nix gefunden');
@@ -83,6 +85,9 @@ class ModuleHvzPaypal extends \Module
                 }
 
                 $payment = HvzPaypal::executePayment($paymentId, $orderObj->paypal_PayerID);
+
+                ModuleHvz::setSessionForThankYouPage($orderObj);
+
 
                 if($payment){
 //                    $orderObj->paypal_first_name = $payment->getPayer()->getPayerInfo()->

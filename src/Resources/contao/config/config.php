@@ -40,6 +40,7 @@ array_insert($GLOBALS['FE_MOD'], 3, [
         'hvzreader' => 'Chuckki\ContaoHvzBundle\ModuleHvzReader',
         'hvzresult' => 'Chuckki\ContaoHvzBundle\ModuleHvzResult',
         'hvzpaypal' => 'Chuckki\ContaoHvzBundle\ModuleHvzPaypal',
+        'hvzklarna' => 'Chuckki\ContaoHvzBundle\ModuleHvzKlarna',
     ],
 ]);
 

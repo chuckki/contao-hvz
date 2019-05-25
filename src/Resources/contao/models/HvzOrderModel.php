@@ -84,4 +84,17 @@ class HvzOrderModel extends \Model
      * @var string
      */
     protected static $strTable = 'tl_hvz_orders';
+
+    public function __construct()
+    {
+
+    }
+
+
+    public function getSingleHvzOrderPrice(){
+
+
+        return "2";
+    }
+
 }

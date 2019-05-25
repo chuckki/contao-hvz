@@ -7,7 +7,7 @@
 
 <script type="application/javascript">
     var ppp = PAYPAL.apps.PPP({
-        "approvalUrl": "<?php echo $this->approvalUrl['link']; ?>",
+        "approvalUrl": "<?php echo $this->approvalUrl; ?>",
         "placeholder": "ppplus",
         "mode": "sandbox",
         "language": "de_DE",
