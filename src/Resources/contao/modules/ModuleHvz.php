@@ -11,6 +11,7 @@
 namespace Chuckki\ContaoHvzBundle;
 
 use Contao\Database;
+use Contao\Environment;
 use Contao\Frontend;
 use Contao\PageModel;
 use Contao\System;
@@ -19,6 +20,7 @@ use DateTime;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
+use http\Env;
 use mysqli;
 use Psr\Log\LoggerInterface;
 
@@ -212,6 +214,8 @@ class ModuleHvz extends \Frontend
 
         // cleanup - check periodical for errors
         if (empty($arrSubmitted['type'])) {
+            $this->pushMe('MSG with no Type:' . json_encode($arrSubmitted));
+
             $this->logger->log(500, 'APICall miss - no type', $arrSubmitted);
             // set type
             switch ($arrSubmitted['Genehmigung']) {
@@ -238,46 +242,35 @@ class ModuleHvz extends \Frontend
                     \intval($curDate[2], 10)));
         }
 
-        if (!empty($arrSubmitted['type'])) {
-
+        if (!empty($arrSubmitted['type']))
+        {
             $orderModel = $this->createOrderAndSaveToDatabase($arrSubmitted);
 
+            // todo: do an update call later with payment info
             $orderModel->orderNumber = $this->sendNewOrderToBackend($arrSubmitted);
             $orderModel->save();
 
+            // set order for payment session
+            System::getContainer()->get('session')->set('orderToken',$orderModel->hash);
 
-            if (!empty(\Input::post('Payment'))) {
-                $orderModel->choosen_payment = \Input::post('Payment');
-
-                switch ($orderModel->choosen_payment) {
-                    // todo: make config ;)
-                    case 'paypal':
-                        $paymentObj            = HvzPaypal::generatePayment($arrSubmitted);
-                        $orderModel->paypal_id = $paymentObj->getId();
-                        $redirect              = 43;
-
-                        System::getContainer()->get('session')->set('paypal_approval_link', $paymentObj->getApprovalLink());
-                        break;
-                    case 'klarna':
-
-                        $sessionObj                      = HvzKlarna::getKlarnaSession($arrSubmitted);
-                        $orderModel->klarna_session_id   = $sessionObj['session_id'];
-                        $orderModel->klarna_client_token = $sessionObj['client_token'];
-                        $redirect                        = 44;
-
-                        System::getContainer()->get('session')->set('klarna_client_token', $sessionObj['client_token']);
-                        System::getContainer()->get('session')->set('klarna_session_id', $sessionObj['session_id']);
-                        break;
-                    default:
-                }
+            switch ($orderModel->choosen_payment) {
+                // todo: make config ;)
+                case 'paypal':
+                    $paymentObj                      = HvzPaypal::generatePayment($orderModel);
+                    $orderModel->paypal_paymentId    = $paymentObj->getId();
+                    $orderModel->paypal_approvalLink = $paymentObj->getApprovalLink();
+                    $redirect                        = 43;
+                    break;
+                case 'klarna':
+                    $sessionObj                      = HvzKlarna::getKlarnaSession($orderModel);
+                    $orderModel->klarna_session_id   = $sessionObj['session_id'];
+                    $orderModel->klarna_client_token = $sessionObj['client_token'];
+                    $redirect                        = 44;
+                    break;
+                default:
             }
+            $orderModel->save();
 
-
-            dump($arrSubmitted);
-            die;
-
-
-            $orderModel = HvzOrderModel::findById($insertId);
             ModuleHvz::setSessionForThankYouPage($orderModel);
 
             if (!empty($redirect)) {
@@ -294,6 +287,8 @@ class ModuleHvz extends \Frontend
     private function cleanUpSubmit(&$arrSubmitted)
     {
         $this->calcValidPrices($arrSubmitted);
+
+        $arrSubmitted['choosen_payment'] = \Input::post('Payment');
 
         //  ************************************
         //  2. prepare Data
@@ -440,18 +435,14 @@ class ModuleHvz extends \Frontend
 
     private function createOrderAndSaveToDatabase(&$arrSubmitted): HvzOrderModel
     {
-
         $this->cleanUpSubmit($arrSubmitted);
-
 
         $hvzOrder = new HvzOrderModel();
         $hvzOrder->tstamp              = time();
 
-
         $hvzOrder->hvz_solo_price      = $arrSubmitted['hvz_solo_price'];
         $hvzOrder->hvz_extra_tag       = $arrSubmitted['hvzTagesPreis'];
         $hvzOrder->hvz_rabatt_percent  = $arrSubmitted['Rabatt'];
-
 
         $hvzOrder->hvz_preis           = $arrSubmitted['Preis'];
         $hvzOrder->hvzTagesPreis       = $arrSubmitted['hvzTagesPreis'];
@@ -459,12 +450,10 @@ class ModuleHvz extends \Frontend
         $hvzOrder->hvz_rabatt          = $arrSubmitted['rabattValue'];
         $hvzOrder->user_id             = $arrSubmitted['customerId'];
 
-
         $hvzOrder->type                = $arrSubmitted['submitType'];
         $hvzOrder->hvz_type            = $arrSubmitted['type'];
         $hvzOrder->hvz_type_name       = $arrSubmitted['Genehmigung'];
         $hvzOrder->hvz_ge_vorhanden    = substr($arrSubmitted['genehmigungVorhanden'], 0, 1);
-
 
         $hvzOrder->hvz_ort             = $arrSubmitted['Ort'];
         $hvzOrder->hvz_plz             = $arrSubmitted['PLZ'];
@@ -495,11 +484,13 @@ class ModuleHvz extends \Frontend
         $hvzOrder->orderNumber         = $arrSubmitted['orderNumber'];
 
         $hvzOrder->paypal_paymentId    = $arrSubmitted['paypal_id'];
-        $hvzOrder->klarna_session_id   = $arrSubmitted['klarna_session_id'];
-        $hvzOrder->klarna_client_token = $arrSubmitted['klarna_client_token'];
+        $hvzOrder->paypal_approvalLink = '';
+        $hvzOrder->klarna_session_id   = '';
+        $hvzOrder->klarna_client_token = '';
+        $hvzOrder->klarna_auth_token   = '';
+        $hvzOrder->hvz_id              = $arrSubmitted['hvzID'];
         $hvzOrder->choosen_payment     = \Input::post('Payment');
-        $hvzOrder->hvzId               = (int)$arrSubmitted['hvzID'];
-
+        $hvzOrder->generateHash();
         $hvzOrder->save();
 
         return $hvzOrder;
@@ -616,4 +607,5 @@ class ModuleHvz extends \Frontend
         curl_exec($ch);
         curl_close($ch);
     }
+
 }

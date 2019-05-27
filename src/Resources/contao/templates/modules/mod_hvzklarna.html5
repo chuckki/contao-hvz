@@ -15,7 +15,7 @@
 //                    console.debug(window.location.href + "?auth=" + res['authorization_token'])
                     window.location.href = window.location.href + "?auth=" + res['authorization_token'] + "";
                 }else{
-                    alert(res['authorization_token']);
+                    //alert(res['authorization_token']);
                 }
             })
 

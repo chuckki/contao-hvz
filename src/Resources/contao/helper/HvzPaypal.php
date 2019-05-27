@@ -1,5 +1,4 @@
 <?php
-
 /*
  * This file is part of backend-hvb.
  *
@@ -27,82 +26,70 @@ use ResultPrinter;
 
 class HvzPaypal
 {
-    public static function generatePayment(array $arrSubmitted): ?Payment
+    public static function generatePayment(HvzOrderModel $hvzOrderModel): ?Payment
     {
-        $apiContext =
-            new ApiContext(new OAuthTokenCredential(
-                getenv('CLIENT_ID'),
-                getenv('CLIENT_SECRET')
-            ));
-
+        $apiContext = new ApiContext(
+            new OAuthTokenCredential(
+                getenv('CLIENT_ID'), getenv('CLIENT_SECRET')
+            )
+        );
         // 3. Lets try to create a Payment
-
         // https://developer.paypal.com/docs/api/payments/v2/
         $payer = new Payer();
         $payer->setPaymentMethod('paypal');
-
         $details = new Details();
-        $details->setTax($arrSubmitted['preisDetaisl']['newMst']);
-        $details->setSubtotal($arrSubmitted['preisDetaisl']['netto']);
-
+        $details->setTax($hvzOrderModel->getMwSt());
+        $details->setSubtotal($hvzOrderModel->getNetto());
         $itemList = new ItemList();
-        $item = new Item();
-        $item->setDescription($arrSubmitted['Genehmigung'].' in '.$arrSubmitted['Ort']);
-        $item->setPrice($arrSubmitted['preisDetaisl']['netto']);
+        $item     = new Item();
+        $item->setDescription($hvzOrderModel->hvz_type_name . ' in ' . $hvzOrderModel->hvz_ort);
+        $item->setPrice($hvzOrderModel->getNetto());
         $item->setCurrency('EUR');
         $item->setQuantity(1);
         $itemList->setItems([$item]);
-
         $amount = new Amount();
-        $amount->setTotal($arrSubmitted['preisDetaisl']['brutto']);
+        $amount->setTotal($hvzOrderModel->getBrutto());
         $amount->setCurrency('EUR');
         $amount->setDetails($details);
-
         $transaction = new Transaction();
         $transaction->setAmount($amount);
         // todo: config?
-        $transaction->setDescription('Bestellung einer Halterverbotszone in '.$arrSubmitted['Ort']);
-        $transaction->setInvoiceNumber($arrSubmitted['orderNumber']);
+        $transaction->setDescription('Bestellung einer Halterverbotszone in ' . $hvzOrderModel->hvz_ort);
+        $transaction->setInvoiceNumber($hvzOrderModel->orderNumber);
         $transaction->setItemList($itemList);
-
         $redirectUrls = new RedirectUrls();
         // todo: get links from modul config
-        $redirectUrls->setReturnUrl('http://hvb2018.test/bestellung-abgeschlossen.html')
-            ->setCancelUrl('https://example.com/your_cancel_url.html');
-
+        $redirectUrls->setReturnUrl('http://hvb2018.test/bestellung-abgeschlossen.html')->setCancelUrl(
+                'http://hvb2018.test/bestellung-abgeschlossen-nicht.html'
+            );
         $payment = new Payment();
-        $payment->setIntent('sale')
-            ->setPayer($payer)
-            ->setTransactions([$transaction])
-            ->setRedirectUrls($redirectUrls);
-
+        $payment->setIntent('sale')->setPayer($payer)->setTransactions([$transaction])->setRedirectUrls($redirectUrls);
         // 4. Make a Create Call and print the values
         try {
             $payment->create($apiContext);
             return $payment;
             //echo "\n\nRedirect user to approval_url: " . $payment->getApprovalLink() . "\n";
         } catch (PayPalConnectionException $ex) {
+            // todo: catch it
             // This will print the detailed information on the exception.
             //REALLY HELPFUL FOR DEBUGGING
             echo $ex->getData();
             // @todo: log it
         }
-
         return null;
     }
 
     public static function executePayment($paymentId, $payerId): Payment
     {
-        $apiContext =
-            new ApiContext(new OAuthTokenCredential(
-                getenv('CLIENT_ID'),
-                getenv('CLIENT_SECRET')
-            ));
+        $apiContext = new ApiContext(
+            new OAuthTokenCredential(
+                getenv('CLIENT_ID'), getenv('CLIENT_SECRET')
+            )
+        );
         // Get the payment Object by passing paymentId
         // payment id was previously stored in session in
         // CreatePaymentUsingPayPal.php
-        $payment   = Payment::get($paymentId, $apiContext);
-
+        $payment = Payment::get($paymentId, $apiContext);
         // ### Payment Execute
         // PaymentExecution object includes information necessary
         // to execute a PayPal account payment.
@@ -110,13 +97,10 @@ class HvzPaypal
         // when the user is redirected from paypal back to your site
         $execution = new PaymentExecution();
         $execution->setPayerId($payerId);
-
-        
         try {
             // Execute the payment
             // (See bootstrap.php for more on `ApiContext`)
             $result = $payment->execute($execution, $apiContext);
-
             try {
                 $payment = Payment::get($paymentId, $apiContext);
                 dump("Payment after execution:");
@@ -129,7 +113,6 @@ class HvzPaypal
             // todo: log it
             exit(1);
         }
-
         return $result;
     }
 }

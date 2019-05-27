@@ -62,25 +62,20 @@ class ModuleHvzKlarna extends \Module
      */
     protected function compile()
     {
-        // Start Payment
-        if (!empty(System::getContainer()->get('session')->get('klarna_client_token')) and empty(Input::get('auth'))) {
-            $this->Template->clientToken = System::getContainer()->get('session')->get('klarna_client_token');
-//            System::getContainer()->get('session')->remove('klarna_client_token');
-        } else {
-            if(Input::get('auth'))
-            {
-                $orderObj = HvzOrderModel::findOneBy('klarna_client_token',
-                    System::getContainer()->get('session')->get('klarna_client_token'), [
-                        'klarna_session_id' => System::getContainer()->get('session')->get('klarna_session_id')
-                    ]);
+        $orderObj = HvzOrderModel::findOneBy('hash', System::getContainer()->get('session')->get('orderToken'));
+        if(!$orderObj){
+                // todo: falsher hash - was jetzt?
+        }
 
-                dump($orderObj);
-//                die;
-                $paymentId = Input::get('auth');
-                $redirectUrl = HvzKlarna::executePayment(Input::get('auth'), $orderObj);
-                \Controller::redirect($redirectUrl);
-            }
-
+        if(!empty($orderObj->klarna_client_token) and empty(Input::get('auth')))
+        {
+            $this->Template->clientToken = $orderObj->klarna_client_token;
+        }
+        if(!empty(Input::get('auth'))){
+            $orderObj->klarna_auth_token = Input::get('auth');
+            $orderObj->save();
+            $redirectUrl = HvzKlarna::executePayment($orderObj);
+            \Controller::redirect($redirectUrl);
         }
     }
 }
