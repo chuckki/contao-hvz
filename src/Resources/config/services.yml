@@ -1,0 +1,19 @@
+services:
+    _instanceof:
+        Contao\CoreBundle\Framework\FrameworkAwareInterface:
+            calls:
+                - ["setFramework", ["@contao.framework"]]
+
+        Symfony\Component\DependencyInjection\ContainerAwareInterface:
+            calls:
+                - ["setContainer", ["@service_container"]]
+
+    chuckki.contao_hvz_bundle.paypal:
+        class: Chuckki\ContaoHvzBundle\HvzPaypal
+        arguments:
+            - '@monolog.logger.contao'
+
+    chuckki.contao_hvz_bundle.klarna:
+        class: Chuckki\ContaoHvzBundle\HvzKlarna
+        arguments:
+            - '@monolog.logger.contao'

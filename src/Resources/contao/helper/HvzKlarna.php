@@ -29,6 +29,7 @@ use PayPal\Api\Transaction;
 use PayPal\Auth\OAuthTokenCredential;
 use PayPal\Exception\PayPalConnectionException;
 use PayPal\Rest\ApiContext;
+use Psr\Log\LoggerInterface;
 use ResultPrinter;
 
 /**
@@ -40,38 +41,13 @@ use ResultPrinter;
  */
 class HvzKlarna
 {
-    private static function getBillingData(HvzOrderModel $hvzOrderModel): array
+    private $logger;
+    public function __construct(LoggerInterface $logger)
     {
-
-        return [
-            "auto_capture"      => true, //https://developers.klarna.com/documentation/klarna-payments/integration-guide/place-order#4-3-place-recurring-order-tokenization
-            "purchase_country"  => "DE",
-            "purchase_currency" => "EUR",
-            "locale"            => "de-DE",
-            "merchant_data" => $hvzOrderModel->orderNumber,
-            // todo: check it
-            "merchant_reference1" => 'hier',
-
-            "order_amount"      => self::getCents($hvzOrderModel->getBrutto()),
-            "order_tax_amount"  => self::getCents($hvzOrderModel->getMwSt()),
-            "order_lines"       => [
-                [
-                    "type"                  => "physical",
-                    "reference"             => $hvzOrderModel->hvz,
-                    "name"                  => 'Halterverbotszone in ' . $hvzOrderModel->hvz_ort,
-                    "quantity"              => 1,
-                    "product_url"           => $hvzOrderModel->getAbsoluteUrl(),
-                    "tax_rate"              => (HvzOrderModel::MWST_INTL_GERMANY)*100,
-                    "total_tax_amount"      => self::getCents($hvzOrderModel->getMwSt()),
-                    "total_amount"          => self::getCents($hvzOrderModel->getBrutto()),
-                    "unit_price"            => self::getCents($hvzOrderModel->getBrutto() + $hvzOrderModel->getRabatt()),
-                    "total_discount_amount" => self::getCents($hvzOrderModel->getRabatt()),
-                ]
-            ]
-        ];
+        $this->logger = $logger;
     }
 
-    public static function getKlarnaSession(HvzOrderModel $hvzOrderModel ): Sessions
+    public function getKlarnaSession(HvzOrderModel $hvzOrderModel ): Sessions
     {
         $merchantId   = getenv('KLARNA_USER') ?: 'PK09676_34cc248c6138';
         $sharedSecret = getenv('KLARNA_PW') ?: 'HpCMzNiLb7Jy12Kd';
@@ -90,7 +66,7 @@ class HvzKlarna
         }
     }
 
-    public static function executePayment(HvzOrderModel $orderModel)
+    public function executePayment(HvzOrderModel $orderModel)
     {
         $merchantId         = getenv('KLARNA_USER') ?: 'K123456_abcd12345';
         $sharedSecret       = getenv('KLARNA_PW') ?: 'sharedSecret';
@@ -129,7 +105,37 @@ class HvzKlarna
 
     }
 
-    private static function getCents(string $string)
+    private function getBillingData(HvzOrderModel $hvzOrderModel): array
+    {
+        return [
+            "auto_capture"      => true, //https://developers.klarna.com/documentation/klarna-payments/integration-guide/place-order#4-3-place-recurring-order-tokenization
+            "purchase_country"  => "DE",
+            "purchase_currency" => "EUR",
+            "locale"            => "de-DE",
+            "merchant_data" => $hvzOrderModel->orderNumber,
+            // todo: check it
+            "merchant_reference1" => 'hier',
+
+            "order_amount"      => self::getCents($hvzOrderModel->getBrutto()),
+            "order_tax_amount"  => self::getCents($hvzOrderModel->getMwSt()),
+            "order_lines"       => [
+                [
+                    "type"                  => "physical",
+                    "reference"             => $hvzOrderModel->hvz,
+                    "name"                  => 'Halterverbotszone in ' . $hvzOrderModel->hvz_ort,
+                    "quantity"              => 1,
+                    "product_url"           => $hvzOrderModel->getAbsoluteUrl(),
+                    "tax_rate"              => (HvzOrderModel::MWST_INTL_GERMANY)*100,
+                    "total_tax_amount"      => self::getCents($hvzOrderModel->getMwSt()),
+                    "total_amount"          => self::getCents($hvzOrderModel->getBrutto()),
+                    "unit_price"            => self::getCents($hvzOrderModel->getBrutto() + $hvzOrderModel->getRabatt()),
+                    "total_discount_amount" => self::getCents($hvzOrderModel->getRabatt()),
+                ]
+            ]
+        ];
+    }
+
+    private function getCents(string $string)
     {
         $string = round(floatval($string),5);
         $arr = explode('.', $string);

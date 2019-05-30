@@ -134,6 +134,11 @@ class HvzOrderModel extends \Model
      */
     protected static $strTable = 'tl_hvz_orders';
 
+    public function getOrderDescription()
+    {
+        return $hvzOrderModel->hvz_type_name . ' in ' . $hvzOrderModel->hvz_ort;
+    }
+
     public function generateHash()
     {
         // geiler Scheiss...

@@ -12,13 +12,14 @@ namespace Chuckki\ContaoHvzBundle;
 
 use Contao\Input;
 use Contao\System;
+use Haste\Frontend\AbstractFrontendModule;
 use PayPal\Api\Payment;
 use PayPal\Api\PaymentExecution;
 
 /**
  * @author Dennis Esken
  */
-class ModuleHvzPaypal extends \Module
+class ModuleHvzPaypal extends AbstractFrontendModule
 {
     /**
      * Template.
@@ -62,20 +63,25 @@ class ModuleHvzPaypal extends \Module
      */
     protected function compile()
     {
-        if (!empty(System::getContainer()->get('session')->get('paypal_approval_link')))
-        {
+        $orderObj = HvzOrderModel::findOneBy('hash', System::getContainer()->get('session')->get('orderToken'));
+        if (!$orderObj) {
+            PushMeMessage::pushMe('Paypal Order not found by PaymentId: '.$orderObj->paypal_paymentId);
+        }
+        if (!empty($orderObj->paypal_approvalLink) and empty(Input::get('paymentId'))) {
             // Start Payment
-            $this->Template->approvalUrl = System::getContainer()->get('session')->get('paypal_approval_link');
-            System::getContainer()->get('session')->clear();
-        } else {
+            $this->Template->approvalUrl = $orderObj->paypal_approvalLink;
+        }
 
+        if(!empty(Input::get('paymentId')))
+        {
             // End Payment
             $paymentId = Input::get('paymentId');
             if (!empty($paymentId)) {
                 $this->strTemplate = null;
-                $orderObj          = HvzOrderModel::findOneBy('paypal_paymentId', $paymentId);
-                dump($orderObj);
-                if (empty($orderObj)) {
+                $currentOrderObj   = HvzOrderModel::findOneBy('paypal_paymentId', $orderObj->paypal_paymentId);
+
+                if (empty($currentOrderObj) or $currentOrderObj->paypal_paymentId !== $orderObj->paypal_paymentId) {
+                    PushMeMessage::pushMe('Paypal Order not found by PaymentId: '.$orderObj->paypal_paymentId);
                     dump('nix gefunden');
                     // todo: log it or pushme it
                 } else {
@@ -84,11 +90,15 @@ class ModuleHvzPaypal extends \Module
                     $orderObj->save();
                 }
 
-                $payment = HvzPaypal::executePayment($paymentId, $orderObj->paypal_PayerID);
+                $hvzPaypal = System::getContainer()->get('chuckki.contao_hvz_bundle.paypal');
 
+                dump($payment);
+
+                $payment = $hvzPaypal->executePayment($paymentId, $orderObj->paypal_PayerID);
                 ModuleHvz::setSessionForThankYouPage($orderObj);
 
-
+                dump($payment);
+                die;
                 if($payment){
 //                    $orderObj->paypal_first_name = $payment->getPayer()->getPayerInfo()->
                 }

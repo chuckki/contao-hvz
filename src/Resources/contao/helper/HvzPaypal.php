@@ -10,6 +10,7 @@
 namespace Chuckki\ContaoHvzBundle;
 
 use Exception;
+use Monolog\Logger;
 use PayPal\Api\Amount;
 use PayPal\Api\Details;
 use PayPal\Api\Item;
@@ -22,11 +23,20 @@ use PayPal\Api\Transaction;
 use PayPal\Auth\OAuthTokenCredential;
 use PayPal\Exception\PayPalConnectionException;
 use PayPal\Rest\ApiContext;
+use Psr\Log\LoggerInterface;
 use ResultPrinter;
 
 class HvzPaypal
 {
-    public static function generatePayment(HvzOrderModel $hvzOrderModel): ?Payment
+
+    private $logger;
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
+
+    public function generatePayment(HvzOrderModel $hvzOrderModel): ?Payment
     {
         $apiContext = new ApiContext(
             new OAuthTokenCredential(
@@ -42,7 +52,7 @@ class HvzPaypal
         $details->setSubtotal($hvzOrderModel->getNetto());
         $itemList = new ItemList();
         $item     = new Item();
-        $item->setDescription($hvzOrderModel->hvz_type_name . ' in ' . $hvzOrderModel->hvz_ort);
+        $item->setDescription($hvzOrderModel->getOrderDescription());
         $item->setPrice($hvzOrderModel->getNetto());
         $item->setCurrency('EUR');
         $item->setQuantity(1);
@@ -54,32 +64,33 @@ class HvzPaypal
         $transaction = new Transaction();
         $transaction->setAmount($amount);
         // todo: config?
-        $transaction->setDescription('Bestellung einer Halterverbotszone in ' . $hvzOrderModel->hvz_ort);
+        $transaction->setDescription($hvzOrderModel->getOrderDescription());
         $transaction->setInvoiceNumber($hvzOrderModel->orderNumber);
         $transaction->setItemList($itemList);
         $redirectUrls = new RedirectUrls();
         // todo: get links from modul config
-        $redirectUrls->setReturnUrl('http://hvb2018.test/bestellung-abgeschlossen.html')->setCancelUrl(
-                'http://hvb2018.test/bestellung-abgeschlossen-nicht.html'
-            );
+        $redirectUrls
+            ->setReturnUrl('http://hvb2018.test/bestellung-abgeschlossen.html')
+            ->setCancelUrl('http://hvb2018.test/bestellung-abgeschlossen-nicht.html');
         $payment = new Payment();
         $payment->setIntent('sale')->setPayer($payer)->setTransactions([$transaction])->setRedirectUrls($redirectUrls);
         // 4. Make a Create Call and print the values
         try {
             $payment->create($apiContext);
+
+            if($payment->state !== 'created'){
+                PushMeMessage::pushMe("Payment state: \n created != ".$payment->state."\n\n paypal_id:".$payment->id . "\n order_id:" . $hvzOrderModel->orderNumber, 'HvzPaypal');
+            }
             return $payment;
-            //echo "\n\nRedirect user to approval_url: " . $payment->getApprovalLink() . "\n";
+
         } catch (PayPalConnectionException $ex) {
-            // todo: catch it
-            // This will print the detailed information on the exception.
-            //REALLY HELPFUL FOR DEBUGGING
-            echo $ex->getData();
-            // @todo: log it
+            PushMeMessage::pushMe("Paypal Exception: " . $ex->getData());
+            $logger->error('Paypal Exception ('.$payment->id.')',[$ex->getData()]);
         }
         return null;
     }
 
-    public static function executePayment($paymentId, $payerId): Payment
+    public function executePayment($paymentId, $payerId): Payment
     {
         $apiContext = new ApiContext(
             new OAuthTokenCredential(
@@ -105,6 +116,7 @@ class HvzPaypal
                 $payment = Payment::get($paymentId, $apiContext);
                 dump("Payment after execution:");
                 dump($payment);
+                die;
             } catch (Exception $ex) {
                 // todo: log it
                 exit(1);

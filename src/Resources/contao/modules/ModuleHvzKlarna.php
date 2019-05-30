@@ -71,10 +71,15 @@ class ModuleHvzKlarna extends \Module
         {
             $this->Template->clientToken = $orderObj->klarna_client_token;
         }
-        if(!empty(Input::get('auth'))){
+
+        if(!empty(Input::get('auth')))
+        {
             $orderObj->klarna_auth_token = Input::get('auth');
             $orderObj->save();
-            $redirectUrl = HvzKlarna::executePayment($orderObj);
+
+            $hvzKlarna = System::getContainer()->get('chuckki.contao_hvz_bundle.klarna');
+
+            $redirectUrl = $hvzKlarna->executePayment($orderObj);
             \Controller::redirect($redirectUrl);
         }
     }

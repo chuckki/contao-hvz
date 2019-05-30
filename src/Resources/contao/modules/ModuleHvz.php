@@ -20,16 +20,18 @@ use DateTime;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
+use Haste\Frontend\AbstractFrontendModule;
 use http\Env;
 use mysqli;
 use Psr\Log\LoggerInterface;
+use Symfony\Bridge\Monolog\Logger;
 
 /**
  * Provide methods regarding HVZs.
  *
  * @author Dennis Esken
  */
-class ModuleHvz extends \Frontend
+class ModuleHvz extends AbstractFrontendModule
 {
     /**
      * @var LoggerInterface
@@ -256,13 +258,15 @@ class ModuleHvz extends \Frontend
             switch ($orderModel->choosen_payment) {
                 // todo: make config ;)
                 case 'paypal':
-                    $paymentObj                      = HvzPaypal::generatePayment($orderModel);
+                    $hvzPaypal = System::getContainer()->get('chuckki.contao_hvz_bundle.paypal');
+                    $paymentObj                      = $hvzPaypal->generatePayment($orderModel);
                     $orderModel->paypal_paymentId    = $paymentObj->getId();
                     $orderModel->paypal_approvalLink = $paymentObj->getApprovalLink();
                     $redirect                        = 43;
                     break;
                 case 'klarna':
-                    $sessionObj                      = HvzKlarna::getKlarnaSession($orderModel);
+                    $hvzKlarna = System::getContainer()->get('chuckki.contao_hvz_bundle.klarna');
+                    $sessionObj                      = $hvzKlarna->getKlarnaSession($orderModel);
                     $orderModel->klarna_session_id   = $sessionObj['session_id'];
                     $orderModel->klarna_client_token = $sessionObj['client_token'];
                     $redirect                        = 44;
@@ -495,7 +499,6 @@ class ModuleHvz extends \Frontend
 
         return $hvzOrder;
     }
-
 
     public static function setSessionForThankYouPage(HvzOrderModel $orderModel)
     {
