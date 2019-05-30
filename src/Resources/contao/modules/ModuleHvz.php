@@ -31,7 +31,7 @@ use Symfony\Bridge\Monolog\Logger;
  *
  * @author Dennis Esken
  */
-class ModuleHvz extends AbstractFrontendModule
+class ModuleHvz extends \Frontend
 {
     /**
      * @var LoggerInterface
