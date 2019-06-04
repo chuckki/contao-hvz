@@ -92,13 +92,10 @@ class ModuleHvzPaypal extends AbstractFrontendModule
 
                 $hvzPaypal = System::getContainer()->get('chuckki.contao_hvz_bundle.paypal');
 
-                dump($payment);
 
                 $payment = $hvzPaypal->executePayment($paymentId, $orderObj->paypal_PayerID);
                 ModuleHvz::setSessionForThankYouPage($orderObj);
 
-                dump($payment);
-                die;
                 if($payment){
 //                    $orderObj->paypal_first_name = $payment->getPayer()->getPayerInfo()->
                 }

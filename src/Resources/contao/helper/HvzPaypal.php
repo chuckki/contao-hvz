@@ -114,9 +114,6 @@ class HvzPaypal
             $result = $payment->execute($execution, $apiContext);
             try {
                 $payment = Payment::get($paymentId, $apiContext);
-                dump("Payment after execution:");
-                dump($payment);
-                die;
             } catch (Exception $ex) {
                 // todo: log it
                 exit(1);

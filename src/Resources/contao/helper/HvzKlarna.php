@@ -131,6 +131,10 @@ class HvzKlarna
                     "unit_price"            => self::getCents($hvzOrderModel->getBrutto() + $hvzOrderModel->getRabatt()),
                     "total_discount_amount" => self::getCents($hvzOrderModel->getRabatt()),
                 ]
+            ],
+            "merchant_urls"    => [
+                "confirmation" => 'http://hvb2018.test/bestellung-abgeschlossen.html',
+                "notification" => "https://example.com/pending" // optional
             ]
         ];
     }
