@@ -327,6 +327,8 @@ Hier können Sie einfach und unkompliziert Ihr <b>Halteverbot in <?= $this->ques
             <?php if ($this->isUser): ?>
                 <fieldset id="payment_field">
                     <legend>Bezahlung</legend>
+
+                    <p>Wählen Sie eine passende Bezahlart. Weitere Informationeen finden Sie hier: <a href="">Zahlungsarten</a></p>
                     <div class="formRow" id="payments">
                         <label for="pay_offline" class="pay_offline btn"><input type="radio" value="invoice" class="radio" id="pay_offline" name="Payment">Bezahlen via Rechnung</label>
                         <label for="pay_paypal" class="pay_paypal btn"><input type="radio" value="paypal" class="radio" id="pay_paypal" name="Payment">
@@ -341,9 +343,15 @@ Hier können Sie einfach und unkompliziert Ihr <b>Halteverbot in <?= $this->ques
             <?php else: ?>
                 <fieldset id="payment_field">
                     <legend>Bezahlung</legend>
+                    <p>Wählen Sie eine passende Bezahlart. Weitere Informationeen finden Sie hier: <a href="">Zahlungsarten</a></p>
                     <div class="formRow" id="payments">
-                        <label for="pay_online" class="btn"><input type="radio" value="paypal" class="radio" id="pay_online" checked="checked" name="Payment">Online Bezahlen (Paypal/SEPA-Lastschrift/Kreditkarte)</label>
-                        <label for="pay_klarna" class="btn"><input type="radio" value="klarna" class="radio" id="pay_klarna" name="Payment">Sofortüberweisung</label>
+                        <label for="pay_paypal" class="pay_paypal btn"><input type="radio" value="paypal" class="radio" id="pay_paypal" name="Payment">
+                            Paypal
+                            <img id="paypal_logo" src="bundles/chuckkicontaohvz/img/paypalplus/de-pp_plus-logo-quer_ohne_PUI_365x60px.png" alt="Online Bezahlen (Paypal/SEPA-Lastschrift/Kreditkarte)" ></label>
+                        <label for="pay_klarna" class="pay_klarna btn"><input type="radio" value="klarna" class="radio" id="pay_klarna" checked="checked" name="Payment">
+                            Sofortüberweisung
+                            <img  id="paynow_logo" alt="Pay now. by Klarna" src="https://cdn.klarna.com/1.0/shared/image/generic/badge/de_de/pay_now/descriptive/horizontal/pink.svg" >
+                        </label>
                     </div>
                 </fieldset>
             <?php endif; ?>
