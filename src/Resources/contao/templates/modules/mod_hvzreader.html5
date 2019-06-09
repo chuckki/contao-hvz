@@ -326,9 +326,9 @@ Hier können Sie einfach und unkompliziert Ihr <b>Halteverbot in <?= $this->ques
             
             <?php if ($this->isUser): ?>
                 <fieldset id="payment_field">
-                    <legend>Bezahlung</legend>
+                    <legend>Zahlungsweise</legend>
 
-                    <p>Wählen Sie eine passende Bezahlart. Weitere Informationeen finden Sie hier: <a href="">Zahlungsarten</a></p>
+                    <p>Wählen Sie eine passende Zahlungsweise. Weitere Informationeen finden Sie hier: <a href="">Zahlungsarten</a></p>
                     <div class="formRow" id="payments">
                         <label for="pay_offline" class="pay_offline btn"><input type="radio" value="invoice" class="radio" id="pay_offline" name="Payment">Bezahlen via Rechnung</label>
                         <label for="pay_paypal" class="pay_paypal btn"><input type="radio" value="paypal" class="radio" id="pay_paypal" name="Payment">
@@ -342,8 +342,8 @@ Hier können Sie einfach und unkompliziert Ihr <b>Halteverbot in <?= $this->ques
                 </fieldset>
             <?php else: ?>
                 <fieldset id="payment_field">
-                    <legend>Bezahlung</legend>
-                    <p>Wählen Sie eine passende Bezahlart. Weitere Informationeen finden Sie hier: <a href="">Zahlungsarten</a></p>
+                    <legend>Zahlungsweise</legend>
+                    <p>Wählen Sie eine passende Zahlungsweise. Weitere Informationeen finden Sie hier: <a href="">Zahlungsarten</a></p>
                     <div class="formRow" id="payments">
                         <label for="pay_paypal" class="pay_paypal btn"><input type="radio" value="paypal" class="radio" id="pay_paypal" name="Payment">
                             Paypal
