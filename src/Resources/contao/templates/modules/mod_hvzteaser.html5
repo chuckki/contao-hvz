@@ -9,7 +9,7 @@ foreach ($category['items'] as $hvz):
   };
 ?>
       <li class="featuredlist">
-        <a class="btn" href="<?= $hvz['href'] ?>" title="Halteverbot in <?= $hvz['title'] ?> bestellen">
+        <a class="" href="<?= $hvz['href'] ?>" title="Halteverbot in <?= $hvz['title'] ?> bestellen">
           <?php echo $hvz['question'] ?>
         </a>
       </li>

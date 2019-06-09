@@ -49,6 +49,6 @@
 
     <div id="klarna_container"></div>
 
-    <input type="button" id="confirm" class="btn" value="Bezahlen">
+    <input type="button" id="confirm" class="btn" value="Jetzt Bezahlen">
 
 <?php endif; ?>
