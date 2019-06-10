@@ -70,8 +70,9 @@ class HvzPaypal
         $redirectUrls = new RedirectUrls();
         // todo: get links from modul config
         $redirectUrls
-            ->setReturnUrl('http://hvb2018.test/bestellung-abgeschlossen.html')
-            ->setCancelUrl('http://hvb2018.test/bestellung-abgeschlossen-nicht.html');
+            ->setReturnUrl(\Environment::get('base') .'bestellung-abgeschlossen.html')
+            ->setCancelUrl(\Environment::get('base') .'bestellung-bearbeiten.html');
+
         $payment = new Payment();
         $payment->setIntent('sale')->setPayer($payer)->setTransactions([$transaction])->setRedirectUrls($redirectUrls);
         // 4. Make a Create Call and print the values

@@ -171,6 +171,9 @@ $GLOBALS['TL_DCA']['tl_hvz_orders'] = [
         ],
         'hash' => [
             'sql' => "varchar(128) NOT NULL default ''",
-        ]
+        ],
+        'payment_status' => [
+            'sql' => "varchar(128) NOT NULL default ''",
+        ],
     ],
 ];

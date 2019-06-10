@@ -133,8 +133,8 @@ class HvzKlarna
                 ]
             ],
             "merchant_urls"    => [
-                "confirmation" => 'http://hvb2018.test/bestellung-abgeschlossen.html',
-                "notification" => "https://example.com/pending" // optional
+                "confirmation" => \Environment::get('base') .'bestellung-abgeschlossen.html',
+                "notification" => \Environment::get('base') .'bestellung-bearbeiten.html' // optional
             ]
         ];
     }

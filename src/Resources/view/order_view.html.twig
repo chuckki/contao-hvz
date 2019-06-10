@@ -1,0 +1,28 @@
+<div class="saleinfo">
+<table>
+    <thead>
+    <tr>
+        <th>Beschreibung</th>
+        <th>Preis<br>inkl. MwSt</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td class="desc">
+            {{ order.OrderDescription }} <br>am {{ order.hvz_vom }} für
+
+            {% if order.hvz_anzahl_tage == 1  %}
+            einen Tag
+            {% else %}
+            {{ order.hvz_anzahl_tage }} Tag
+            {% endif %}<br>
+            täglich von {{ order.hvz_vom_time }} Uhr bis {{ order.hvz_vom_bis }} Uhr
+        </td>
+        <td>
+
+            {{ order.Brutto }} €
+        </td>
+    </tr>
+    </tbody>
+</table>
+</div>

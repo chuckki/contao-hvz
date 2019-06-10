@@ -74,6 +74,7 @@ use Contao\Environment;
  * @property string $choosen_payment
  * @property int $hvz_id
  * @property string $hash
+ * @property string payment_status
  *
  * @method static HvzOrderModel|null findById($id, $opt = array())
  * @method static HvzOrderModel|null findByPk($id, $opt = array())
@@ -136,7 +137,7 @@ class HvzOrderModel extends \Model
 
     public function getOrderDescription()
     {
-        return $hvzOrderModel->hvz_type_name . ' in ' . $hvzOrderModel->hvz_ort;
+        return $this->hvz_type_name . ' in ' . $this->hvz_ort;
     }
 
     public function generateHash()
