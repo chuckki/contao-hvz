@@ -1,5 +1,4 @@
 <?php
-
 /*
  * This file is part of backend-hvb.
  *
@@ -11,6 +10,7 @@
 namespace Chuckki\ContaoHvzBundle;
 
 use Contao\Controller;
+use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
 use Exception;
 use Klarna\Rest\CustomerToken\Tokens;
 use Klarna\Rest\Payments\Orders;
@@ -35,125 +35,123 @@ use ResultPrinter;
 /**
  * Class HvzKlarna
  *
- *
- *
  * @package Chuckki\ContaoHvzBundle
  */
 class HvzKlarna
 {
+    private $merchantId;
+    private $sharedSecret;
+    private $klarna_env;
     private $logger;
-    public function __construct(LoggerInterface $logger)
+    private $contaoFramework;
+
+    public function __construct(LoggerInterface $logger, ContaoFrameworkInterface $contaoFramework)
     {
+        $this->contaoFramework = $contaoFramework;
+        $this->contaoFramework->initialize();
+        $this->initialCredits($GLOBALS['TL_CONFIG']);
         $this->logger = $logger;
     }
 
-    public function getKlarnaSession(HvzOrderModel $hvzOrderModel ): Sessions
+    public function initialCredits(array $conf)
     {
-        $merchantId   = getenv('KLARNA_USER') ?: 'PK09676_34cc248c6138';
-        $sharedSecret = getenv('KLARNA_PW') ?: 'HpCMzNiLb7Jy12Kd';
-        $klarnaEnv    = getenv('KLARNA_ENV') ?: 'https://api.playground.klarna.com';
+        $this->klarna_env   = (!$conf['klarna_env']) ? 'https://api.klarna.com' : 'https://api.playground.klarna.com';
+        $this->merchantId   = $conf['klarna_user'];
+        $this->sharedSecret = $conf['klarna_pw'];
+    }
 
-        $connector = Connector::create($merchantId, $sharedSecret, $klarnaEnv);
+    public function getKlarnaNewOrderSession(HvzOrderModel $hvzOrderModel): Sessions
+    {
         $order = self::getBillingData($hvzOrderModel);
-
         try {
-            $session = new Sessions($connector);
+            $session = $this->getKlarnaSession($hvzOrderModel);
             $session->create($order);
             return $session;
         } catch (Exception $e) {
-            echo 'Caught exception: ' . $e->getMessage() . "\n";
+            $this->logger->error('Not possible to create Klarnaorder', [$e->getMessage()]);
+            PushMeMessage::pushMe('Not possible to create Klarnaorder');
             exit(0);
         }
+        die('Klarna Payments got some errors');
+    }
+
+    public function getKlarnaSession(HvzOrderModel $hvzOrderModel, $sessionId = null): Sessions
+    {
+        $connector = Connector::create($this->merchantId, $this->sharedSecret, $this->klarna_env);
+        try {
+            $session = new Sessions($connector);
+            return $session;
+        } catch (Exception $e) {
+            $this->logger->error('Not possible to get Klarnasession', [$e->getMessage()]);
+            PushMeMessage::pushMe('Not possible to get Klarnasession');
+            exit(0);
+        }
+        die('Klarna Payments got some errors');
     }
 
     public function executePayment(HvzOrderModel $orderModel)
     {
-        $merchantId         = getenv('KLARNA_USER') ?: 'K123456_abcd12345';
-        $sharedSecret       = getenv('KLARNA_PW') ?: 'sharedSecret';
+        $connector          = Connector::create($this->merchantId, $this->sharedSecret, $this->klarna_env);
         $authorizationToken = $orderModel->klarna_auth_token ?: 'authorizationToken';
-        $klarnaEnv          = getenv('KLARNA_ENV') ?: 'https://api.playground.klarna.com';
-
-        $connector = Connector::create($merchantId, $sharedSecret, $klarnaEnv);
-        $address = [
-            "given_name"      => "Omer",
-            "family_name"     => "Heberstreit",
-            "email"           => "omer+red@Heberstreit.com",
-            "title"           => "Herr",
-            "street_address"  => "Im Friedenstal 38",
-            "street_address2" => "2. Stock",
-            "postal_code"     => "55006",
-            "city"            => "WestSchon Matishagenfeld",
-            "region"          => "",
-            "phone"           => "+491522113356",
-            "country"         => "DE"
-        ];
-        $data = self::getBillingData($orderModel);
-
         try {
             $order = new Orders($connector, $authorizationToken);
-            $data  = $order->create($data);
-            //dump($data);
-            //die;
-            return $data['redirect_url'];
-
+            $data  = $order->create(self::getBillingData($orderModel));
+            return $data;
         } catch (Exception $e) {
-            print_r($e->getMessage());
-            die;
+            $this->logger->error('Not possible to execute Klarna Payment', [$e->getMessage()]);
+            PushMeMessage::pushMe('Not possible to execute Klarna Payment');
+            exit(0);
         }
-
-        die('error HvzKlarna');
-
+        die('Klarna Payments got some errors');
     }
 
     private function getBillingData(HvzOrderModel $hvzOrderModel): array
     {
         return [
-            "auto_capture"      => true, //https://developers.klarna.com/documentation/klarna-payments/integration-guide/place-order#4-3-place-recurring-order-tokenization
-            "purchase_country"  => "DE",
-            "purchase_currency" => "EUR",
-            "locale"            => "de-DE",
-            "merchant_data" => $hvzOrderModel->orderNumber,
-            // todo: check it
-            "merchant_reference1" => 'hier',
-
-            "order_amount"      => self::getCents($hvzOrderModel->getBrutto()),
-            "order_tax_amount"  => self::getCents($hvzOrderModel->getMwSt()),
-            "order_lines"       => [
+            "auto_capture"        => true,
+            //https://developers.klarna.com/documentation/klarna-payments/integration-guide/place-order#4-3-place-recurring-order-tokenization
+            "purchase_country"    => "DE",
+            "purchase_currency"   => "EUR",
+            "locale"              => "de-DE",
+            "merchant_data"       => $hvzOrderModel->orderNumber,
+            "merchant_reference1" => $hvzOrderModel->orderNumber,
+            "order_amount"        => self::getCents($hvzOrderModel->getBrutto()),
+            "order_tax_amount"    => self::getCents($hvzOrderModel->getMwSt()),
+            "order_lines"         => [
                 [
                     "type"                  => "physical",
                     "reference"             => $hvzOrderModel->hvz,
                     "name"                  => 'Halterverbotszone in ' . $hvzOrderModel->hvz_ort,
                     "quantity"              => 1,
                     "product_url"           => $hvzOrderModel->getAbsoluteUrl(),
-                    "tax_rate"              => (HvzOrderModel::MWST_INTL_GERMANY)*100,
+                    "tax_rate"              => (HvzOrderModel::MWST_INTL_GERMANY) * 100,
                     "total_tax_amount"      => self::getCents($hvzOrderModel->getMwSt()),
                     "total_amount"          => self::getCents($hvzOrderModel->getBrutto()),
-                    "unit_price"            => self::getCents($hvzOrderModel->getBrutto() + $hvzOrderModel->getRabatt()),
+                    "unit_price"            => self::getCents(
+                        $hvzOrderModel->getBrutto() + $hvzOrderModel->getRabatt()
+                    ),
                     "total_discount_amount" => self::getCents($hvzOrderModel->getRabatt()),
                 ]
             ],
-            "merchant_urls"    => [
-                "confirmation" => \Environment::get('base') .'bestellung-abgeschlossen.html',
-                "notification" => \Environment::get('base') .'bestellung-bearbeiten.html' // optional
+            "merchant_urls"       => [
+                "confirmation" => $hvzOrderModel->getFinishOrderPage(),
+                "notification" => $hvzOrderModel->getErrorOrderPage() // optional
             ]
         ];
     }
 
     private function getCents(string $string)
     {
-        $string = round(floatval($string),5);
-        $arr = explode('.', $string);
-        if(count($arr) === 2){
-            if(strlen($arr[1]) == 1){
+        $string = round(floatval($string), 5);
+        $arr    = explode('.', $string);
+        if (count($arr) === 2) {
+            if (strlen($arr[1]) == 1) {
                 $arr[1] .= "0";
             }
-            $value = (int)implode("", $arr);
-        }elseif(count($arr) === 1){
-             $value = (int) (implode("", $arr)."00");
-        }else{
-
+            $value = (int) implode("", $arr);
+        } elseif (count($arr) === 1) {
+            $value = (int) (implode("", $arr) . "00");
         }
         return $value;
     }
-
 }

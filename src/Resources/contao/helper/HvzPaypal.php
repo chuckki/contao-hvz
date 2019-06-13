@@ -9,6 +9,7 @@
 
 namespace Chuckki\ContaoHvzBundle;
 
+use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
 use Exception;
 use Monolog\Logger;
 use PayPal\Api\Amount;
@@ -28,20 +29,29 @@ use ResultPrinter;
 
 class HvzPaypal
 {
-
+    private $clientId;
+    private $clientSecret;
     private $logger;
-    public function __construct(LoggerInterface $logger)
+    private $contaoFramework;
+
+    public function __construct(LoggerInterface $logger, ContaoFrameworkInterface $contaoFramework)
     {
+        $this->contaoFramework = $contaoFramework;
+        $this->contaoFramework->initialize();
+        $this->initialCredits($GLOBALS['TL_CONFIG']);
         $this->logger = $logger;
     }
 
+    public function initialCredits(array $conf)
+    {
+        $this->clientId     = $conf['paypal_id'];
+        $this->clientSecret = $conf['paypal_secret'];
+    }
 
     public function generatePayment(HvzOrderModel $hvzOrderModel): ?Payment
     {
         $apiContext = new ApiContext(
-            new OAuthTokenCredential(
-                getenv('CLIENT_ID'), getenv('CLIENT_SECRET')
-            )
+            new OAuthTokenCredential($this->clientId, $this->clientSecret)
         );
         // 3. Lets try to create a Payment
         // https://developer.paypal.com/docs/api/payments/v2/
@@ -68,25 +78,24 @@ class HvzPaypal
         $transaction->setInvoiceNumber($hvzOrderModel->orderNumber);
         $transaction->setItemList($itemList);
         $redirectUrls = new RedirectUrls();
-        // todo: get links from modul config
-        $redirectUrls
-            ->setReturnUrl(\Environment::get('base') .'bestellung-abgeschlossen.html')
-            ->setCancelUrl(\Environment::get('base') .'bestellung-bearbeiten.html');
-
+        $redirectUrls->setReturnUrl($hvzOrderModel->getFinishOrderPage())->setCancelUrl(
+            $hvzOrderModel->getErrorOrderPage()
+        );
         $payment = new Payment();
         $payment->setIntent('sale')->setPayer($payer)->setTransactions([$transaction])->setRedirectUrls($redirectUrls);
         // 4. Make a Create Call and print the values
         try {
             $payment->create($apiContext);
-
-            if($payment->state !== 'created'){
-                PushMeMessage::pushMe("Payment state: \n created != ".$payment->state."\n\n paypal_id:".$payment->id . "\n order_id:" . $hvzOrderModel->orderNumber, 'HvzPaypal');
+            if ($payment->state !== 'created') {
+                $this->logger->error('Paypal created Order not working. State:'.$payment->state . " paypal_id:" . $payment->id . " order_id:" . $hvzOrderModel->orderNumber);
+                PushMeMessage::pushMe(
+                    "Payment state: \n created != " . $payment->state . "\n\n paypal_id:" . $payment->id . "\n order_id:" . $hvzOrderModel->orderNumber,
+                    'HvzPaypal');
             }
             return $payment;
-
         } catch (PayPalConnectionException $ex) {
             PushMeMessage::pushMe("Paypal Exception: " . $ex->getData());
-            $logger->error('Paypal Exception ('.$payment->id.')',[$ex->getData()]);
+            $logger->error('Paypal Exception - not possible to create Payment (' . $payment->id . ')', [$ex->getMessage(),$ex->getData()]);
         }
         return null;
     }
@@ -94,9 +103,7 @@ class HvzPaypal
     public function executePayment($paymentId, $payerId): Payment
     {
         $apiContext = new ApiContext(
-            new OAuthTokenCredential(
-                getenv('CLIENT_ID'), getenv('CLIENT_SECRET')
-            )
+            new OAuthTokenCredential($this->clientId, $this->clientSecret)
         );
         // Get the payment Object by passing paymentId
         // payment id was previously stored in session in
@@ -110,17 +117,16 @@ class HvzPaypal
         $execution = new PaymentExecution();
         $execution->setPayerId($payerId);
         try {
-            // Execute the payment
-            // (See bootstrap.php for more on `ApiContext`)
             $result = $payment->execute($execution, $apiContext);
             try {
                 $payment = Payment::get($paymentId, $apiContext);
             } catch (Exception $ex) {
-                // todo: log it
+                PushMeMessage::pushMe("Paypal Payment not exist: " . $ex->getMessage());
                 exit(1);
             }
         } catch (Exception $ex) {
-            // todo: log it
+            PushMeMessage::pushMe("Paypal Execute Failure: " . $ex->getMessage());
+            $logger->error('Paypal  Execute Failure (' . $paymentId . ')', [$ex->getMessage()]);
             exit(1);
         }
         return $result;

@@ -12,7 +12,7 @@
   <div class="ce_text hvz_info block">
     <p>
 
-Hier können Sie einfach und unkompliziert Ihr <b>Halteverbot in <?= $this->question ?> beantragen</b>. Die unten stehenden Angaben geben Ihnen Informationen zur jeweiligen Preisgestaltung bei einer Halteverbotszone in <?= $this->question ?>. Ergänzen Sie Ihre Angaben und klicken Sie auf „Halteverbot bestellen“. Sie erhalten von uns unmittelbar nach Bestellung eine Bestätigungsemail, in welcher Sie Ihre Angaben kontrollieren können. Alle weiteren Unterlagen, wie Genehmigungen der für <?= $this->question ?> zuständigen Behörden, Aufstellprotokolle der eingerichteten Halteverbotszone, sowie unsere Kostennote erhalten Sie via Email. Unsere Rechnungen können Sie sorglos per Überweisung begleichen.</p>
+Hier können Sie einfach und unkompliziert Ihr <b>Halteverbot in <?= $this->question ?> beantragen</b>. Die unten stehenden Angaben geben Ihnen Informationen zur jeweiligen Preisgestaltung bei einer Halteverbotszone in <?= $this->question ?>. Ergänzen Sie Ihre Angaben und klicken Sie auf „Halteverbot bestellen“. Sie erhalten von uns unmittelbar nach Bestellung eine Bestätigungsemail, in welcher Sie Ihre Angaben kontrollieren können. Alle weiteren Unterlagen, wie Genehmigungen der für <?= $this->question ?> zuständigen Behörden, Aufstellprotokolle der eingerichteten Halteverbotszone, sowie unsere Kostennote erhalten Sie via Email. Diese können Sie im Zuge der Bestellung unkompliziert und sicher via Paypal oder Klarna begleichen.</p>
     <h2>Preisübersicht für <em>Halteverbotszonen in <?= $this->question ?></em></h2>
 
     <div class="pricetable " id="priceShow">

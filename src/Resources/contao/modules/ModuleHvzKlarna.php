@@ -1,5 +1,4 @@
 <?php
-
 /*
  * This file is part of backend-hvb.
  *
@@ -14,6 +13,7 @@ use Contao\Input;
 use Contao\System;
 use PayPal\Api\Payment;
 use PayPal\Api\PaymentExecution;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * @author Dennis Esken
@@ -44,16 +44,13 @@ class ModuleHvzKlarna extends \Module
         if (TL_MODE === 'BE') {
             /** @var \BackendTemplate|object $objTemplate */
             $objTemplate = new \BackendTemplate('be_wildcard');
-
             $objTemplate->wildcard = '### Klarna Bezahlung ###';
             $objTemplate->title    = $this->headline;
             $objTemplate->id       = $this->id;
             $objTemplate->link     = $this->name;
             $objTemplate->href     = 'contao/main.php?do=themes&amp;table=tl_module&amp;act=edit&amp;id=' . $this->id;
-
             return $objTemplate->parse();
         }
-
         return parent::generate();
     }
 
@@ -63,24 +60,30 @@ class ModuleHvzKlarna extends \Module
     protected function compile()
     {
         $orderObj = HvzOrderModel::findOneBy('hash', System::getContainer()->get('session')->get('orderToken'));
-        if(!$orderObj){
-                // todo: falsher hash - was jetzt?
+        if (!$orderObj) {
+            PushMeMessage::pushMe('Klarna Order not found by PaymentId: ' . $orderObj->paypal_paymentId);
+            throw new NotFoundHttpException();
         }
-
-        if(!empty($orderObj->klarna_client_token) and empty(Input::get('auth')))
-        {
+        if (!empty($orderObj->klarna_client_token) and empty(Input::get('auth'))) {
             $this->Template->clientToken = $orderObj->klarna_client_token;
+            $this->Template->successSite = $orderObj->getFinishOrderPage();
+            $this->Template->editOrder   = $orderObj->getErrorOrderPage();
         }
-
-        if(!empty(Input::get('auth')))
-        {
+        // receive Klarna
+        if (!empty(Input::get('auth'))) {
             $orderObj->klarna_auth_token = Input::get('auth');
             $orderObj->save();
-
             $hvzKlarna = System::getContainer()->get('chuckki.contao_hvz_bundle.klarna');
-
-            $redirectUrl = $hvzKlarna->executePayment($orderObj);
-            \Controller::redirect($redirectUrl);
+            $data                      = $hvzKlarna->executePayment($orderObj);
+            $orderObj->klarna_order_id = $data['order_id'];
+            $orderObj->payment_status  = "Payed via Klarna";
+            $orderObj->save();
+            if ($data['fraud_status']) {
+                PushMeMessage::pushMe('Klarna Payment was not successfull:' . $orderObj->klarna_order_id);
+            }
+            self::redirect($data['redirect_url']);
         }
+
+
     }
 }

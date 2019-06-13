@@ -10,7 +10,9 @@
 //namespace Chuckki\ContaoHvzBundle;
 namespace Chuckki\ContaoHvzBundle;
 
+use Contao\Controller;
 use Contao\Environment;
+use Contao\PageModel;
 
 /**
  * Reads and writes Hvz categories.
@@ -65,16 +67,19 @@ use Contao\Environment;
  * @property string $re_ip
  * @property string $re_agb_akzeptiert
  * @property string $ts
+ * @property int $hvz_id
+ * @property string $hash
  * @property string $orderNumber
- * @property string $paypal_paymentId
- * @property string $paypal_approvalLink
+ * @property string $choosen_payment
+ * @property string $payment_status
+ *
  * @property string $klarna_session_id
  * @property string $klarna_client_token
  * @property string $klarna_auth_token
- * @property string $choosen_payment
- * @property int $hvz_id
- * @property string $hash
- * @property string payment_status
+ * @property string $klarna_order_id
+ * @property string $paypal_token
+ * @property string $paypal_paymentId
+ * @property string $paypal_approvalLink
  *
  * @method static HvzOrderModel|null findById($id, $opt = array())
  * @method static HvzOrderModel|null findByPk($id, $opt = array())
@@ -138,6 +143,18 @@ class HvzOrderModel extends \Model
     public function getOrderDescription()
     {
         return $this->hvz_type_name . ' in ' . $this->hvz_ort;
+    }
+
+    public function getErrorOrderPage(){
+        $id = $GLOBALS['TL_CONFIG']['edit_order'];
+        $page = PageModel::findById($id);
+        return $page->getAbsoluteUrl();
+    }
+
+    public function getFinishOrderPage(){
+        $id = $GLOBALS['TL_CONFIG']['finish_order'];
+        $page = PageModel::findById($id);
+        return $page->getAbsoluteUrl();
     }
 
     public function generateHash()

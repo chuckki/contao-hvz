@@ -12,8 +12,10 @@ services:
         class: Chuckki\ContaoHvzBundle\HvzPaypal
         arguments:
             - '@monolog.logger'
+            - '@contao.framework'
 
     chuckki.contao_hvz_bundle.klarna:
         class: Chuckki\ContaoHvzBundle\HvzKlarna
         arguments:
             - '@monolog.logger'
+            - '@contao.framework'

@@ -154,6 +154,9 @@ $GLOBALS['TL_DCA']['tl_hvz_orders'] = [
         'klarna_session_id' => [
             'sql' => "text NOT NULL default ''",
         ],
+        'klarna_order_id' => [
+            'sql' => "text NOT NULL default ''",
+        ],
         'choosen_payment' => [
             'sql' => "varchar(16) NOT NULL default ''",
         ],

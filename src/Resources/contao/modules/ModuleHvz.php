@@ -235,17 +235,18 @@ class ModuleHvz extends \Frontend
                     $paymentObj                      = $hvzPaypal->generatePayment($orderModel);
                     $orderModel->paypal_paymentId    = $paymentObj->getId();
                     $orderModel->paypal_approvalLink = $paymentObj->getApprovalLink();
-                    $redirect                        = 43;
+                    $redirect                        = $GLOBALS['TL_CONFIG']['paypal_payment'];
                     break;
                 case 'klarna':
                     $hvzKlarna                       = System::getContainer()->get('chuckki.contao_hvz_bundle.klarna');
-                    $sessionObj                      = $hvzKlarna->getKlarnaSession($orderModel);
+                    $sessionObj                      = $hvzKlarna->getKlarnaNewOrderSession($orderModel);
                     $orderModel->klarna_session_id   = $sessionObj['session_id'];
                     $orderModel->klarna_client_token = $sessionObj['client_token'];
-                    $redirect                        = 44;
+                    $redirect                        = $GLOBALS['TL_CONFIG']['klarna_payment'];
                     break;
                 default:
             }
+            $orderModel->payment_status      = 'PrePayment';
             $orderModel->save();
             ModuleHvz::setSessionForThankYouPage($orderModel);
             if (!empty($redirect)) {
@@ -460,6 +461,7 @@ class ModuleHvz extends \Frontend
         $hvzOrder->klarna_auth_token   = '';
         $hvzOrder->hvz_id              = $arrSubmitted['hvzID'];
         $hvzOrder->choosen_payment     = \Input::post('Payment');
+        $hvzOrder->klarna_order_id     = '';
         $hvzOrder->generateHash();
         $hvzOrder->save();
         return $hvzOrder;
