@@ -35,6 +35,11 @@ class ModuleHvzReplaceInsertTag extends \Frontend
                 }
                 return $inser;
                 break;
+
+            case 'greenSign':
+                dump("geenrSing");
+                return '<i class="fas fa-check-circle greenSign"></i>';
+                break;
             case 'hvborder':
                 switch ($arrTag[1]) {
                     case 'currentForm':

@@ -2,14 +2,18 @@
 <table>
     <thead>
     <tr>
-        <th>Beschreibung</th>
-        <th>Preis<br>inkl. MwSt</th>
+        <th>Bestellung</th>
+        <th>Preis</th>
     </tr>
     </thead>
     <tbody>
     <tr>
         <td class="desc">
-            {{ order.OrderDescription }} <br>am {{ order.hvz_vom }} für
+            <strong>
+            {{ order.OrderDescription }}
+            </strong>
+
+            <br>am {{ order.hvz_vom }} für
 
             {% if order.hvz_anzahl_tage == 1  %}
             einen Tag
@@ -18,9 +22,8 @@
             {% endif %}<br>
             täglich von {{ order.hvz_vom_time }} Uhr bis {{ order.hvz_vom_bis }} Uhr
         </td>
-        <td>
-
-            {{ order.Brutto }} €
+        <td class="desc_price">
+            <strong>{{ order.getBrutto }} €</strong>
         </td>
     </tr>
     </tbody>

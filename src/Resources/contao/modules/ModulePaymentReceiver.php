@@ -73,8 +73,6 @@ class ModulePaymentReceiver extends AbstractFrontendModule
             $orderObj->klarna_auth_token = Input::get('auth');
             $hvzKlarna                   = System::getContainer()->get('chuckki.contao_hvz_bundle.klarna');
             $data                        = $hvzKlarna->executePayment($orderObj);
-            dump($data);
-            die;
             $orderObj->klarna_order_id = $data['order_id'];
             $orderObj->payment_status  = "Payed via Klarna";
             $orderObj->save();

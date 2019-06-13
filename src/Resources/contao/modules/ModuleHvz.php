@@ -105,7 +105,7 @@ class ModuleHvz extends \Frontend
             }
         }
         // add sites from BL and Kreis
-        $objParent = PageModel::findWithDetails(29);
+        $objParent   = PageModel::findWithDetails(29);
         $bLand_alias = [
             'baden-wuerttemberg',
             'bayern',
@@ -145,13 +145,13 @@ class ModuleHvz extends \Frontend
         $host     = $GLOBALS['TL_CONFIG']['dbHost'];
         $user     = $GLOBALS['TL_CONFIG']['dbUser'];
         $database = $GLOBALS['TL_CONFIG']['dbDatabase'];
-        $db = new mysqli($host, $user, $passw, $database);
+        $db       = new mysqli($host, $user, $passw, $database);
         if ($db->connect_errno > 0) {
             die('Unable to connect to database [' . $db->connect_error . ']');
         }
         $db->set_charset('utf8');
-        $sql    = 'select isFamus as myid , count(isFamus) as anzahl from tl_hvz group by isFamus order by isFamus';
-        $result = $db->query($sql);
+        $sql     = 'select isFamus as myid , count(isFamus) as anzahl from tl_hvz group by isFamus order by isFamus';
+        $result  = $db->query($sql);
         $counter = 1;
         $log     = '';
         $allSql  = '';
@@ -183,7 +183,7 @@ class ModuleHvz extends \Frontend
      */
     public function saveFormData(&$arrSubmitted, $arrData, $arrFiles, $arrLabels, $objForm)
     {
-        $redirect = null;
+        $redirect     = null;
         $this->logger = static::getContainer()->get('monolog.logger.contao');
         $this->logger->log(500, 'APICall backup', $arrSubmitted);
         // cleanup - check periodical for errors
@@ -231,10 +231,13 @@ class ModuleHvz extends \Frontend
             switch ($orderModel->choosen_payment) {
                 // todo: make config ;)
                 case 'paypal':
-                    $hvzPaypal                       = System::getContainer()->get('chuckki.contao_hvz_bundle.paypal');
+                    $hvzPaypal = System::getContainer()->get('chuckki.contao_hvz_bundle.paypal');
+                    //$paymentObj                      = $hvzPaypal->createProfile();
+                    //dump("done");
                     $paymentObj                      = $hvzPaypal->generatePayment($orderModel);
                     $orderModel->paypal_paymentId    = $paymentObj->getId();
                     $orderModel->paypal_approvalLink = $paymentObj->getApprovalLink();
+                    $orderModel->payment_status      = 'Paypal in Progress';
                     $redirect                        = $GLOBALS['TL_CONFIG']['paypal_payment'];
                     break;
                 case 'klarna':
@@ -242,11 +245,12 @@ class ModuleHvz extends \Frontend
                     $sessionObj                      = $hvzKlarna->getKlarnaNewOrderSession($orderModel);
                     $orderModel->klarna_session_id   = $sessionObj['session_id'];
                     $orderModel->klarna_client_token = $sessionObj['client_token'];
+                    $orderModel->payment_status      = 'Klarna in Progress';
                     $redirect                        = $GLOBALS['TL_CONFIG']['klarna_payment'];
                     break;
                 default:
             }
-            $orderModel->payment_status      = 'PrePayment';
+            $orderModel->payment_status = 'PrePayment';
             $orderModel->save();
             ModuleHvz::setSessionForThankYouPage($orderModel);
             if (!empty($redirect)) {
@@ -388,12 +392,12 @@ class ModuleHvz extends \Frontend
             while ($objRabatt->next()) {
                 $rabatt = $objRabatt->rabattProzent;
             }
-            $arrSubmitted['Rabatt'] = ($rabatt) ? (int) $rabatt : 0;
+            $arrSubmitted['Rabatt']      = ($rabatt) ? (int) $rabatt : 0;
             $netto                       = $this->roundTo2($arrSubmitted['fullPrice'] / 119 * 100);
             $arrSubmitted['rabattValue'] = $this->roundTo2($netto / 100 * $rabatt);
-            $zwischenSummer = $netto - $arrSubmitted['rabattValue'];
-            $newMsst        = $this->roundTo2($zwischenSummer * 0.19);
-            $arr = [
+            $zwischenSummer              = $netto - $arrSubmitted['rabattValue'];
+            $newMsst                     = $this->roundTo2($zwischenSummer * 0.19);
+            $arr                         = [
                 'brutto'        => number_format($arrSubmitted['fullPrice'], 2),
                 'netto'         => $netto,
                 'rabatt'        => $rabatt,
@@ -415,45 +419,45 @@ class ModuleHvz extends \Frontend
     private function createOrderAndSaveToDatabase(&$arrSubmitted): HvzOrderModel
     {
         $this->cleanUpSubmit($arrSubmitted);
-        $hvzOrder         = new HvzOrderModel();
-        $hvzOrder->tstamp = time();
-        $hvzOrder->hvz_solo_price     = $arrSubmitted['hvz_solo_price'];
-        $hvzOrder->hvz_extra_tag      = $arrSubmitted['hvzTagesPreis'];
-        $hvzOrder->hvz_rabatt_percent = $arrSubmitted['Rabatt'];
-        $hvzOrder->hvz_preis         = $arrSubmitted['Preis'];
-        $hvzOrder->hvzTagesPreis     = $arrSubmitted['hvzTagesPreis'];
-        $hvzOrder->hvz_gutscheincode = $arrSubmitted['rabattCode'];
-        $hvzOrder->hvz_rabatt        = $arrSubmitted['rabattValue'];
-        $hvzOrder->user_id           = $arrSubmitted['customerId'];
-        $hvzOrder->type             = $arrSubmitted['submitType'];
-        $hvzOrder->hvz_type         = $arrSubmitted['type'];
-        $hvzOrder->hvz_type_name    = $arrSubmitted['Genehmigung'];
-        $hvzOrder->hvz_ge_vorhanden = substr($arrSubmitted['genehmigungVorhanden'], 0, 1);
-        $hvzOrder->hvz_ort         = $arrSubmitted['Ort'];
-        $hvzOrder->hvz_plz         = $arrSubmitted['PLZ'];
-        $hvzOrder->hvz_strasse_nr  = $arrSubmitted['Strasse'];
-        $hvzOrder->hvz_vom         = $arrSubmitted['vom'];
-        $hvzOrder->hvz_bis         = $arrSubmitted['bis'];
-        $hvzOrder->hvz_vom_time    = $arrSubmitted['vomUhrzeit'];
-        $hvzOrder->hvz_vom_bis     = $arrSubmitted['bisUhrzeit'];
-        $hvzOrder->hvz_anzahl_tage = $arrSubmitted['wievieleTage'];
-        $hvzOrder->hvz_meter       = $arrSubmitted['Meter'];
-        $hvzOrder->hvz_fahrzeugart = $arrSubmitted['Fahrzeug'];
-        $hvzOrder->hvz_zusatzinfos = $arrSubmitted['Zusatzinformationen'];
-        $hvzOrder->hvz_grund       = $arrSubmitted['Grund'];
-        $hvzOrder->re_anrede         = $arrSubmitted['Geschlecht'];
-        $hvzOrder->re_umstid         = $arrSubmitted['umstid'];
-        $hvzOrder->re_firma          = $arrSubmitted['firma'];
-        $hvzOrder->re_name           = $arrSubmitted['Name'];
-        $hvzOrder->re_vorname        = $arrSubmitted['Vorname'];
-        $hvzOrder->re_strasse_nr     = $arrSubmitted['strasse_rechnung'];
-        $hvzOrder->re_ort_plz        = $arrSubmitted['ort_rechnung'];
-        $hvzOrder->re_email          = $arrSubmitted['email'];
-        $hvzOrder->re_telefon        = $arrSubmitted['Telefon'];
-        $hvzOrder->re_ip             = $arrSubmitted['client_ip'];
-        $hvzOrder->re_agb_akzeptiert = $arrSubmitted['agbakzeptiert'];
-        $hvzOrder->ts          = $arrSubmitted['ts'];
-        $hvzOrder->orderNumber = $arrSubmitted['orderNumber'];
+        $hvzOrder                      = new HvzOrderModel();
+        $hvzOrder->tstamp              = time();
+        $hvzOrder->hvz_solo_price      = $arrSubmitted['hvz_solo_price'];
+        $hvzOrder->hvz_extra_tag       = $arrSubmitted['hvzTagesPreis'];
+        $hvzOrder->hvz_rabatt_percent  = $arrSubmitted['Rabatt'];
+        $hvzOrder->hvz_preis           = $arrSubmitted['Preis'];
+        $hvzOrder->hvzTagesPreis       = $arrSubmitted['hvzTagesPreis'];
+        $hvzOrder->hvz_gutscheincode   = $arrSubmitted['rabattCode'];
+        $hvzOrder->hvz_rabatt          = $arrSubmitted['rabattValue'];
+        $hvzOrder->user_id             = $arrSubmitted['customerId'];
+        $hvzOrder->type                = $arrSubmitted['submitType'];
+        $hvzOrder->hvz_type            = $arrSubmitted['type'];
+        $hvzOrder->hvz_type_name       = $arrSubmitted['Genehmigung'];
+        $hvzOrder->hvz_ge_vorhanden    = substr($arrSubmitted['genehmigungVorhanden'], 0, 1);
+        $hvzOrder->hvz_ort             = $arrSubmitted['Ort'];
+        $hvzOrder->hvz_plz             = $arrSubmitted['PLZ'];
+        $hvzOrder->hvz_strasse_nr      = $arrSubmitted['Strasse'];
+        $hvzOrder->hvz_vom             = $arrSubmitted['vom'];
+        $hvzOrder->hvz_bis             = $arrSubmitted['bis'];
+        $hvzOrder->hvz_vom_time        = $arrSubmitted['vomUhrzeit'];
+        $hvzOrder->hvz_vom_bis         = $arrSubmitted['bisUhrzeit'];
+        $hvzOrder->hvz_anzahl_tage     = $arrSubmitted['wievieleTage'];
+        $hvzOrder->hvz_meter           = $arrSubmitted['Meter'];
+        $hvzOrder->hvz_fahrzeugart     = $arrSubmitted['Fahrzeug'];
+        $hvzOrder->hvz_zusatzinfos     = $arrSubmitted['Zusatzinformationen'];
+        $hvzOrder->hvz_grund           = $arrSubmitted['Grund'];
+        $hvzOrder->re_anrede           = $arrSubmitted['Geschlecht'];
+        $hvzOrder->re_umstid           = $arrSubmitted['umstid'];
+        $hvzOrder->re_firma            = $arrSubmitted['firma'];
+        $hvzOrder->re_name             = $arrSubmitted['Name'];
+        $hvzOrder->re_vorname          = $arrSubmitted['Vorname'];
+        $hvzOrder->re_strasse_nr       = $arrSubmitted['strasse_rechnung'];
+        $hvzOrder->re_ort_plz          = $arrSubmitted['ort_rechnung'];
+        $hvzOrder->re_email            = $arrSubmitted['email'];
+        $hvzOrder->re_telefon          = $arrSubmitted['Telefon'];
+        $hvzOrder->re_ip               = $arrSubmitted['client_ip'];
+        $hvzOrder->re_agb_akzeptiert   = $arrSubmitted['agbakzeptiert'];
+        $hvzOrder->ts                  = $arrSubmitted['ts'];
+        $hvzOrder->orderNumber         = $arrSubmitted['orderNumber'];
         $hvzOrder->paypal_paymentId    = $arrSubmitted['paypal_id'];
         $hvzOrder->paypal_approvalLink = '';
         $hvzOrder->klarna_session_id   = '';
@@ -469,8 +473,8 @@ class ModuleHvz extends \Frontend
 
     private function sendNewOrderToBackend(&$arrSubmitted)
     {
-        $api_url  = $GLOBALS['TL_CONFIG']['hvz_api'];
-        $api_auth = $GLOBALS['TL_CONFIG']['hvz_api_auth'];
+        $api_url                   = $GLOBALS['TL_CONFIG']['hvz_api'];
+        $api_auth                  = $GLOBALS['TL_CONFIG']['hvz_api_auth'];
         $arrSubmitted['apiGender'] = 'female';
         if ('Herr' === $arrSubmitted['Geschlecht']) {
             $arrSubmitted['apiGender'] = 'male';
@@ -478,7 +482,7 @@ class ModuleHvz extends \Frontend
         if (!empty($api_url)) {
             $doubleSide = ($arrSubmitted['type'] % 2 === 0) ? true : false;
             // payload with missing value
-            $data = [
+            $data   = [
                 'uniqueRef'      => $arrSubmitted['orderNumber'],
                 'reason'         => $arrSubmitted['Grund'],
                 'plz'            => (int) ($arrSubmitted['PLZ']),
@@ -509,7 +513,7 @@ class ModuleHvz extends \Frontend
             $pushMe = '';
             try {
                 // Send order to API
-                $client = new Client(
+                $client   = new Client(
                     [
                         'base_uri' => $api_url,
                         'headers'  => [

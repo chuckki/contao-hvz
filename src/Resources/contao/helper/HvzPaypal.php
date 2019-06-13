@@ -14,13 +14,16 @@ use Exception;
 use Monolog\Logger;
 use PayPal\Api\Amount;
 use PayPal\Api\Details;
+use PayPal\Api\InputFields;
 use PayPal\Api\Item;
 use PayPal\Api\ItemList;
 use PayPal\Api\Payer;
 use PayPal\Api\Payment;
 use PayPal\Api\PaymentExecution;
+use PayPal\Api\Presentation;
 use PayPal\Api\RedirectUrls;
 use PayPal\Api\Transaction;
+use PayPal\Api\WebProfile;
 use PayPal\Auth\OAuthTokenCredential;
 use PayPal\Exception\PayPalConnectionException;
 use PayPal\Rest\ApiContext;
@@ -40,6 +43,59 @@ class HvzPaypal
         $this->contaoFramework->initialize();
         $this->initialCredits($GLOBALS['TL_CONFIG']);
         $this->logger = $logger;
+    }
+
+    public function createProfile()
+    {
+        $apiContext = new ApiContext(
+            new OAuthTokenCredential($this->clientId, $this->clientSecret)
+        );
+
+        // Parameters for style and presentation.
+        $presentation = new \PayPal\Api\Presentation();
+        // A URL to logo image. Allowed vaues: .gif, .jpg, or .png.
+        $presentation->setLogoImage(
+            "https://www.halteverbot-beantragen.de/files/halteverbot-theme/img/halteverbot-beantragen-Paypal.png"
+        )//	A label that overrides the business name in the PayPal account on the PayPal pages.
+        ->setBrandName("Halteverbot Beantragen")//  Locale of pages displayed by PayPal payment experience.
+        ->setLocaleCode("DE")// A label to use as hypertext for the return to merchant link.
+        ->setReturnUrlLabel("zurück")
+        // A label to use as the title for the note to seller field. Used only when `allow_note` is `1`.
+        ->setNoteToSellerLabel("Danke schön!");
+
+
+        // Parameters for input fields customization.
+        $inputFields = new \PayPal\Api\InputFields();
+        // Enables the buyer to enter a note to the merchant on the PayPal page during checkout.
+        $inputFields->setAllowNote(true)
+            // Determines whether or not PayPal displays shipping address fields on the experience pages. Allowed values: 0, 1, or 2. When set to 0, PayPal displays the shipping address on the PayPal pages. When set to 1, PayPal does not display shipping address fields whatsoever. When set to 2, if you do not pass the shipping address, PayPal obtains it from the buyer’s account profile. For digital goods, this field is required, and you must set it to 1.
+        ->setNoShipping(1)
+            // Determines whether or not the PayPal pages should display the shipping address and not the shipping address on file with PayPal for this buyer. Displaying the PayPal street address on file does not allow the buyer to edit that address. Allowed values: 0 or 1. When set to 0, the PayPal pages should not display the shipping address. When set to 1, the PayPal pages should display the shipping address.
+        ->setAddressOverride(0);
+
+        // #### Payment Web experience profile resource
+        $webProfile = new \PayPal\Api\WebProfile();
+        // Name of the web experience profile. Required. Must be unique
+        $webProfile->setName("Halteverbot Online Demo2" . uniqid())// Parameters for flow configuration.
+        ->setPresentation($presentation)// Parameters for input field customization.
+        ->setInputFields($inputFields)
+        // Indicates whether the profile persists for three hours or permanently. Set to `false` to persist the profile permanently. Set to `true` to persist the profile for three hours.
+        ->setTemporary(true);
+        try {
+            // Use this call to create a profile.
+            $createProfileResponse = $webProfile->create($apiContext);
+        } catch (\PayPal\Exception\PayPalConnectionException $ex) {
+            // NOTE: PLEASE DO NOT USE RESULTPRINTER CLASS IN YOUR ORIGINAL CODE. FOR SAMPLE ONLY
+            ResultPrinter::printError("Created Web Profile", "Web Profile", null, $request, $ex);
+            dump('regest');
+            dump($request);
+            die;
+
+        }
+
+        dump($createProfileResponse);
+        die;
+
     }
 
     public function initialCredits(array $conf)
@@ -83,19 +139,28 @@ class HvzPaypal
         );
         $payment = new Payment();
         $payment->setIntent('sale')->setPayer($payer)->setTransactions([$transaction])->setRedirectUrls($redirectUrls);
+        $payment->setExperienceProfileId('TXP-8XL32616S4108244N');
         // 4. Make a Create Call and print the values
         try {
             $payment->create($apiContext);
             if ($payment->state !== 'created') {
-                $this->logger->error('Paypal created Order not working. State:'.$payment->state . " paypal_id:" . $payment->id . " order_id:" . $hvzOrderModel->orderNumber);
+                $this->logger->error(
+                    'Paypal created Order not working. State:' . $payment->state . " paypal_id:" . $payment->id
+                    . " order_id:" . $hvzOrderModel->orderNumber
+                );
                 PushMeMessage::pushMe(
-                    "Payment state: \n created != " . $payment->state . "\n\n paypal_id:" . $payment->id . "\n order_id:" . $hvzOrderModel->orderNumber,
-                    'HvzPaypal');
+                    "Payment state: \n created != " . $payment->state . "\n\n paypal_id:" . $payment->id
+                    . "\n order_id:" . $hvzOrderModel->orderNumber,
+                    'HvzPaypal'
+                );
             }
             return $payment;
         } catch (PayPalConnectionException $ex) {
             PushMeMessage::pushMe("Paypal Exception: " . $ex->getData());
-            $logger->error('Paypal Exception - not possible to create Payment (' . $payment->id . ')', [$ex->getMessage(),$ex->getData()]);
+            $logger->error(
+                'Paypal Exception - not possible to create Payment (' . $hvzOrderModel->orderNumber . ')',
+                [$ex->getMessage(), $ex->getData()]
+            );
         }
         return null;
     }
