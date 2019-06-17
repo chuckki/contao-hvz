@@ -55,7 +55,6 @@ $GLOBALS['FE_MOD']['faq']['faqreader'] = 'Chuckki\ContaoHvzBundle\ModuleFaqReade
 $GLOBALS['TL_HOOKS']['replaceInsertTags'][] = ['Chuckki\ContaoHvzBundle\ModuleHvzReplaceInsertTag', 'replaceCuInsertTags'];
 $GLOBALS['TL_HOOKS']['getSearchablePages'][] = ['Chuckki\ContaoHvzBundle\ModuleHvz', 'getSearchablePages'];
 $GLOBALS['TL_HOOKS']['processFormData'][] = ['Chuckki\ContaoHvzBundle\ModuleHvz', 'saveFormData'];
-
 $GLOBALS['TL_CRON']['monthly'][] = ['Chuckki\ContaoHvzBundle\ModuleHvz', 'mergeFamus'];
 
 /*

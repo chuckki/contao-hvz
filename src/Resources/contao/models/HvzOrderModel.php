@@ -173,30 +173,30 @@ class HvzOrderModel extends \Model
     }
 
     private function getFullBrutto(){
-        return $this->hvz_solo_price + (($this->hvz_anzahl_tage-1) * $this->hvz_extra_tag);
+        return number_format($this->hvz_solo_price + (($this->hvz_anzahl_tage-1) * $this->hvz_extra_tag) ,2);
     }
 
     public function getBrutto()
     {
         $fullBrutto = $this->getFullBrutto() * (1 - ($this->hvz_rabatt_percent / 100));
-        return round($fullBrutto, 2);
+        return number_format(round($fullBrutto, 2),2);
     }
 
     public function getRabatt(){
         $rabatt = $this->getFullBrutto() - $this->getBrutto();
-        return round($rabatt,2);
+        return number_format(round($rabatt,2),2);
     }
 
     public function getMwSt()
     {
         $mwst = $this->getBrutto() / (self::MWST_DECIMAL_GERMANY * 100) * ((self::MWST_DECIMAL_GERMANY - 1) * 100);
         $mwst = $this->getBrutto() / (self::MWST_INTL_GERMANY + 100) * self::MWST_INTL_GERMANY;
-        return round($mwst, 2);
+        return number_format(round($mwst, 2),2);
     }
 
     public function getNetto()
     {
-        return round($this->getBrutto() - $this->getMwSt(), 2);
+        return number_format(round($this->getBrutto() - $this->getMwSt(), 2),2);
     }
 
     public function getAbsoluteUrl()
@@ -207,4 +207,21 @@ class HvzOrderModel extends \Model
         return $myUrl;
     }
 
+    public function getGrussFormel()
+    {
+        $anrede = $this->re_anrede . " " . $this->re_name;
+        $tagesStunde = (int) (date('H'));
+        $grussFormel = 'Sehr geehrte Damen und Herren,';
+        if (!empty($this->re_name)) {
+            $grussFormel = 'Guten Tag';
+            if ($tagesStunde < 10) {
+                $grussFormel = 'Guten Morgen';
+            }
+            if ($tagesStunde >= 18) {
+                $grussFormel = 'Guten Abend';
+            }
+            $grussFormel .= ' '.trim($anrede).',';
+        }
+        return $grussFormel;
+    }
 }

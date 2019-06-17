@@ -11,6 +11,7 @@ namespace Chuckki\ContaoHvzBundle;
 
 use Contao\Database;
 use Contao\Environment;
+use Contao\Form;
 use Contao\Frontend;
 use Contao\PageModel;
 use Contao\System;
@@ -22,6 +23,8 @@ use GuzzleHttp\Exception\RequestException;
 use Haste\Frontend\AbstractFrontendModule;
 use http\Env;
 use mysqli;
+use NotificationCenter\Model\Notification;
+use NotificationCenter\tl_form;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Monolog\Logger;
 
@@ -175,13 +178,13 @@ class ModuleHvz extends \Frontend
     /**
      * @param       $arrSubmitted
      * @param       $arrLabels
-     * @param       $objForm
+     * @param Form  $objForm
      * @param mixed $arrData
      * @param mixed $arrFiles
      *
      * @throws Exception
      */
-    public function saveFormData(&$arrSubmitted, $arrData, $arrFiles, $arrLabels, $objForm)
+    public function saveFormData(&$arrSubmitted, $arrData, $arrFiles, $arrLabels, Form $objForm)
     {
         $redirect     = null;
         $this->logger = static::getContainer()->get('monolog.logger.contao');
@@ -195,13 +198,13 @@ class ModuleHvz extends \Frontend
                 case 'Einfache HVZ mit Genehmigung':
                     $arrSubmitted['type'] = 1;
                     break;
-                case 'Doppelte HVZ mit Genehmigung':
+                case 'Doppelseitige HVZ mit Genehmigung':
                     $arrSubmitted['type'] = 2;
                     break;
                 case 'Einfache HVZ ohne Genehmigung':
                     $arrSubmitted['type'] = 3;
                     break;
-                case 'Doppelte HVZ ohne Genehmigung':
+                case 'Doppelseitige HVZ ohne Genehmigung':
                     $arrSubmitted['type'] = 4;
                     break;
             }
@@ -221,6 +224,7 @@ class ModuleHvz extends \Frontend
                 )
             );
         }
+        
         if (!empty($arrSubmitted['type'])) {
             $orderModel = $this->createOrderAndSaveToDatabase($arrSubmitted);
             // todo: do an update call later with payment info
@@ -232,8 +236,6 @@ class ModuleHvz extends \Frontend
                 // todo: make config ;)
                 case 'paypal':
                     $hvzPaypal = System::getContainer()->get('chuckki.contao_hvz_bundle.paypal');
-                    //$paymentObj                      = $hvzPaypal->createProfile();
-                    //dump("done");
                     $paymentObj                      = $hvzPaypal->generatePayment($orderModel);
                     $orderModel->paypal_paymentId    = $paymentObj->getId();
                     $orderModel->paypal_approvalLink = $paymentObj->getApprovalLink();
@@ -248,13 +250,18 @@ class ModuleHvz extends \Frontend
                     $orderModel->payment_status      = 'Klarna in Progress';
                     $redirect                        = $GLOBALS['TL_CONFIG']['klarna_payment'];
                     break;
+                case 'cpaypal':
+                    $hvzPaypal = System::getContainer()->get('chuckki.contao_hvz_bundle.paypal');
+                    $hvzPaypal->createProfile();
+                    die;
+
                 default:
             }
             $orderModel->payment_status = 'PrePayment';
             $orderModel->save();
             ModuleHvz::setSessionForThankYouPage($orderModel);
             if (!empty($redirect)) {
-                $this->redirectToFrontendPage($redirect);
+                $objForm->getModel()->jumpTo = $redirect;
             }
         }
     }

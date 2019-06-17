@@ -69,7 +69,22 @@ $GLOBALS['TL_DCA']['tl_settings']['fields']['paypal_secret'] = [
         'tl_class'  => 'w50'
     ],
 ];
+
+
+/**
+ * Fields
+ */
+$GLOBALS['TL_DCA']['tl_settings']['fields']['notifications'] = array
+(
+    'label'                     => &$GLOBALS['TL_LANG']['tl_form']['nc_notification'],
+    'exclude'                   => true,
+    'inputType'                 => 'select',
+    'options_callback'          => array('NotificationCenter\tl_form', 'getNotificationChoices'),
+    'eval'                      => array('includeBlankOption'=>true, 'chosen'=>true, 'tl_class'=>'clr'),
+    'sql'                       => "int(10) unsigned NOT NULL default '0'"
+);
+
 $GLOBALS['TL_DCA']['tl_settings']['palettes']['default'] .= ';{hvz_api:hide},hvz_api,hvz_api_auth;';
 $GLOBALS['TL_DCA']['tl_settings']['palettes']['default'] .= '{klarna_settings:hide},klarna_user,klarna_pw,klarna_env;';
-$GLOBALS['TL_DCA']['tl_settings']['palettes']['default'] .= '{paypal_settings:hide},paypal_id,paypal_secret;';
+$GLOBALS['TL_DCA']['tl_settings']['palettes']['default'] .= '{paypal_settings:hide},paypal_id,paypal_secret, notifications;';
 $GLOBALS['TL_DCA']['tl_settings']['palettes']['default'] .= '{hvz_payment:hide},edit_order,finish_order,paypal_payment,klarna_payment';

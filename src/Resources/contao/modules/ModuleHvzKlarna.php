@@ -78,9 +78,11 @@ class ModuleHvzKlarna extends \Module
             $orderObj->klarna_order_id = $data['order_id'];
             $orderObj->payment_status  = "Payed via Klarna";
             $orderObj->save();
-            if ($data['fraud_status']) {
-                PushMeMessage::pushMe('Klarna Payment was not successfull:' . $orderObj->klarna_order_id);
+            if ($data['fraud_status'] !== "ACCEPTED") {
+                PushMeMessage::pushMe('Klarna Payment was not successfull ('.$data['fraud_status'].'):' . $orderObj->klarna_order_id);
+                $orderObj->payment_status  = "Payed via Klarna failed: ".$data['fraud_status'];
             }
+            $orderObj->save();
             self::redirect($data['redirect_url']);
         }
 
