@@ -4,6 +4,8 @@ namespace Chuckki\ContaoHvzBundle;
 
 use Contao\Input;
 use Contao\System;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 use Haste\Frontend\AbstractFrontendModule;
 use NotificationCenter\Model\Notification;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -77,12 +79,18 @@ class ModulePaymentReceiver extends AbstractFrontendModule
             $orderObj->klarna_order_id   = $data['order_id'];
             $orderObj->payment_status    = "Payed via Klarna";
             $orderObj->save();
-            if ($data['fraud_status']) {
+            if ($data['fraud_status'] !== "ACCEPTED") {
                 PushMeMessage::pushMe('Klarna Payment was not successfull:' . $orderObj->klarna_order_id);
             }
         }
+
+        if(empty(Input::get('auth')) and empty(Input::get('paymentId')) and $orderObj->choosen_payment == 'invoice'){
+            $orderObj->payment_status    = "Rechnung";
+            $orderObj->save();
+        }
+
         $session->clear();
-        $array = [
+        $array           = [
             'form_grussFormel'          => $orderObj->getGrussFormel(),
             'form_Geschlecht'           => $orderObj->re_anrede,
             'form_Vorname'              => $orderObj->re_vorname,
@@ -114,13 +122,60 @@ class ModulePaymentReceiver extends AbstractFrontendModule
             'form_strasse_rechnung'     => $orderObj->re_strasse_nr,
             'form_ort_rechnung'         => $orderObj->re_ort_plz
         ];
-
         $objNotification = Notification::findByPk($GLOBALS['TL_CONFIG']['notifications']);
         if (null !== $objNotification) {
             $objNotification->send($array);
+        } else {
+            PushMeMessage::pushMe(
+                'Keine Order-Mail versand. Fehler in Notification-Center (id:' . $GLOBALS['TL_CONFIG']['notifications']
+                . ')'
+            );
         }
         ModuleHvz::setSessionForThankYouPage($orderObj);
+        $this->updatePaymentStatus($orderObj);
+    }
 
+    private function updatePaymentStatus(HvzOrderModel $hvzOrderModel)
+    {
+        $api_url                   = $GLOBALS['TL_CONFIG']['hvz_api'];
+        $api_auth                  = $GLOBALS['TL_CONFIG']['hvz_api_auth'];
+        if (!empty($api_url)) {
+            $doubleSide = ($arrSubmitted['type'] % 2 === 0) ? true : false;
+            // payload with missing value
+            $data   = [
+                'uniqueRef'      => $hvzOrderModel->orderNumber,
+                'paymentStatus'  => $hvzOrderModel->payment_status,
+            ];
+            $pushMe = '';
+            try {
+                // Send order to API
+                $client   = new Client(
+                    [
+                        'base_uri' => $api_url,
+                        'headers'  => [
+                            'Content-Type'  => 'application/json',
+                            'authorization' => 'Basic ' . $api_auth,
+                        ],
+                    ]
+                );
+                $response = $client->put('/v1/order/updatePaymentStatus', ['body' => json_encode($data)]);
+
+                if (200 !== $response->getStatusCode()) {
+                    $pushMe = 'Hvb2Api:' . $data['uniqueRef'] . "\n StatusCode:" . $response->getStatusCode()
+                              . "\n updatePaymentStatus failed";
+                } else {
+                    $responseArray = json_decode($response->getBody(), true);
+                    if (!empty($responseArray['data']['uniqueRef'])) {
+                        return $responseArray['data']['uniqueRef'];
+                    }
+                }
+            } catch (RequestException $e) {
+                $pushMe = 'Hvb2Api:' . $data['uniqueRef'] . "\n APICall updatePaymentStatus:" . $e->getMessage();
+            }
+            if ('' !== $pushMe) {
+                PushMeMessage::pushMe($pushMe);
+            }
+        }
     }
 
 }

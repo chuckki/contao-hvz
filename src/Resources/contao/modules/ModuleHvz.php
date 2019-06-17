@@ -254,10 +254,10 @@ class ModuleHvz extends \Frontend
                     $hvzPaypal = System::getContainer()->get('chuckki.contao_hvz_bundle.paypal');
                     $hvzPaypal->createProfile();
                     die;
-
+                case 'invoice':
+                    $orderModel->payment_status      = 'Rechnung';
                 default:
             }
-            $orderModel->payment_status = 'PrePayment';
             $orderModel->save();
             ModuleHvz::setSessionForThankYouPage($orderModel);
             if (!empty($redirect)) {
@@ -516,6 +516,7 @@ class ModuleHvz extends \Frontend
                 'needLicence'    => $arrSubmitted['apiNeedLicence'],
                 'gender'         => $arrSubmitted['apiGender'],
                 'customerId'     => 'hvb_' . $arrSubmitted['customerId'],
+                'paymentStatus'  => 'in Progress',
             ];
             $pushMe = '';
             try {
