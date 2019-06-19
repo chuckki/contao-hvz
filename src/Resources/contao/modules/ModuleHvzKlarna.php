@@ -68,6 +68,8 @@ class ModuleHvzKlarna extends \Module
             $this->Template->clientToken = $orderObj->klarna_client_token;
             $this->Template->successSite = $orderObj->getFinishOrderPage();
             $this->Template->editOrder   = $orderObj->getErrorOrderPage();
+            $this->Template->payment_method_category = ($GLOBALS['TL_CONFIG']['klarna_env']) ? 'pay_later' : 'pay_now';
+            dump($this->Template->payment_method_category);
         }
         // receive Klarna
         if (!empty(Input::get('auth'))) {

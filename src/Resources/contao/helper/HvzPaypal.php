@@ -34,6 +34,7 @@ class HvzPaypal
 {
     private $clientId;
     private $clientSecret;
+    private $env;
     private $logger;
     private $contaoFramework;
 
@@ -101,14 +102,19 @@ class HvzPaypal
     {
         $this->clientId = $conf['paypal_id'];
         $this->clientSecret = $conf['paypal_secret'];
+        $this->env = $conf['paypal_env'];
     }
 
     public function generatePayment(HvzOrderModel $hvzOrderModel): ?Payment
     {
-        $apiContext = new ApiContext(
-            new OAuthTokenCredential($this->clientId, $this->clientSecret)
-        );
-        $apiContext->setConfig(['mode' => 'sandbox']);
+        $apiContext = new ApiContext(new OAuthTokenCredential($this->clientId, $this->clientSecret));
+
+        if ($this->env) {
+            $apiContext->setConfig(['mode' => 'sandbox']);
+        } else {
+            $apiContext->setConfig(['mode' => 'live']);
+        };
+
         // 3. Lets try to create a Payment
         // https://developer.paypal.com/docs/api/payments/v2/
         $payer = new Payer();
@@ -157,10 +163,6 @@ class HvzPaypal
             return $payment;
         } catch (PayPalConnectionException $ex) {
             PushMeMessage::pushMe("Paypal Exception: " . $ex->getData());
-            $logger->error(
-                'Paypal Exception - not possible to create Payment (' . $hvzOrderModel->orderNumber . ')',
-                [$ex->getMessage(), $ex->getData()]
-            );
         }
         return null;
     }

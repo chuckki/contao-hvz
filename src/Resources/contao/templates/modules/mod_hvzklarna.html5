@@ -5,7 +5,7 @@
           $("#confirm").click(function () {
               Klarna.Payments.authorize({
                   instance_id: 'klarna-payments-instance',
-                  payment_method_category: "pay_later"
+                  payment_method_category: '<?php echo $this->payment_method_category; ?>'
               }, {}, function (res) {
                   console.debug(res);
                   if (res['approved'] === true) {
@@ -23,7 +23,7 @@
           Klarna.Payments.load({
               container: '#klarna_container',
               instance_id: 'klarna-payments-instance',
-              payment_method_category: 'pay_later'
+              payment_method_category: '<?php echo $this->payment_method_category; ?>'//'pay_later'
           }, function (res) {
               console.debug(res);
           })
