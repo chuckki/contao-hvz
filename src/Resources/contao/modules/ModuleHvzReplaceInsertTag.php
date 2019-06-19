@@ -37,7 +37,6 @@ class ModuleHvzReplaceInsertTag extends \Frontend
                 break;
 
             case 'greenSign':
-                dump("geenrSing");
                 return '<i class="fas fa-check-circle greenSign"></i>';
                 break;
             case 'hvborder':
