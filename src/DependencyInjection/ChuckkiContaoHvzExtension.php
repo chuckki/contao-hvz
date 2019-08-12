@@ -32,5 +32,6 @@ class ChuckkiContaoHvzExtension extends Extension
         $loader->load('parameters.yml');
         $loader->load('listener.yml');
         $loader->load('services.yml');
+        $loader->load('commands.yml');
     }
 }

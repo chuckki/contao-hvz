@@ -93,9 +93,8 @@ class HvzPaypal
             die;
 
         }
-        dump($createProfileResponse);
-        die;
 
+        return ($createProfileResponse);
     }
 
     public function initialCredits(array $conf)

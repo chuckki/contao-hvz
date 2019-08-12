@@ -1,0 +1,6 @@
+services:
+  hvz.paypal.getprofilid:
+    class: Chuckki\ContaoHvzBundle\Command\PaypalCommand
+    tags: ['console.command']
+    calls:
+      - ["setFramework", ["@contao.framework"]]
