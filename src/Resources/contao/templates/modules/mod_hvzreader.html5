@@ -1,392 +1,494 @@
 <?php if ($this->error): ?>
 
-<div class="<?=$this->class ?> textblock block "<?= $this->cssID ?><?php if ($this->style): ?> style="<?= $this->style ?>"<?php endif; ?>>
-  <h1>Halteverbot in <em><?= $this->question ?></em> beantragen</h1>
-  <div class="ce_text hvz_info block">
-    <p>Leider existiert kein Eintrag zur angegebenen Stadt.</p>
-  </div>
-</div>
-<?php else: ?>
-<div class="<?= $this->class ?> textblock block "<?= $this->cssID ?><?php if ($this->style): ?> style="<?= $this->style ?>"<?php endif; ?>>
-  <h1>Halteverbot in <em><?= $this->question ?></em> beantragen</h1>
-  <div class="ce_text hvz_info block">
-    <p>
-
-Hier können Sie einfach und unkompliziert Ihr <b>Halteverbot in <?= $this->question ?> beantragen</b>. Die unten stehenden Angaben geben Ihnen Informationen zur jeweiligen Preisgestaltung bei einer Halteverbotszone in <?= $this->question ?>. Ergänzen Sie Ihre Angaben und klicken Sie auf „Halteverbot bestellen“. Sie erhalten von uns unmittelbar nach Bestellung eine Bestätigungsemail, in welcher Sie Ihre Angaben kontrollieren können. Alle weiteren Unterlagen, wie Genehmigungen der für <?= $this->question ?> zuständigen Behörden, Aufstellprotokolle der eingerichteten Halteverbotszone, sowie unsere Kostennote erhalten Sie via Email. Diese können Sie im Zuge der Bestellung unkompliziert und sicher via Paypal oder Klarna begleichen.</p>
-    <h2>Preisübersicht für <em>Halteverbotszonen in <?= $this->question ?></em></h2>
-
-    <div class="pricetable " id="priceShow">
-      <?php if ($this->hvz_single): ?>
-      <div class="preisblock first">
-        <h3 class="togClick">einfaches Halteverbot </h3>
-        <p>Beantragung einer behördlichen Genehmigung inklusive fristegerechter Aufstellung des Halteverbots, Anfertigung eines Aufstellprotokolls sowie Abholung der Halteverbotsschilder nach Ablauf der Gültigkeitsdauer.</p>
-        <div class="price">
-          <span>für <em><?= $this->hvz_single ?>,- €</em></span></div>
-        </div>
-      <?php endif; ?>
-      <?php if ($this->hvz_double): ?>
-      <div class="preisblock">
-        <h3 class="togClick">beidseitiges Halteverbot</h3>
-        <p>Fristgerechte Beantragung einer Genehmigung zur Einrichtung eines beidseitigen Halteverbots. <br>In engen Straßen ist dies nötig um eine Rettungsgasse von mindestens drei Metern zu gewährleisten. <br>Aufstellung der Halteverbotszone inklusive Anfertigung eines Aufstellprotokolls und Abholung der Parkverbotsschilder nach Ablauf der Gültigkeit</p>
-        <div class="price">
-          <span>für <em><?= $this->hvz_double ?>,- €</em></span>
-        </div>
-      </div>
-      <?php endif; ?>
-      <?php if ($this->hvz_single_og): ?>      
-      <div class="preisblock last">
-        <h3 class="togClick">Schilderservice</h3>
-        <p>Sie haben die behördliche Genehmigung selber und benötigen nur die Einrichtung einer Halteverbotszone inklusive Schilder. <br>Aufstellung, Abholung und Protokollierung sind inklusive.</p>
-        <div class="price">
-          <span>für <em><?= $this->hvz_single_og ?>,- €</em></span>
-        </div>
-      </div>
-      <?php endif; ?>
+  <div
+      class="<?= $this->class ?> textblock block "<?= $this->cssID ?><?php if ($this->style): ?> style="<?= $this->style ?>"<?php endif; ?>>
+    <h1>Halteverbot in <em><?= $this->question ?></em> beantragen</h1>
+    <div class="ce_text hvz_info block">
+      <p>Leider existiert kein Eintrag zur angegebenen Stadt.</p>
     </div>
-    <p class="mwstInfo"><i class="fa fa-asterisk"></i><small> Alle Preise sind inklusive 19% Mehrwertsteuer</small></p>
-
-
-    <?php if (!empty($this->hvz_extra_tag)): ?>    
-    <p class="extraTag"><i class="fa fa-info-circle"></i> Zusätzliche Kosten pro weiteren Gültigkeitstag für eine Halteverbotszone in <?= $this->question ?>: <span class="preisEt"><?= $this->hvz_extra_tag ?></span>,00 €.</p>
-    <?php endif; ?>
-
-    <?php if (!empty($this->hvzzusatz)): ?>
-      <div class="zusatzinfos">
-        <h3>Bitte beachten Sie:</h3>
-        <?= $this->hvzzusatz ?></div>
-    <?php endif; ?>
-
   </div>
-</div>
-<div id="bestellung" class="ce_form last tableform block ">
-  <h2 class="textblock">Bestellformular <br><b>Halteverbot in <?= $this->question ?></b></h2>
+<?php else: ?>
+  <div
+      class="<?= $this->class ?> textblock block "<?= $this->cssID ?><?php if ($this->style): ?> style="<?= $this->style ?>"<?php endif; ?>>
+    <h1>Halteverbot in <em><?= $this->question ?></em> beantragen</h1>
+    <div class="ce_text hvz_info block">
+      <p>
+
+        Hier können Sie einfach und unkompliziert Ihr <b>Halteverbot in <?= $this->question ?> beantragen</b>. Die unten
+        stehenden Angaben geben Ihnen Informationen zur jeweiligen Preisgestaltung bei einer Halteverbotszone
+        in <?= $this->question ?>. Ergänzen Sie Ihre Angaben und klicken Sie auf „Halteverbot bestellen“. Sie erhalten
+        von uns unmittelbar nach Bestellung eine Bestätigungsemail, in welcher Sie Ihre Angaben kontrollieren können.
+        Alle weiteren Unterlagen, wie Genehmigungen der für <?= $this->question ?> zuständigen Behörden,
+        Aufstellprotokolle der eingerichteten Halteverbotszone, sowie unsere Kostennote erhalten Sie via Email. Diese
+        können Sie im Zuge der Bestellung unkompliziert und sicher via Paypal oder Klarna begleichen.</p>
+      <h2>Preisübersicht für <em>Halteverbotszonen in <?= $this->question ?></em></h2>
+
+      <div class="pricetable " id="priceShow">
+          <?php if ($this->hvz_single): ?>
+            <div class="preisblock first">
+              <h3 class="togClick">einfaches Halteverbot </h3>
+              <p>Beantragung einer behördlichen Genehmigung inklusive fristegerechter Aufstellung des Halteverbots,
+                Anfertigung eines Aufstellprotokolls sowie Abholung der Halteverbotsschilder nach Ablauf der
+                Gültigkeitsdauer.</p>
+              <div class="price">
+                <span>für <em><?= $this->hvz_single ?>,- €</em></span></div>
+            </div>
+          <?php endif; ?>
+          <?php if ($this->hvz_double): ?>
+            <div class="preisblock">
+              <h3 class="togClick">beidseitiges Halteverbot</h3>
+              <p>Fristgerechte Beantragung einer Genehmigung zur Einrichtung eines beidseitigen Halteverbots. <br>In
+                engen Straßen ist dies nötig um eine Rettungsgasse von mindestens drei Metern zu gewährleisten. <br>Aufstellung
+                der Halteverbotszone inklusive Anfertigung eines Aufstellprotokolls und Abholung der Parkverbotsschilder
+                nach Ablauf der Gültigkeit</p>
+              <div class="price">
+                <span>für <em><?= $this->hvz_double ?>,- €</em></span>
+              </div>
+            </div>
+          <?php endif; ?>
+          <?php if ($this->hvz_single_og): ?>
+            <div class="preisblock last">
+              <h3 class="togClick">Schilderservice</h3>
+              <p>Sie haben die behördliche Genehmigung selber und benötigen nur die Einrichtung einer Halteverbotszone
+                inklusive Schilder. <br>Aufstellung, Abholung und Protokollierung sind inklusive.</p>
+              <div class="price">
+                <span>für <em><?= $this->hvz_single_og ?>,- €</em></span>
+              </div>
+            </div>
+          <?php endif; ?>
+      </div>
+      <p class="mwstInfo"><i class="fa fa-asterisk"></i><small> Alle Preise sind inklusive 19% Mehrwertsteuer</small>
+      </p>
+
+
+        <?php if (!empty($this->hvz_extra_tag)): ?>
+          <p class="extraTag"><i class="fa fa-info-circle"></i> Zusätzliche Kosten pro weiteren Gültigkeitstag für eine
+            Halteverbotszone in <?= $this->question ?>: <span class="preisEt"><?= $this->hvz_extra_tag ?></span>,00 €.
+          </p>
+        <?php endif; ?>
+
+        <?php if (!empty($this->hvzzusatz)): ?>
+          <div class="zusatzinfos">
+            <h3>Bitte beachten Sie:</h3>
+              <?= $this->hvzzusatz ?></div>
+        <?php endif; ?>
+
+    </div>
+  </div>
+  <div id="bestellung" class="ce_form last tableform block ">
+    <h2 class="textblock">Bestellformular <br><b>Halteverbot in <?= $this->question ?></b></h2>
     <div id="info">
       <form enctype="application/x-www-form-urlencoded" method="post" id="f7" action="bestellformular.html">
         <div class="textblock formbody">
           <input type="hidden" value="auto_form_7" name="FORM_SUBMIT">
           <input type="hidden" name="REQUEST_TOKEN" value="<?= \RequestToken::get() ?>">
-          <input type="hidden" name="type" value="0">          
+          <input type="hidden" name="type" value="0">
           <input type="hidden" name="Preis" id="setprice" value="0">
           <input type="hidden" name="hvzTagesPreis" value="0">
-            <input type="hidden" name="hvzLand" value="<?= $this->hvz_land ?>">
-            <input type="hidden" name="hvzID" value="<?= $this->hvz_id ?>">
+          <input type="hidden" name="hvzLand" value="<?= $this->hvz_land ?>">
+          <input type="hidden" name="hvzID" value="<?= $this->hvz_id ?>">
           <input type="hidden" name="PreisMwSt" value="0">
           <input type="hidden" name="Rabatt" value="0">
           <input type="hidden" name="EndPreis" value="0">
           <input type="hidden" name="gesamtPreis" value="0">
           <input type="hidden" name="bis" value="">
 
-<fieldset id="hvzProdukt">
-    <legend><span>Halteverbotszone</span></legend>
-    <div class="formRow" id="genehmigung">
-        <input type="hidden" value="" name="Genehmigung">
-        <label for="opt_64_0" class="btn" id="lbl_64_0">
-          <input type="radio" data-price="<?= $this->hvz_single ?>" data-hvztyp="1" onclick="setPrice(<?= $this->hvz_single ?>, this.value,1);" value="Einfache HVZ mit Genehmigung" class="radio" id="opt_64_0" name="Genehmigung" >
-          <span class="inlineprice"><?= $this->hvz_single ?>,- €</span>
-            <span class="prod">Einfaches Halteverbot<br> mit Genehmigung</span>
-        </label>
+          <fieldset id="hvzProdukt">
+            <legend><span>Halteverbotszone</span></legend>
+            <div class="formRow" id="genehmigung">
+              <input type="hidden" value="" name="Genehmigung">
+              <label for="opt_64_0" class="btn" id="lbl_64_0">
+                <input type="radio" data-price="<?= $this->hvz_single ?>" data-hvztyp="1"
+                       onclick="setPrice(<?= $this->hvz_single ?>, this.value,1);" value="Einfache HVZ mit Genehmigung"
+                       class="radio" id="opt_64_0" name="Genehmigung">
+                <span class="inlineprice"><?= $this->hvz_single ?>,- €</span>
+                <span class="prod">Einfaches Halteverbot<br> mit Genehmigung</span>
+              </label>
 
-        <label for="opt_64_1" class="btn" id="lbl_64_1">
-          <input type="radio" data-price="<?= $this->hvz_double ?>" data-hvztyp="2" onclick="setPrice(<?= $this->hvz_double ?>, this.value,2);" value="Doppelte HVZ mit Genehmigung" class="radio" id="opt_64_1" name="Genehmigung" >
-          <span class="inlineprice"><?= $this->hvz_double ?>,- €</span>
-            <span class="prod">Beidseitiges Halteverbot<br>mit Genehmigung</span>
-        </label>
-<?php if ($this->hvz_single_og): ?>
-        <label for="opt_64_3" class="btn" id="lbl_64_3">
-          <input type="radio" data-price="<?= $this->hvz_single_og ?>" data-hvztyp="3" onclick="setPrice(<?= $this->hvz_single_og ?>, this.value,3);" value="Einfache HVZ ohne Genehmigung" class="radio" id="opt_64_3" name="Genehmigung" >
-          <span class="inlineprice"><?= $this->hvz_single_og ?>,- €</span>
-            <span class="prod">Einfaches Halteverbot<br> <u>ohne Genehmigung</u></span>
-        </label>
+              <label for="opt_64_1" class="btn" id="lbl_64_1">
+                <input type="radio" data-price="<?= $this->hvz_double ?>" data-hvztyp="2"
+                       onclick="setPrice(<?= $this->hvz_double ?>, this.value,2);" value="Doppelte HVZ mit Genehmigung"
+                       class="radio" id="opt_64_1" name="Genehmigung">
+                <span class="inlineprice"><?= $this->hvz_double ?>,- €</span>
+                <span class="prod">Beidseitiges Halteverbot<br>mit Genehmigung</span>
+              </label>
+                <?php if ($this->hvz_single_og): ?>
+                  <label for="opt_64_3" class="btn" id="lbl_64_3">
+                    <input type="radio" data-price="<?= $this->hvz_single_og ?>" data-hvztyp="3"
+                           onclick="setPrice(<?= $this->hvz_single_og ?>, this.value,3);"
+                           value="Einfache HVZ ohne Genehmigung" class="radio" id="opt_64_3" name="Genehmigung">
+                    <span class="inlineprice"><?= $this->hvz_single_og ?>,- €</span>
+                    <span class="prod">Einfaches Halteverbot<br> <u>ohne Genehmigung</u></span>
+                  </label>
 
-        <label for="opt_64_4" class="btn" id="lbl_64_4">
-          <input type="radio" data-price="<?= $this->hvz_double_og ?>" data-hvztyp="4" onclick="setPrice(<?= $this->hvz_double_og ?>, this.value,4);" value="Doppelte HVZ ohne Genehmigung" class="radio" id="opt_64_4" name="Genehmigung" >
-            <span class="inlineprice"><?= $this->hvz_double_og ?>,- €</span>
-            <span class="prod">Beidseitiges Halteverbot<br> <u>ohne Genehmigung</u></span>
-        </label>
-<?php endif; ?>
-    </div>
-    <fieldset class="checkbox_container gotgen" id="ctrl_119" style="display: block;">
-      <legend>Genehmigung</legend>
-        <input type="hidden" value="0" id="getGen" name="genehmigung_vorhanden">
-        <span>
-          <input type="checkbox" class="checkbox" id="opt_119_0" onclick="$('#gotGen').val($(this).prop('checked'));" name="genehmigung_vorhanden"> <label for="opt_119_0" id="lbl_119_0">Hiermit versichere ich, dass ich die Genehmigung für die angegebene Halteverbotszone besitze und diese nachreichen werde.</label>
-        </span> 
-    </fieldset>
- </fieldset>
+                  <label for="opt_64_4" class="btn" id="lbl_64_4">
+                    <input type="radio" data-price="<?= $this->hvz_double_og ?>" data-hvztyp="4"
+                           onclick="setPrice(<?= $this->hvz_double_og ?>, this.value,4);"
+                           value="Doppelte HVZ ohne Genehmigung" class="radio" id="opt_64_4" name="Genehmigung">
+                    <span class="inlineprice"><?= $this->hvz_double_og ?>,- €</span>
+                    <span class="prod">Beidseitiges Halteverbot<br> <u>ohne Genehmigung</u></span>
+                  </label>
+                <?php endif; ?>
+            </div>
+            <fieldset class="checkbox_container gotgen" id="ctrl_119" style="display: block;">
+              <legend>Genehmigung</legend>
+              <input type="hidden" value="0" id="getGen" name="genehmigung_vorhanden">
+              <span>
+          <input type="checkbox" class="checkbox" id="opt_119_0" onclick="$('#gotGen').val($(this).prop('checked'));"
+                 name="genehmigung_vorhanden"> <label for="opt_119_0" id="lbl_119_0">Hiermit versichere ich, dass ich die Genehmigung für die angegebene Halteverbotszone besitze und diese nachreichen werde.</label>
+        </span>
+            </fieldset>
+          </fieldset>
 
-<fieldset id="hvzAdresse">
-  <legend>Adresse für das Halteverbot</legend>
-  <div class="formRow">
-    <label class="mandatory" for="ctrl_49">
-      <span class="invisible">Pflichtfeld</span> Ort<span class="mandatory">*</span>
-    </label>
-    <input type="text"  name="Ort"  id="ctrl_49" value="<?= $this->question ?>" readonly="readonly" class="disabledOrt text mandatory" >
-  </div>
+          <fieldset id="hvzAdresse">
+            <legend>Adresse für das Halteverbot</legend>
+            <div class="formRow">
+              <label class="mandatory" for="ctrl_49">
+                <span class="invisible">Pflichtfeld</span> Ort<span class="mandatory">*</span>
+              </label>
+              <input type="text" name="Ort" id="ctrl_49" value="<?= $this->question ?>" readonly="readonly"
+                     class="disabledOrt text mandatory">
+            </div>
 
-  <div class="formRow">
-    <label class="mandatory" for="ctrl_50">
-      <span class="invisible">Pflichtfeld</span> PLZ<span class="mandatory">*</span>
-    </label>
-    <input type="tel" value="23453" class="text mandatory" id="ctrl_50" name="PLZ"  placeholder="PLZ von <?= $this->question ?>">
-  </div>
+            <div class="formRow">
+              <label class="mandatory" for="ctrl_50">
+                <span class="invisible">Pflichtfeld</span> PLZ<span class="mandatory">*</span>
+              </label>
+              <input type="tel" value="23453" class="text mandatory" id="ctrl_50" name="PLZ"
+                     placeholder="PLZ von <?= $this->question ?>">
+            </div>
 
-  <div class="formRow">
-    <label class="mandatory" for="ctrl_51">
-      <span class="invisible">Pflichtfeld</span> Straße/Hausnummer<span class="mandatory">*</span>
-    </label>
-    <input type="text" value="asdfasdf 123" class="text mandatory" id="ctrl_51" name="Strasse" placeholder="Straße und Hausnummer" >
-  </div>
-</fieldset>
+            <div class="formRow">
+              <label class="mandatory" for="ctrl_51">
+                <span class="invisible">Pflichtfeld</span> Straße/Hausnummer<span class="mandatory">*</span>
+              </label>
+              <input type="text" value="asdfasdf 123" class="text mandatory" id="ctrl_51" name="Strasse"
+                     placeholder="Straße und Hausnummer">
+            </div>
+          </fieldset>
 
-<fieldset id="hvzDatum">
-  <legend>Wann soll die Halteverbotszone gestellt werden</legend>
-    <div class="formRow mydate">
-      <div class="date1">
-        <label class="mandatory withExpl" for="ctrl_53">
-          <span class="withExpl">Datum</span><span class="invisible">Pflichtfeld</span> vom
-        </label>
-        <input type="text" class="text mandatory" value="" readonly="readonly" id="ctrl_53" name="vom">
-      </div>
-      <div class="date2">
-        <label class="mandatory last" for="ctrl_54">
-          <span class="invisible">Pflichtfeld</span> Wie viele Tage
-        </label>
-        <select id="ctrl_54" name="wievieleTage">
-          <option value="1" selected>1 Tag</option>
-          <option value="2">2 Tage</option>
-          <option value="3">3 Tage</option>
-          <option value="4">4 Tage</option>
-          <option value="5">5 Tage</option>
-          <option value="6">6 Tage</option>
-          <option value="7">7 Tage</option>
-          <option value="8">8 Tage</option>
-          <option value="9">9 Tage</option>
-          <option value="10">10 Tage</option>
-          <option value="11">11 Tage</option>
-          <option value="12">12 Tage</option>
-          <option value="13">13 Tage</option>
-          <option value="14">14 Tage</option>
-        </select>
-      </div>
-    </div>
+          <fieldset id="hvzDatum">
+            <legend>Wann soll die Halteverbotszone gestellt werden</legend>
+            <div class="formRow mydate">
+              <div class="date1">
+                <label class="mandatory withExpl" for="ctrl_53">
+                  <span class="withExpl">Datum</span><span class="invisible">Pflichtfeld</span> vom
+                </label>
+                <input type="text" class="text mandatory" value="" readonly="readonly" id="ctrl_53" name="vom">
+              </div>
+              <div class="date2">
+                <label class="mandatory last" for="ctrl_54">
+                  <span class="invisible">Pflichtfeld</span> Wie viele Tage
+                </label>
+                <select id="ctrl_54" name="wievieleTage">
+                  <option value="1" selected>1 Tag</option>
+                  <option value="2">2 Tage</option>
+                  <option value="3">3 Tage</option>
+                  <option value="4">4 Tage</option>
+                  <option value="5">5 Tage</option>
+                  <option value="6">6 Tage</option>
+                  <option value="7">7 Tage</option>
+                  <option value="8">8 Tage</option>
+                  <option value="9">9 Tage</option>
+                  <option value="10">10 Tage</option>
+                  <option value="11">11 Tage</option>
+                  <option value="12">12 Tage</option>
+                  <option value="13">13 Tage</option>
+                  <option value="14">14 Tage</option>
+                </select>
+              </div>
+            </div>
 
-    <div class="formRow">
-      <div class="date1">
-      <label class="mandatory" for="ctrl_55">
-        <span class="invisible">Pflichtfeld</span>täglich von
-      </label>
-      <select id="ctrl_55" name="vomUhrzeit" >
-        <option value="7" selected> 7 Uhr</option>
-        <option value="8"> 8 Uhr</option>
-        <option value="9"> 9 Uhr</option>
-        <option value="10">10 Uhr</option>
-        <option value="11">11 Uhr</option>
-        <option value="12">12 Uhr</option>
-        <option value="13">13 Uhr</option>
-        <option value="14">14 Uhr</option>
-        <option value="15">15 Uhr</option>
-        <option value="16">16 Uhr</option>
-        <option value="17">17 Uhr</option>
-        <option value="18">18 Uhr</option>
-        <option value="19">19 Uhr</option>
-        <option value="20">20 Uhr</option>
-      </select>
-      </div>
-      <div class="date2">
+            <div class="formRow">
+              <div class="date1">
+                <label class="mandatory" for="ctrl_55">
+                  <span class="invisible">Pflichtfeld</span>täglich von
+                </label>
+                <select id="ctrl_55" name="vomUhrzeit">
+                  <option value="7" selected> 7 Uhr</option>
+                  <option value="8"> 8 Uhr</option>
+                  <option value="9"> 9 Uhr</option>
+                  <option value="10">10 Uhr</option>
+                  <option value="11">11 Uhr</option>
+                  <option value="12">12 Uhr</option>
+                  <option value="13">13 Uhr</option>
+                  <option value="14">14 Uhr</option>
+                  <option value="15">15 Uhr</option>
+                  <option value="16">16 Uhr</option>
+                  <option value="17">17 Uhr</option>
+                  <option value="18">18 Uhr</option>
+                  <option value="19">19 Uhr</option>
+                  <option value="20">20 Uhr</option>
+                </select>
+              </div>
+              <div class="date2">
 
-      <label class="mandatory last" for="ctrl_108"><span class="invisible">Pflichtfeld</span>täglich bis </label>
-      <select id="ctrl_108" name="bisUhrzeit" >
-        <option value="7" > 7 Uhr</option>
-        <option value="8"> 8 Uhr</option>
-        <option value="9"> 9 Uhr</option>
-        <option value="10">10 Uhr</option>
-        <option value="11">11 Uhr</option>
-        <option value="12">12 Uhr</option>
-        <option value="13">13 Uhr</option>
-        <option value="14">14 Uhr</option>
-        <option value="15">15 Uhr</option>
-        <option value="16">16 Uhr</option>
-        <option value="17">17 Uhr</option>
-        <option value="18">18 Uhr</option>
-        <option value="19" selected>19 Uhr</option>
-        <option value="20">20 Uhr</option>
-      </select>
-      </div>
-    </div>
+                <label class="mandatory last" for="ctrl_108"><span class="invisible">Pflichtfeld</span>täglich bis
+                </label>
+                <select id="ctrl_108" name="bisUhrzeit">
+                  <option value="7"> 7 Uhr</option>
+                  <option value="8"> 8 Uhr</option>
+                  <option value="9"> 9 Uhr</option>
+                  <option value="10">10 Uhr</option>
+                  <option value="11">11 Uhr</option>
+                  <option value="12">12 Uhr</option>
+                  <option value="13">13 Uhr</option>
+                  <option value="14">14 Uhr</option>
+                  <option value="15">15 Uhr</option>
+                  <option value="16">16 Uhr</option>
+                  <option value="17">17 Uhr</option>
+                  <option value="18">18 Uhr</option>
+                  <option value="19" selected>19 Uhr</option>
+                  <option value="20">20 Uhr</option>
+                </select>
+              </div>
+            </div>
 
-    </fieldset>
+          </fieldset>
 
-<fieldset id="hvzDetails">
-  <legend>Halteverbot Details</legend>
+          <fieldset id="hvzDetails">
+            <legend>Halteverbot Details</legend>
 
-    <div class="formRow" id="grund">
-        <div class="date1">
-          <label class="mandatory" for="ctrl_247">
-              <span class="invisible">Pflichtfeld</span> Grund für die Stellung
-          </label>
-          <select class="select mandatory" id="ctrl_247" name="Grund" >
-              <option value="">Bitte wählen Sie</option>
-              <option value="umzug" selected="">Umzug</option>
-              <option value="containergestellung">Containergestellung</option>
-              <option value="baustelle">Baustelle</option>
-              <option value="sonstiges">Sonstiges</option>
-          </select>
-        </div>
-        <div class="date2">
-        <label class="mandatory" for="ctrl_62">
-              <span class="invisible">Pflichtfeld</span> Größe in Meter
-        </label>
-        <select class="select mandatory" id="ctrl_62" name="Meter" >
-                <option value="5">5m</option>
-                <option value="10">10m</option>
-                <option selected="" value="15">15m</option>
-                <option value="20">20m</option>
-        </select>
-        </div>
-    </div>
+            <div class="formRow" id="grund">
+              <div class="date1">
+                <label class="mandatory" for="ctrl_247">
+                  <span class="invisible">Pflichtfeld</span> Grund für die Stellung
+                </label>
+                <select class="select mandatory" id="ctrl_247" name="Grund">
+                  <option value="">Bitte wählen Sie</option>
+                  <option value="umzug" selected="">Umzug</option>
+                  <option value="containergestellung">Containergestellung</option>
+                  <option value="baustelle">Baustelle</option>
+                  <option value="sonstiges">Sonstiges</option>
+                </select>
+              </div>
+              <div class="date2">
+                <label class="mandatory" for="ctrl_62">
+                  <span class="invisible">Pflichtfeld</span> Größe in Meter
+                </label>
+                <select class="select mandatory" id="ctrl_62" name="Meter">
+                  <option value="5">5m</option>
+                  <option value="10">10m</option>
+                  <option selected="" value="15">15m</option>
+                  <option value="20">20m</option>
+                </select>
+              </div>
+            </div>
 
-    <div class="formRow">
-    <div id="grundAddon">
-        <p>
-            <strong>Bitte beachten Sie:</strong><br>
-            Bei Containergestellung und Baustellen können die Preise der Stadt variieren. Wir werden Sie diesbezüglich
-            umgehend informieren.
-        </p>
-    </div>
+            <div class="formRow">
+              <div id="grundAddon">
+                <p>
+                  <strong>Bitte beachten Sie:</strong><br>
+                  Bei Containergestellung und Baustellen können die Preise der Stadt variieren. Wir werden Sie
+                  diesbezüglich
+                  umgehend informieren.
+                </p>
+              </div>
 
-    <div id="grundSonstig">
-        <p>
-            <strong>Bitte beachten Sie:</strong><br>
-            Bitte geben Sie den Grund in den Zusatzinformationen mit an.
-        </p>
-    </div>
-    </div>
+              <div id="grundSonstig">
+                <p>
+                  <strong>Bitte beachten Sie:</strong><br>
+                  Bitte geben Sie den Grund in den Zusatzinformationen mit an.
+                </p>
+              </div>
+            </div>
 
             <div class="formRow floatme" id="fahrzeug">
-                <span class="expl">für welche Fahrzeugart</span>
-                <input type="hidden" value="" name="Fahrzeug">
+              <span class="expl">für welche Fahrzeugart</span>
+              <input type="hidden" value="" name="Fahrzeug">
 
-                <label for="opt_65_0" id="lbl_65_0" class="btn car floatmeL">
-                  <input type="radio" value="Fahrzeug bis 3,5t" class="radio" id="opt_65_0" checked="checked" name="Fahrzeug" >
-                  Fahrzeug bis 3,5t
-                </label>
+              <label for="opt_65_0" id="lbl_65_0" class="btn car floatmeL">
+                <input type="radio" value="Fahrzeug bis 3,5t" class="radio" id="opt_65_0" checked="checked"
+                       name="Fahrzeug">
+                Fahrzeug bis 3,5t
+              </label>
 
-                <label for="opt_65_1" id="lbl_65_1" class="btn lkw floatmeR">
-                  <input type="radio" value="Fahrzeug größer 3,5t (LKW)" class="radio" id="opt_65_1" name="Fahrzeug"> 
-                  Fahrzeug größer 3,5t
-                </label>
+              <label for="opt_65_1" id="lbl_65_1" class="btn lkw floatmeR">
+                <input type="radio" value="Fahrzeug größer 3,5t (LKW)" class="radio" id="opt_65_1" name="Fahrzeug">
+                Fahrzeug größer 3,5t
+              </label>
             </div>
 
             <div class="formRow">
-              <label class="zusatzinfo" for="ctrl_66">Zusatzinformationen</label>  <textarea cols="40" rows="6" class="textarea" id="ctrl_66" placeholder="evtl. weitere Informationen zur Aufstellung" name="Zusatzinformationen"></textarea>
+              <label class="zusatzinfo" for="ctrl_66">Zusatzinformationen</label> <textarea cols="40" rows="6"
+                                                                                            class="textarea"
+                                                                                            id="ctrl_66"
+                                                                                            placeholder="evtl. weitere Informationen zur Aufstellung"
+                                                                                            name="Zusatzinformationen"></textarea>
             </div>
-          <div class="formRow gutscheinRow">
-            <label class="mandatory" for="ctrl_122"> Gutscheincode</label>  <input type="text" value="{{user::gutschein}}" class="text mandatory" id="ctrl_122" placeholder="Gutscheincode" name="gutscheincode" >
-          </div>
-</fieldset>
+            <div class="formRow gutscheinRow">
+              <label class="mandatory" for="ctrl_122"> Gutscheincode</label> <input type="text"
+                                                                                    value="{{user::gutschein}}"
+                                                                                    class="text mandatory" id="ctrl_122"
+                                                                                    placeholder="Gutscheincode"
+                                                                                    name="gutscheincode">
+            </div>
+          </fieldset>
 
-<fieldset id="rechnungsadresse">
-  <legend>Rechnungsadresse</legend>
+          <fieldset id="rechnungsadresse">
+            <legend>Rechnungsadresse</legend>
 
-            <div id="stepThreeError" class="stepError" style="display:none;">Bitte füllen Sie alle <strong>rot</strong> umrandeten Felder aus.</div>
+            <div id="stepThreeError" class="stepError" style="display:none;">Bitte füllen Sie alle <strong>rot</strong>
+              umrandeten Felder aus.
+            </div>
 
             <div class="formRow" id="gender">
-              
-                <label for="opt_68_0" id="lbl_68_0" class="btn male"><input type="radio" value="Herr" <?php if($this->userGender == 'Herr'){ echo "checked='checked' ";} ?>class="radio" id="opt_68_0" name="Geschlecht">Herr</label>
 
-                <label for="opt_68_1" id="lbl_68_1" class="btn female"><input type="radio" value="Frau" <?php if($this->userGender == 'Frau'){ echo "checked='checked' ";} ?>class="radio" id="opt_68_1" name="Geschlecht">Frau</label>
+              <label for="opt_68_0" id="lbl_68_0" class="btn male"><input type="radio" value="Herr"
+                                                                          <?php if ($this->userGender == 'Herr') {
+                                                                              echo "checked='checked' ";
+                                                                          } ?>class="radio" id="opt_68_0"
+                                                                          name="Geschlecht">Herr</label>
+
+              <label for="opt_68_1" id="lbl_68_1" class="btn female"><input type="radio" value="Frau"
+                                                                            <?php if ($this->userGender == 'Frau') {
+                                                                                echo "checked='checked' ";
+                                                                            } ?>class="radio" id="opt_68_1"
+                                                                            name="Geschlecht">Frau</label>
             </div>
-            
+
 
             <div class="formRow">
-              <label for="ctrl_72">Firma</label>  <input type="text" value="{{user::company}}" placeholder="Firma" class="text" id="ctrl_72" name="firma">
+              <label for="ctrl_72">Firma</label> <input type="text" value="{{user::company}}" placeholder="Firma"
+                                                        class="text" id="ctrl_72" name="firma">
             </div>
             <div class="formRow <?= $this->hasUmstid; ?>" id="umstElement">
-                <label for="ctrl_248">USt-IdNr.</label>  <input type="text" value="{{user::umstid}}" placeholder="USt-IdNr. (optional)" class="text" id="ctrl_248" name="umstid">
+              <label for="ctrl_248">USt-IdNr.</label> <input type="text" value="{{user::umstid}}"
+                                                             placeholder="USt-IdNr. (optional)" class="text"
+                                                             id="ctrl_248" name="umstid">
             </div>
             <div class="formRow">
-              <label class="mandatory" for="ctrl_57"><span class="invisible">Pflichtfeld</span> Name<span class="mandatory">*</span></label>  <input type="text" value="{{user::lastname}}" class="text mandatory" id="ctrl_57" placeholder="Name" name="Name">
+              <label class="mandatory" for="ctrl_57"><span class="invisible">Pflichtfeld</span> Name<span
+                    class="mandatory">*</span></label> <input type="text" value="{{user::lastname}}"
+                                                              class="text mandatory" id="ctrl_57" placeholder="Name"
+                                                              name="Name">
             </div>
             <div class="formRow">
-              <label class="mandatory" for="ctrl_67"><span class="invisible">Pflichtfeld</span> Vorname<span class="mandatory">*</span></label>  <input type="text" value="{{user::firstname}}" class="text mandatory" id="ctrl_67" placeholder="Vorname" name="Vorname">
+              <label class="mandatory" for="ctrl_67"><span class="invisible">Pflichtfeld</span> Vorname<span
+                    class="mandatory">*</span></label> <input type="text" value="{{user::firstname}}"
+                                                              class="text mandatory" id="ctrl_67" placeholder="Vorname"
+                                                              name="Vorname">
             </div>
             <div class="formRow">
-              <label class="mandatory" for="ctrl_69"><span class="invisible">Pflichtfeld</span> Straße / Hausnummer<span class="mandatory">*</span></label>  <input type="text" value="{{user::street}}" class="text mandatory" placeholder="Strasse/Hausnummer" id="ctrl_69" name="strasse_rechnung">
+              <label class="mandatory" for="ctrl_69"><span class="invisible">Pflichtfeld</span> Straße / Hausnummer<span
+                    class="mandatory">*</span></label> <input type="text" value="{{user::street}}"
+                                                              class="text mandatory" placeholder="Strasse/Hausnummer"
+                                                              id="ctrl_69" name="strasse_rechnung">
             </div>
             <div class="formRow">
-              <label class="mandatory" for="ctrl_70"><span class="invisible">Pflichtfeld</span> Ort / PLZ<span class="mandatory">*</span></label> <input type="text" value="<?= $this->userStreNum ?>" class="text mandatory" id="ctrl_70" placeholder="Ort/PLZ" name="ort_rechnung">
+              <label class="mandatory" for="ctrl_70"><span class="invisible">Pflichtfeld</span> Ort / PLZ<span
+                    class="mandatory">*</span></label> <input type="text" value="<?= $this->userStreNum ?>"
+                                                              class="text mandatory" id="ctrl_70" placeholder="Ort/PLZ"
+                                                              name="ort_rechnung">
             </div>
             <div class="formRow">
-              <label class="mandatory" for="ctrl_58"><span class="invisible">Pflichtfeld</span> eMail<span class="mandatory">*</span></label>  <input type="email" value="{{user::email}}" class="text mandatory" id="ctrl_58" placeholder="E-Mail-Adresse" name="email" >
+              <label class="mandatory" for="ctrl_58"><span class="invisible">Pflichtfeld</span> eMail<span
+                    class="mandatory">*</span></label> <input type="email" value="{{user::email}}"
+                                                              class="text mandatory" id="ctrl_58"
+                                                              placeholder="E-Mail-Adresse" name="email">
             </div>
             <div class="formRow">
-              <label class="mandatory" for="ctrl_59"><span class="invisible">Pflichtfeld</span> Telefon<span class="mandatory">*</span></label>  <input type="tel" value="{{user::phone}}" class="text mandatory" id="ctrl_59" placeholder="Telefon tagsüber" name="Telefon" >
+              <label class="mandatory" for="ctrl_59"><span class="invisible">Pflichtfeld</span> Telefon<span
+                    class="mandatory">*</span></label> <input type="tel" value="{{user::phone}}" class="text mandatory"
+                                                              id="ctrl_59" placeholder="Telefon tagsüber"
+                                                              name="Telefon">
             </div>
-</fieldset>
-            
-            <?php if ($this->isUser): ?>
-                <fieldset id="payment_field">
-                    <legend>Zahlungsweise</legend>
+          </fieldset>
 
-                    <p>Wählen Sie eine passende Zahlungsweise. Weitere Informationeen finden Sie hier: <a href="">Zahlungsarten</a></p>
-                    <div class="formRow" id="payments">
-                        <label for="pay_paypal" class="pay_paypal btn"><input type="radio" value="paypal" class="radio" id="pay_paypal" name="Payment">
-                            Paypal
-                            <img id="paypal_logo" src="bundles/chuckkicontaohvz/img/paypalplus/de-pp_plus-logo-quer_ohne_PUI_365x60px.png" alt="Online Bezahlen (Paypal/SEPA-Lastschrift/Kreditkarte)" ></label>
-                        <label for="pay_klarna" class="pay_klarna btn"><input type="radio" value="klarna" class="radio" id="pay_klarna" name="Payment">
-                            Sofortüberweisung
-                            <img  id="paynow_logo" alt="Pay now. by Klarna" src="https://cdn.klarna.com/1.0/shared/image/generic/badge/de_de/pay_now/descriptive/horizontal/pink.svg" >
+            <?php if ($this->hasOtherPaymentsThanInvoice): ?>
+                <?php if ($this->isUser): ?>
+                <fieldset id="payment_field">
+                  <legend>Zahlungsweise</legend>
+
+                  <p>Wählen Sie eine passende Zahlungsweise. Weitere Informationeen finden Sie hier: <a href="">Zahlungsarten</a>
+                  </p>
+                  <div class="formRow" id="payments">
+                      <?php if ($this->isPaypalPaymentActive): ?>
+                        <label for="pay_paypal" class="pay_paypal btn"><input type="radio" value="paypal" class="radio"
+                                                                              id="pay_paypal" name="Payment">
+                          Paypal
+                          <img id="paypal_logo"
+                               src="bundles/chuckkicontaohvz/img/paypalplus/de-pp_plus-logo-quer_ohne_PUI_365x60px.png"
+                               alt="Online Bezahlen (Paypal/SEPA-Lastschrift/Kreditkarte)"></label>
+                      <?php endif; ?>
+                      <?php if ($this->isKlarnaPaymentActive): ?>
+
+                        <label for="pay_klarna" class="pay_klarna btn"><input type="radio" value="klarna" class="radio"
+                                                                              id="pay_klarna" name="Payment">
+                          Sofortüberweisung
+                          <img id="paynow_logo" alt="Pay now. by Klarna"
+                               src="https://cdn.klarna.com/1.0/shared/image/generic/badge/de_de/pay_now/descriptive/horizontal/pink.svg">
                         </label>
-                        <label for="pay_offline" class="pay_offline btn"><input type="radio" value="invoice" class="radio" id="pay_offline" name="Payment">Bezahlen via Rechnung</label>
-                    </div>
+                      <?php endif; ?>
+
+                    <label for="pay_offline" class="pay_offline btn"><input type="radio" value="invoice" class="radio"
+                                                                            id="pay_offline" name="Payment">Bezahlen via
+                      Rechnung</label>
+                  </div>
                 </fieldset>
+                <?php else: ?>
+                <fieldset id="payment_field">
+                  <legend>Zahlungsweise</legend>
+                  <p>Wählen Sie eine passende Zahlungsweise. Weitere Informationeen finden Sie hier: <a href="">Zahlungsarten</a>
+                  </p>
+                  <div class="formRow" id="payments">
+                      <?php if ($this->isPaypalPaymentActive): ?>
+
+                        <label for="pay_paypal" class="pay_paypal btn">
+                          <input type="radio" value="paypal" class="radio" id="pay_paypal" name="Payment">
+                          Paypal
+                          <img id="paypal_logo"
+                               src="bundles/chuckkicontaohvz/img/paypalplus/de-pp_plus-logo-quer_ohne_PUI_365x60px.png"
+                               alt="Online Bezahlen (Paypal/SEPA-Lastschrift/Kreditkarte)"></label>
+                      <?php endif; ?>
+                      <?php if ($this->isKlarnaPaymentActive): ?>
+
+                        <label for="pay_klarna" class="pay_klarna btn">
+                          <input type="radio" value="klarna" class="radio" id="pay_klarna" name="Payment">
+                          Sofortüberweisung
+                          <img id="paynow_logo" alt="Pay now. by Klarna"
+                               src="https://cdn.klarna.com/1.0/shared/image/generic/badge/de_de/pay_now/descriptive/horizontal/pink.svg">
+                        </label>
+                      <?php endif; ?>
+                  </div>
+                </fieldset>
+                <?php endif; ?>
             <?php else: ?>
-              <fieldset id="payment_field">
-                <legend>Zahlungsweise</legend>
-                <p>Wählen Sie eine passende Zahlungsweise. Weitere Informationeen finden Sie hier: <a href="">Zahlungsarten</a>
-                </p>
-                <div class="formRow" id="payments">
-                  <label for="pay_paypal" class="pay_paypal btn">
-                    <input type="radio" value="paypal" class="radio" id="pay_paypal" name="Payment">
-                    Paypal
-                    <img id="paypal_logo"
-                         src="bundles/chuckkicontaohvz/img/paypalplus/de-pp_plus-logo-quer_ohne_PUI_365x60px.png"
-                         alt="Online Bezahlen (Paypal/SEPA-Lastschrift/Kreditkarte)"></label>
-                  <label for="pay_klarna" class="pay_klarna btn">
-                    <input type="radio" value="klarna" class="radio" id="pay_klarna" name="Payment">
-                    Sofortüberweisung
-                    <img id="paynow_logo" alt="Pay now. by Klarna"
-                         src="https://cdn.klarna.com/1.0/shared/image/generic/badge/de_de/pay_now/descriptive/horizontal/pink.svg">
-                  </label>
-                </div>
-              </fieldset>
+              <input type="hidden" name="Payment" value="invoice">
             <?php endif; ?>
-            
-<fieldset id="agb">
-  <input type="hidden" value="" name="agbakzeptiert">
-  <span>
-    <input type="checkbox" value="1" class="checkbox" id="opt_120_0" name="agbakzeptiert" > <label for="opt_120_0" id="lbl_120_0" style="">Ich erkläre mich mit den <a target="_blank" href="/agb.html">AGB</a> und den <a target="_blank" href="/datenschutzerklaerung.html">Datenschutzrichtlinien</a> einverstanden</label>
+          <fieldset id="agb">
+            <input type="hidden" value="" name="agbakzeptiert">
+            <span>
+    <input type="checkbox" value="1" class="checkbox" id="opt_120_0" name="agbakzeptiert"> <label for="opt_120_0"
+                                                                                                  id="lbl_120_0"
+                                                                                                  style="">Ich erkläre mich mit den <a
+                    target="_blank" href="/agb.html">AGB</a> und den <a target="_blank"
+                                                                        href="/datenschutzerklaerung.html">Datenschutzrichtlinien</a> einverstanden</label>
   </span>
-</fieldset>
-  <input type="submit" value="Halteverbot Bestellen" class="btn submit" id="submit">
+          </fieldset>
+          <input type="submit" value="Halteverbot Bestellen" class="btn submit" id="submit">
         </div>
       </form>
     </div>
-</div>
-
-<div class="mod_hvzreader textblock block ">
-  <h2>Nach Ihrer Halteverbotszonenbestellung</h2>
-  <div class="ce_text hvz_info block">
-    <p>Nach Eingang Ihrer Bestellung erhalten Sie von uns eine Bestätigungs-E-Mail. In dieser E-Mail werden Ihre Daten nochmals zusammengefasst. Bitte überprüfen Sie hier Ihre Angaben. Sollten Sie einen Fehler entdecken, so informieren Sie uns bitte unmittelbar via E-Mail.</p>
-    <p>Alle nötigen Schritte, wie die Beantragung der behördlichen Genehmigung in <?= $this->question ?> und fristgerechte Aufstellung der Halteverbotsschilder werden von uns in die Wege geleitet.<br>
-      Spätestens einen Tag vor Gültigkeitsdatum des Halteverbots erhalten Sie alle nötigen Unterlagen von uns via E-Mail. Mit diesen Unterlagen ist es Ihnen sodann möglich eventuelle Falschparker abschleppen zu lassen.</p>
   </div>
-</div>
 
-<?php if(!empty($this->hvzinfo)){
-  echo ('<div class="textblock"><h2>Halteverbot in '.$this->question.'</h2>'.$this->hvzinfo.'</div>');
-}
-?>
+  <div class="mod_hvzreader textblock block ">
+    <h2>Nach Ihrer Halteverbotszonenbestellung</h2>
+    <div class="ce_text hvz_info block">
+      <p>Nach Eingang Ihrer Bestellung erhalten Sie von uns eine Bestätigungs-E-Mail. In dieser E-Mail werden Ihre Daten
+        nochmals zusammengefasst. Bitte überprüfen Sie hier Ihre Angaben. Sollten Sie einen Fehler entdecken, so
+        informieren Sie uns bitte unmittelbar via E-Mail.</p>
+      <p>Alle nötigen Schritte, wie die Beantragung der behördlichen Genehmigung in <?= $this->question ?> und
+        fristgerechte Aufstellung der Halteverbotsschilder werden von uns in die Wege geleitet.<br>
+        Spätestens einen Tag vor Gültigkeitsdatum des Halteverbots erhalten Sie alle nötigen Unterlagen von uns via
+        E-Mail. Mit diesen Unterlagen ist es Ihnen sodann möglich eventuelle Falschparker abschleppen zu lassen.</p>
+    </div>
+  </div>
+
+    <?php if (!empty($this->hvzinfo)) {
+        echo('<div class="textblock"><h2>Halteverbot in ' . $this->question . '</h2>' . $this->hvzinfo . '</div>');
+    }
+    ?>
 
 <?php endif; ?>
 

@@ -143,7 +143,12 @@ class ModuleHvzReader extends \Module
         $this->Template->hvzzusatz = $objHvz->hvzzusatz;
         $this->Template->hvzinfo = $objHvz->hvzinfo;
         $this->Template->isUser = false;
-
+        $this->Template->isKlarnaPaymentActive = $GLOBALS['TL_CONFIG']['isAktive_klarna'];
+        $this->Template->isPaypalPaymentActive = $GLOBALS['TL_CONFIG']['isAktive_paypal'];
+        $this->Template->hasOtherPaymentsThanInvoice = ($GLOBALS['TL_CONFIG']['isAktive_klarna'] OR $GLOBALS['TL_CONFIG']['isAktive_paypal']);
+        
+        
+        
         // import FrontEndUser Data
         $this->import('FrontendUser', 'user');
         if (FE_USER_LOGGED_IN) {
