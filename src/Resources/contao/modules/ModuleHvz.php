@@ -191,7 +191,8 @@ class ModuleHvz extends \Frontend
         $this->logger->log(500, 'APICall backup', $arrSubmitted);
         // cleanup - check periodical for errors
         if (empty($arrSubmitted['type'])) {
-            PushMeMessage::pushMe('MSG with no Type:' . json_encode($arrSubmitted));
+            // todo: check if msg or order without type
+            // currently no flag for knowing
             $this->logger->log(500, 'APICall miss - no type', $arrSubmitted);
             // set type
             switch ($arrSubmitted['Genehmigung']) {
@@ -224,7 +225,7 @@ class ModuleHvz extends \Frontend
                 )
             );
         }
-        
+
         if (!empty($arrSubmitted['type'])) {
             $orderModel = $this->createOrderAndSaveToDatabase($arrSubmitted);
             // todo: do an update call later with payment info
