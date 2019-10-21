@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of backend-hvb.
  *
@@ -9,33 +10,15 @@
 
 namespace Chuckki\ContaoHvzBundle;
 
-use Contao\Controller;
 use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
 use Exception;
-use Klarna\Rest\CustomerToken\Tokens;
 use Klarna\Rest\Payments\Orders;
 use Klarna\Rest\Payments\Sessions;
 use Klarna\Rest\Transport\Connector;
-use Klarna\Rest\Transport\ConnectorInterface;
-use PayPal\Api\Amount;
-use PayPal\Api\Details;
-use PayPal\Api\Item;
-use PayPal\Api\ItemList;
-use PayPal\Api\Payer;
-use PayPal\Api\Payment;
-use PayPal\Api\PaymentExecution;
-use PayPal\Api\RedirectUrls;
-use PayPal\Api\Transaction;
-use PayPal\Auth\OAuthTokenCredential;
-use PayPal\Exception\PayPalConnectionException;
-use PayPal\Rest\ApiContext;
 use Psr\Log\LoggerInterface;
-use ResultPrinter;
 
 /**
- * Class HvzKlarna
- *
- * @package Chuckki\ContaoHvzBundle
+ * Class HvzKlarna.
  */
 class HvzKlarna
 {
@@ -55,8 +38,8 @@ class HvzKlarna
 
     public function initialCredits(array $conf)
     {
-        $this->klarna_env   = (!$conf['klarna_env']) ? 'https://api.klarna.com' : 'https://api.playground.klarna.com';
-        $this->merchantId   = $conf['klarna_user'];
+        $this->klarna_env = (!$conf['klarna_env']) ? 'https://api.klarna.com' : 'https://api.playground.klarna.com';
+        $this->merchantId = $conf['klarna_user'];
         $this->sharedSecret = $conf['klarna_pw'];
     }
 
@@ -66,6 +49,7 @@ class HvzKlarna
         try {
             $session = $this->getKlarnaSession($hvzOrderModel);
             $session->create($order);
+
             return $session;
         } catch (Exception $e) {
             $this->logger->error('Not possible to create Klarnaorder', [$e->getMessage()]);
@@ -80,6 +64,7 @@ class HvzKlarna
         $connector = Connector::create($this->merchantId, $this->sharedSecret, $this->klarna_env);
         try {
             $session = new Sessions($connector);
+
             return $session;
         } catch (Exception $e) {
             $this->logger->error('Not possible to get Klarnasession', [$e->getMessage()]);
@@ -91,11 +76,12 @@ class HvzKlarna
 
     public function executePayment(HvzOrderModel $orderModel)
     {
-        $connector          = Connector::create($this->merchantId, $this->sharedSecret, $this->klarna_env);
+        $connector = Connector::create($this->merchantId, $this->sharedSecret, $this->klarna_env);
         $authorizationToken = $orderModel->klarna_auth_token ?: 'authorizationToken';
         try {
             $order = new Orders($connector, $authorizationToken);
-            $data  = $order->create(self::getBillingData($orderModel));
+            $data = $order->create(self::getBillingData($orderModel));
+
             return $data;
         } catch (Exception $e) {
             $this->logger->error('Not possible to execute Klarna Payment', [$e->getMessage()]);
@@ -108,50 +94,51 @@ class HvzKlarna
     private function getBillingData(HvzOrderModel $hvzOrderModel): array
     {
         return [
-            "auto_capture"        => true,
+            'auto_capture' => true,
             //https://developers.klarna.com/documentation/klarna-payments/integration-guide/place-order#4-3-place-recurring-order-tokenization
-            "purchase_country"    => "DE",
-            "purchase_currency"   => "EUR",
-            "locale"              => "de-DE",
-            "merchant_data"       => $hvzOrderModel->orderNumber,
-            "merchant_reference1" => $hvzOrderModel->orderNumber,
-            "order_amount"        => self::getCents($hvzOrderModel->getBrutto()),
-            "order_tax_amount"    => self::getCents($hvzOrderModel->getMwSt()),
-            "order_lines"         => [
+            'purchase_country' => 'DE',
+            'purchase_currency' => 'EUR',
+            'locale' => 'de-DE',
+            'merchant_data' => $hvzOrderModel->orderNumber,
+            'merchant_reference1' => $hvzOrderModel->orderNumber,
+            'order_amount' => self::getCents($hvzOrderModel->getBrutto()),
+            'order_tax_amount' => self::getCents($hvzOrderModel->getMwSt()),
+            'order_lines' => [
                 [
-                    "type"                  => "physical",
-                    "reference"             => $hvzOrderModel->hvz,
-                    "name"                  => 'Halterverbotszone in ' . $hvzOrderModel->hvz_ort,
-                    "quantity"              => 1,
-                    "product_url"           => $hvzOrderModel->getAbsoluteUrl(),
-                    "tax_rate"              => (HvzOrderModel::MWST_INTL_GERMANY) * 100,
-                    "total_tax_amount"      => self::getCents($hvzOrderModel->getMwSt()),
-                    "total_amount"          => self::getCents($hvzOrderModel->getBrutto()),
-                    "unit_price"            => self::getCents(
+                    'type' => 'physical',
+                    'reference' => $hvzOrderModel->hvz,
+                    'name' => 'Halterverbotszone in '.$hvzOrderModel->hvz_ort,
+                    'quantity' => 1,
+                    'product_url' => $hvzOrderModel->getAbsoluteUrl(),
+                    'tax_rate' => (HvzOrderModel::MWST_INTL_GERMANY) * 100,
+                    'total_tax_amount' => self::getCents($hvzOrderModel->getMwSt()),
+                    'total_amount' => self::getCents($hvzOrderModel->getBrutto()),
+                    'unit_price' => self::getCents(
                         $hvzOrderModel->getBrutto() + $hvzOrderModel->getRabatt()
                     ),
-                    "total_discount_amount" => self::getCents($hvzOrderModel->getRabatt()),
-                ]
+                    'total_discount_amount' => self::getCents($hvzOrderModel->getRabatt()),
+                ],
             ],
-            "merchant_urls"       => [
-                "confirmation" => $hvzOrderModel->getFinishOrderPage(),
-                "notification" => $hvzOrderModel->getErrorOrderPage() // optional
-            ]
+            'merchant_urls' => [
+                'confirmation' => $hvzOrderModel->getFinishOrderPage(),
+                'notification' => $hvzOrderModel->getErrorOrderPage(), // optional
+            ],
         ];
     }
 
     private function getCents(string $string)
     {
-        $string = round(floatval($string), 5);
-        $arr    = explode('.', $string);
-        if (count($arr) === 2) {
-            if (strlen($arr[1]) == 1) {
-                $arr[1] .= "0";
+        $string = round((float) $string, 5);
+        $arr = explode('.', $string);
+        if (2 === \count($arr)) {
+            if (1 === \strlen($arr[1])) {
+                $arr[1] .= '0';
             }
-            $value = (int) implode("", $arr);
-        } elseif (count($arr) === 1) {
-            $value = (int) (implode("", $arr) . "00");
+            $value = (int) implode('', $arr);
+        } elseif (1 === \count($arr)) {
+            $value = (int) (implode('', $arr).'00');
         }
+
         return $value;
     }
 }

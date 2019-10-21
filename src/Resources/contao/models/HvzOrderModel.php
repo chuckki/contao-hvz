@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of backend-hvb.
  *
@@ -8,9 +9,9 @@
  */
 
 //namespace Chuckki\ContaoHvzBundle;
+
 namespace Chuckki\ContaoHvzBundle;
 
-use Contao\Controller;
 use Contao\Environment;
 use Contao\PageModel;
 
@@ -30,7 +31,6 @@ use Contao\PageModel;
  * @property bool   $bbcode
  * @property bool   $requireLogin
  * @property bool   $disableCaptcha
- *
  * @property string $hvz_solo_price
  * @property string $hvz_extra_tag
  * @property string $hvz_rabatt_percent
@@ -67,12 +67,11 @@ use Contao\PageModel;
  * @property string $re_ip
  * @property string $re_agb_akzeptiert
  * @property string $ts
- * @property int $hvz_id
+ * @property int    $hvz_id
  * @property string $hash
  * @property string $orderNumber
  * @property string $choosen_payment
  * @property string $payment_status
- *
  * @property string $klarna_session_id
  * @property string $klarna_client_token
  * @property string $klarna_auth_token
@@ -142,18 +141,22 @@ class HvzOrderModel extends \Model
 
     public function getOrderDescription()
     {
-        return $this->hvz_type_name . ' in ' . $this->hvz_ort;
+        return $this->hvz_type_name.' in '.$this->hvz_ort;
     }
 
-    public function getErrorOrderPage(){
+    public function getErrorOrderPage()
+    {
         $id = $GLOBALS['TL_CONFIG']['edit_order'];
         $page = PageModel::findById($id);
+
         return $page->getAbsoluteUrl();
     }
 
-    public function getFinishOrderPage(){
+    public function getFinishOrderPage()
+    {
         $id = $GLOBALS['TL_CONFIG']['finish_order'];
         $page = PageModel::findById($id);
+
         return $page->getAbsoluteUrl();
     }
 
@@ -162,54 +165,55 @@ class HvzOrderModel extends \Model
         // geiler Scheiss...
         $breakCounter = 100;
         do {
-            $hash       = bin2hex(random_bytes(32));
-            $orderModel = HvzOrderModel::findBy('hash', $hash);
+            $hash = bin2hex(random_bytes(32));
+            $orderModel = self::findBy('hash', $hash);
             if ($breakCounter-- < 0) {
-                $hash = 'fehler_' . $hash;
+                $hash = 'fehler_'.$hash;
                 break;
             }
         } while ($orderModel);
         $this->hash = $hash;
     }
 
-    private function getFullBrutto(){
-        return number_format($this->hvz_solo_price + (($this->hvz_anzahl_tage-1) * $this->hvz_extra_tag) ,2);
-    }
-
     public function getBrutto()
     {
         $fullBrutto = $this->getFullBrutto() * (1 - ($this->hvz_rabatt_percent / 100));
-        return number_format(round($fullBrutto, 2),2);
+
+        return number_format(round($fullBrutto, 2), 2);
     }
 
-    public function getRabatt(){
+    public function getRabatt()
+    {
         $rabatt = $this->getFullBrutto() - $this->getBrutto();
-        return number_format(round($rabatt,2),2);
+
+        return number_format(round($rabatt, 2), 2);
     }
 
     public function getMwSt()
     {
         $mwst = $this->getBrutto() / (self::MWST_DECIMAL_GERMANY * 100) * ((self::MWST_DECIMAL_GERMANY - 1) * 100);
         $mwst = $this->getBrutto() / (self::MWST_INTL_GERMANY + 100) * self::MWST_INTL_GERMANY;
-        return number_format(round($mwst, 2),2);
+
+        return number_format(round($mwst, 2), 2);
     }
 
     public function getNetto()
     {
-        return number_format(round($this->getBrutto() - $this->getMwSt(), 2),2);
+        return number_format(round($this->getBrutto() - $this->getMwSt(), 2), 2);
     }
 
     public function getAbsoluteUrl()
     {
         $hvzModel = HvzModel::findById($this->hvz_id);
         $env = Environment::get('base');
-        $myUrl =  $env . 'halteverbot/'.$hvzModel->alias.'.html';
+        $myUrl = $env.'halteverbot/'.$hvzModel->alias.'.html';
+
         return $myUrl;
     }
 
     public function getGrussFormel()
     {
-        $anrede = $this->re_anrede . " " . $this->re_name;
+        $anrede = $this->re_anrede.' '.$this->re_name;
         $tagesStunde = (int) (date('H'));
         $grussFormel = 'Sehr geehrte Damen und Herren,';
         if (!empty($this->re_name)) {
@@ -222,6 +226,12 @@ class HvzOrderModel extends \Model
             }
             $grussFormel .= ' '.trim($anrede).',';
         }
+
         return $grussFormel;
+    }
+
+    private function getFullBrutto()
+    {
+        return number_format($this->hvz_solo_price + (($this->hvz_anzahl_tage - 1) * $this->hvz_extra_tag), 2);
     }
 }

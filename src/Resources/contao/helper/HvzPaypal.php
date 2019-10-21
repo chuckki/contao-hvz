@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of backend-hvb.
  *
@@ -11,10 +12,8 @@ namespace Chuckki\ContaoHvzBundle;
 
 use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
 use Exception;
-use Monolog\Logger;
 use PayPal\Api\Amount;
 use PayPal\Api\Details;
-use PayPal\Api\InputFields;
 use PayPal\Api\Item;
 use PayPal\Api\ItemList;
 use PayPal\Api\Payer;
@@ -23,7 +22,6 @@ use PayPal\Api\PaymentExecution;
 use PayPal\Api\Presentation;
 use PayPal\Api\RedirectUrls;
 use PayPal\Api\Transaction;
-use PayPal\Api\WebProfile;
 use PayPal\Auth\OAuthTokenCredential;
 use PayPal\Exception\PayPalConnectionException;
 use PayPal\Rest\ApiContext;
@@ -55,14 +53,14 @@ class HvzPaypal
         $presentation = new \PayPal\Api\Presentation();
         // A URL to logo image. Allowed vaues: .gif, .jpg, or .png.
         $presentation->setLogoImage(
-            "https://www.halteverbot-beantragen.de/files/halteverbot-theme/img/halteverbot-beantragen-Paypal.png"
+            'https://www.halteverbot-beantragen.de/files/halteverbot-theme/img/halteverbot-beantragen-Paypal.png'
         )//	A label that overrides the business name in the PayPal account on the PayPal pages.
-        ->setBrandName("Halteverbot Beantragen")//  Locale of pages displayed by PayPal payment experience.
-        ->setLocaleCode("DE")// A label to use as hypertext for the return to merchant link.
+        ->setBrandName('Halteverbot Beantragen')//  Locale of pages displayed by PayPal payment experience.
+        ->setLocaleCode('DE')// A label to use as hypertext for the return to merchant link.
         ->setReturnUrlLabel(
-            "zurück"
+            'zurück'
         )// A label to use as the title for the note to seller field. Used only when `allow_note` is `1`.
-            ->setNoteToSellerLabel("Danke schön!");
+            ->setNoteToSellerLabel('Danke schön!');
         // Parameters for input fields customization.
         $inputFields = new \PayPal\Api\InputFields();
         // Enables the buyer to enter a note to the merchant on the PayPal page during checkout.
@@ -76,7 +74,7 @@ class HvzPaypal
         // #### Payment Web experience profile resource
         $webProfile = new \PayPal\Api\WebProfile();
         // Name of the web experience profile. Required. Must be unique
-        $webProfile->setName("Halteverbot Online Demo2" . uniqid())// Parameters for flow configuration.
+        $webProfile->setName('Halteverbot Online Demo2'.uniqid())// Parameters for flow configuration.
         ->setPresentation($presentation)// Parameters for input field customization.
         ->setInputFields(
             $inputFields
@@ -87,14 +85,13 @@ class HvzPaypal
             $createProfileResponse = $webProfile->create($apiContext);
         } catch (\PayPal\Exception\PayPalConnectionException $ex) {
             // NOTE: PLEASE DO NOT USE RESULTPRINTER CLASS IN YOUR ORIGINAL CODE. FOR SAMPLE ONLY
-            ResultPrinter::printError("Created Web Profile", "Web Profile", null, $request, $ex);
+            ResultPrinter::printError('Created Web Profile', 'Web Profile', null, $request, $ex);
             dump('regest');
             dump($request);
             die;
-
         }
 
-        return ($createProfileResponse);
+        return $createProfileResponse;
     }
 
     public function initialCredits(array $conf)
@@ -112,7 +109,7 @@ class HvzPaypal
             $apiContext->setConfig(['mode' => 'sandbox']);
         } else {
             $apiContext->setConfig(['mode' => 'live']);
-        };
+        }
 
         // 3. Lets try to create a Payment
         // https://developer.paypal.com/docs/api/payments/v2/
@@ -122,7 +119,7 @@ class HvzPaypal
         $details->setTax($hvzOrderModel->getMwSt());
         $details->setSubtotal($hvzOrderModel->getNetto());
         $itemList = new ItemList();
-        $item     = new Item();
+        $item = new Item();
         $item->setDescription($hvzOrderModel->getOrderDescription());
         $item->setPrice($hvzOrderModel->getNetto());
         $item->setCurrency('EUR');
@@ -148,21 +145,23 @@ class HvzPaypal
         // 4. Make a Create Call and print the values
         try {
             $payment->create($apiContext);
-            if ($payment->state !== 'created') {
+            if ('created' !== $payment->state) {
                 $this->logger->error(
-                    'Paypal created Order not working. State:' . $payment->state . " paypal_id:" . $payment->id
-                    . " order_id:" . $hvzOrderModel->orderNumber
+                    'Paypal created Order not working. State:'.$payment->state.' paypal_id:'.$payment->id
+                    .' order_id:'.$hvzOrderModel->orderNumber
                 );
                 PushMeMessage::pushMe(
-                    "Payment state: \n created != " . $payment->state . "\n\n paypal_id:" . $payment->id
-                    . "\n order_id:" . $hvzOrderModel->orderNumber,
+                    "Payment state: \n created != ".$payment->state."\n\n paypal_id:".$payment->id
+                    ."\n order_id:".$hvzOrderModel->orderNumber,
                     'HvzPaypal'
                 );
             }
+
             return $payment;
         } catch (PayPalConnectionException $ex) {
-            PushMeMessage::pushMe("Paypal Exception: " . $ex->getData());
+            PushMeMessage::pushMe('Paypal Exception: '.$ex->getData());
         }
+
         return null;
     }
 
@@ -188,14 +187,15 @@ class HvzPaypal
             try {
                 $payment = Payment::get($paymentId, $apiContext);
             } catch (Exception $ex) {
-                PushMeMessage::pushMe("Paypal Payment not exist: " . $ex->getMessage());
+                PushMeMessage::pushMe('Paypal Payment not exist: '.$ex->getMessage());
                 exit(1);
             }
         } catch (Exception $ex) {
-            PushMeMessage::pushMe("Paypal Execute Failure: " . $ex->getMessage());
-            $logger->error('Paypal  Execute Failure (' . $paymentId . ')', [$ex->getMessage()]);
+            PushMeMessage::pushMe('Paypal Execute Failure: '.$ex->getMessage());
+            $logger->error('Paypal  Execute Failure ('.$paymentId.')', [$ex->getMessage()]);
             exit(1);
         }
+
         return $result;
     }
 
@@ -205,7 +205,7 @@ class HvzPaypal
             new OAuthTokenCredential($this->clientId, $this->clientSecret)
         );
         $apiContext->setConfig(['mode' => 'sandbox']);
+
         return $apiContext;
     }
-
 }

@@ -17,7 +17,7 @@ $GLOBALS['TL_DCA']['tl_hvz_orders'] = [
         'sql' => [
             'keys' => [
                 'id' => 'primary',
-                'hash' => 'key'
+                'hash' => 'key',
             ],
         ],
     ],
@@ -160,16 +160,16 @@ $GLOBALS['TL_DCA']['tl_hvz_orders'] = [
         'choosen_payment' => [
             'sql' => "varchar(16) NOT NULL default ''",
         ],
-        'hvz_id' =>[
+        'hvz_id' => [
             'sql' => "int(10) unsigned NOT NULL default '0'",
         ],
-        'hvz_solo_price' =>[
-            'sql' => "decimal(8,2) DEFAULT NULL" ,
+        'hvz_solo_price' => [
+            'sql' => 'decimal(8,2) DEFAULT NULL',
         ],
-        'hvz_extra_tag' =>[
-            'sql' => "decimal(8,2) DEFAULT NULL" ,
+        'hvz_extra_tag' => [
+            'sql' => 'decimal(8,2) DEFAULT NULL',
         ],
-        'hvz_rabatt_percent' =>[
+        'hvz_rabatt_percent' => [
             'sql' => "TINYINT NOT NULL default '0'",
         ],
         'hash' => [

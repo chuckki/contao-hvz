@@ -403,10 +403,10 @@ class tl_hvz extends Backend
      *
      * @return array
      */
-    public function addAliasButton($arrButtons)
+    public function addAliasButton($arrButtons): array
     {
         // Generate the aliases
-        if ('tl_select' === Input::post('FORM_SUBMIT') && isset($_POST['alias'])) {
+        if (isset($_POST['alias']) && 'tl_select' === Input::post('FORM_SUBMIT')) {
             $session = $this->Session->getData();
             $ids = $session['CURRENT']['IDS'];
 
@@ -454,7 +454,7 @@ class tl_hvz extends Backend
                             ->execute($strAlias);
 
                         if ($objAlias->numRows > 1) {
-                            print_r($objAlias);
+
                             die();
                         }
                     }
@@ -482,7 +482,7 @@ class tl_hvz extends Backend
     /**
      * Check permissions to edit table tl_hvz.
      */
-    public function checkPermission()
+    public function checkPermission(): void
     {
         // HOOK: comments extension required
         if (0 and (!\in_array('comments', ModuleLoader::getActive(), true))) {

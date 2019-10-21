@@ -95,7 +95,7 @@ class ModuleHvzReader extends \Module
         /* @var \PageModel $objPage */
         global $objPage;
 
-        $objPage->cssClass = $objPage->cssClass.' hvzForm';
+        $objPage->cssClass .= ' hvzForm';
 
         $this->Template->back = $GLOBALS['TL_LANG']['MSC']['goBack'];
         $this->Template->referer = 'javascript:history.go(-1)';
@@ -145,10 +145,8 @@ class ModuleHvzReader extends \Module
         $this->Template->isUser = false;
         $this->Template->isKlarnaPaymentActive = $GLOBALS['TL_CONFIG']['isAktive_klarna'];
         $this->Template->isPaypalPaymentActive = $GLOBALS['TL_CONFIG']['isAktive_paypal'];
-        $this->Template->hasOtherPaymentsThanInvoice = ($GLOBALS['TL_CONFIG']['isAktive_klarna'] OR $GLOBALS['TL_CONFIG']['isAktive_paypal']);
-        
-        
-        
+        $this->Template->hasOtherPaymentsThanInvoice = ($GLOBALS['TL_CONFIG']['isAktive_klarna'] or $GLOBALS['TL_CONFIG']['isAktive_paypal']);
+
         // import FrontEndUser Data
         $this->import('FrontendUser', 'user');
         if (FE_USER_LOGGED_IN) {

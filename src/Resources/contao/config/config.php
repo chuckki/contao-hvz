@@ -8,6 +8,19 @@
  * @license NO LICENSE - So dont use it without permission (it could be expensive..)
  */
 
+use Chuckki\ContaoHvzBundle\ModuleFaqReader;
+use Chuckki\ContaoHvzBundle\ModuleHvz;
+use Chuckki\ContaoHvzBundle\ModuleHvzReplaceInsertTag;
+use Chuckki\ContaoHvzBundle\ModuleHvzList;
+use Chuckki\ContaoHvzBundle\ModuleHvzTeaser;
+use Chuckki\ContaoHvzBundle\ModuleHvzListDropDown;
+use Chuckki\ContaoHvzBundle\ModuleHvzReader;
+use Chuckki\ContaoHvzBundle\ModuleHvzResult;
+use Chuckki\ContaoHvzBundle\ModuleHvzPaypal;
+use Chuckki\ContaoHvzBundle\ModuleHvzKlarna;
+use Chuckki\ContaoHvzBundle\ModulePaymentWidget;
+use Chuckki\ContaoHvzBundle\ModulePaymentReceiver;
+
 /**
  * Add back end modules.
  */
@@ -34,28 +47,28 @@ $GLOBALS['TL_MODELS']['tl_hvz_category'] = \Chuckki\ContaoHvzBundle\HvzCategoryM
  */
 array_insert($GLOBALS['FE_MOD'], 3, [
     'hvz' => [
-        'hvzlist' => 'Chuckki\ContaoHvzBundle\ModuleHvzList',
-        'hvzteaser' => 'Chuckki\ContaoHvzBundle\ModuleHvzTeaser',
-        'hvzlistdropdown' => 'Chuckki\ContaoHvzBundle\ModuleHvzListDropDown',
-        'hvzreader' => 'Chuckki\ContaoHvzBundle\ModuleHvzReader',
-        'hvzresult' => 'Chuckki\ContaoHvzBundle\ModuleHvzResult',
-        'hvzpaypal' => 'Chuckki\ContaoHvzBundle\ModuleHvzPaypal',
-        'hvzklarna' => 'Chuckki\ContaoHvzBundle\ModuleHvzKlarna',
-        'hvzpayment' => 'Chuckki\ContaoHvzBundle\ModulePaymentWidget',
-        'hvzpaymentreceiver' => 'Chuckki\ContaoHvzBundle\ModulePaymentReceiver',
+        'hvzlist' => ModuleHvzList::class,
+        'hvzteaser' => ModuleHvzTeaser::class,
+        'hvzlistdropdown' => ModuleHvzListDropDown::class,
+        'hvzreader' => ModuleHvzReader::class,
+        'hvzresult' => ModuleHvzResult::class,
+        'hvzpaypal' => ModuleHvzPaypal::class,
+        'hvzklarna' => ModuleHvzKlarna::class,
+        'hvzpayment' => ModulePaymentWidget::class,
+        'hvzpaymentreceiver' => ModulePaymentReceiver::class,
     ],
 ]);
 
-$GLOBALS['FE_MOD']['faq']['faqreader'] = 'Chuckki\ContaoHvzBundle\ModuleFaqReader';
+$GLOBALS['FE_MOD']['faq']['faqreader'] = ModuleFaqReader::class;
 
 /*
  * Register hooks
  */
 
-$GLOBALS['TL_HOOKS']['replaceInsertTags'][] = ['Chuckki\ContaoHvzBundle\ModuleHvzReplaceInsertTag', 'replaceCuInsertTags'];
-$GLOBALS['TL_HOOKS']['getSearchablePages'][] = ['Chuckki\ContaoHvzBundle\ModuleHvz', 'getSearchablePages'];
-$GLOBALS['TL_HOOKS']['processFormData'][] = ['Chuckki\ContaoHvzBundle\ModuleHvz', 'saveFormData'];
-$GLOBALS['TL_CRON']['monthly'][] = ['Chuckki\ContaoHvzBundle\ModuleHvz', 'mergeFamus'];
+$GLOBALS['TL_HOOKS']['replaceInsertTags'][] = [ModuleHvzReplaceInsertTag::class, 'replaceCuInsertTags'];
+$GLOBALS['TL_HOOKS']['getSearchablePages'][] = [ModuleHvz::class, 'getSearchablePages'];
+$GLOBALS['TL_HOOKS']['processFormData'][] = [ModuleHvz::class, 'saveFormData'];
+$GLOBALS['TL_CRON']['monthly'][] = [ModuleHvz::class, 'mergeFamus'];
 
 /*
  * Add permissions

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of backend-hvb.
  *
@@ -12,7 +13,6 @@ namespace Chuckki\ContaoHvzBundle;
 use Contao\System;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
-use Twig\Template;
 
 class ModuleHvzReplaceInsertTag extends \Frontend
 {
@@ -33,6 +33,7 @@ class ModuleHvzReplaceInsertTag extends \Frontend
                     $inser = \System::getContainer()->get('session')->get($arrTag[1]);
                     $inser = $inser[$arrTag[2]];
                 }
+
                 return $inser;
                 break;
 
@@ -42,21 +43,23 @@ class ModuleHvzReplaceInsertTag extends \Frontend
             case 'hvborder':
                 switch ($arrTag[1]) {
                     case 'currentForm':
-                        $orderObj     =
+                        $orderObj =
                             HvzOrderModel::findOneBy('hash', System::getContainer()->get('session')->get('orderToken'));
                         $twigRenderer = \System::getContainer()->get('twig');
-                        $loader       = new FilesystemLoader(__DIR__ . '/../../view');
-                        $twig         = new Environment($loader);
+                        $loader = new FilesystemLoader(__DIR__.'/../../view');
+                        $twig = new Environment($loader);
                         $rendered = $twig->render(
                             'order_view.html.twig',
                             [
-                                'order' => $orderObj
+                                'order' => $orderObj,
                             ]
                         );
+
                         return $rendered;
                 }
                 break;
         }
+
         return false;
     }
 }
