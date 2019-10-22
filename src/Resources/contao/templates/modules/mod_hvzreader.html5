@@ -154,7 +154,7 @@
               <label class="mandatory" for="ctrl_50">
                 <span class="invisible">Pflichtfeld</span> PLZ<span class="mandatory">*</span>
               </label>
-              <input type="tel" value="23453" class="text mandatory" id="ctrl_50" name="PLZ"
+              <input type="tel" value="" class="text mandatory" id="ctrl_50" name="PLZ"
                      placeholder="PLZ von <?= $this->question ?>">
             </div>
 
@@ -162,7 +162,7 @@
               <label class="mandatory" for="ctrl_51">
                 <span class="invisible">Pflichtfeld</span> Straße/Hausnummer<span class="mandatory">*</span>
               </label>
-              <input type="text" value="asdfasdf 123" class="text mandatory" id="ctrl_51" name="Strasse"
+              <input type="text" value="" class="text mandatory" id="ctrl_51" name="Strasse"
                      placeholder="Straße und Hausnummer">
             </div>
           </fieldset>
