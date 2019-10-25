@@ -32,6 +32,7 @@ class HvzPaypal
 {
     private $clientId;
     private $clientSecret;
+    private $experienceProfil;
     private $env;
     private $logger;
     private $contaoFramework;
@@ -46,9 +47,8 @@ class HvzPaypal
 
     public function createProfile()
     {
-        $apiContext = new ApiContext(
-            new OAuthTokenCredential($this->clientId, $this->clientSecret)
-        );
+        $apiContext = $this->getApiContext();
+        
         // Parameters for style and presentation.
         $presentation = new \PayPal\Api\Presentation();
         // A URL to logo image. Allowed vaues: .gif, .jpg, or .png.
@@ -85,9 +85,8 @@ class HvzPaypal
             $createProfileResponse = $webProfile->create($apiContext);
         } catch (\PayPal\Exception\PayPalConnectionException $ex) {
             // NOTE: PLEASE DO NOT USE RESULTPRINTER CLASS IN YOUR ORIGINAL CODE. FOR SAMPLE ONLY
-            ResultPrinter::printError('Created Web Profile', 'Web Profile', null, $request, $ex);
-            dump('regest');
-            dump($request);
+            //ResultPrinter::printError('Created Web Profile', 'Web Profile', null, $request, $ex);
+            print_r($ex);
             die;
         }
 
@@ -99,17 +98,12 @@ class HvzPaypal
         $this->clientId = $conf['paypal_id'];
         $this->clientSecret = $conf['paypal_secret'];
         $this->env = $conf['paypal_env'];
+        $this->experienceProfil = $conf['paypal_profil'];
     }
 
     public function generatePayment(HvzOrderModel $hvzOrderModel): ?Payment
     {
-        $apiContext = new ApiContext(new OAuthTokenCredential($this->clientId, $this->clientSecret));
-
-        if ($this->env) {
-            $apiContext->setConfig(['mode' => 'sandbox']);
-        } else {
-            $apiContext->setConfig(['mode' => 'live']);
-        }
+        $apiContext = $this->getApiContext();
 
         // 3. Lets try to create a Payment
         // https://developer.paypal.com/docs/api/payments/v2/
@@ -141,7 +135,8 @@ class HvzPaypal
         );
         $payment = new Payment();
         $payment->setIntent('sale')->setPayer($payer)->setTransactions([$transaction])->setRedirectUrls($redirectUrls);
-        $payment->setExperienceProfileId('XP-PMY9-TKQ2-4KR9-4BEH');
+        $payment->setExperienceProfileId($this->experienceProfil);
+
         // 4. Make a Create Call and print the values
         try {
             $payment->create($apiContext);
@@ -167,10 +162,8 @@ class HvzPaypal
 
     public function executePayment($paymentId, $payerId): Payment
     {
-        $apiContext = new ApiContext(
-            new OAuthTokenCredential($this->clientId, $this->clientSecret)
-        );
-        $apiContext->setConfig(['mode' => 'sandbox']);
+        $apiContext = $this->getApiContext();
+
         // Get the payment Object by passing paymentId
         // payment id was previously stored in session in
         // CreatePaymentUsingPayPal.php
@@ -204,8 +197,11 @@ class HvzPaypal
         $apiContext = new ApiContext(
             new OAuthTokenCredential($this->clientId, $this->clientSecret)
         );
-        $apiContext->setConfig(['mode' => 'sandbox']);
-
+        if ($this->env) {
+            $apiContext->setConfig(['mode' => 'sandbox']);
+        } else {
+            $apiContext->setConfig(['mode' => 'live']);
+        }
         return $apiContext;
     }
 }
