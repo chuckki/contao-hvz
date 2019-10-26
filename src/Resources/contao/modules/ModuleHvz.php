@@ -10,6 +10,7 @@
 
 namespace Chuckki\ContaoHvzBundle;
 
+use Contao\CoreBundle\Exception\AccessDeniedException;
 use Contao\Database;
 use Contao\Form;
 use Contao\Frontend;
@@ -228,10 +229,20 @@ class ModuleHvz extends \Frontend
             $orderModel->orderNumber = $this->sendNewOrderToBackend($arrSubmitted);
             $orderModel->save();
             // set order for payment session
+
+        $this->import('FrontendUser', 'user');
+        $showAllPayments = false;
+        if (FE_USER_LOGGED_IN) {
+            $showAllPayments = $this->user->paymentAllowed;
+        }
             System::getContainer()->get('session')->set('orderToken', $orderModel->hash);
             switch ($orderModel->choosen_payment) {
                 // todo: make config ;)
                 case 'paypal':
+                    if (!($GLOBALS['TL_CONFIG']['isAktive_paypal'] || $showAllPayments))
+                    {
+                        throw new AccessDeniedException('Payment not allowed');
+                    }
                     $hvzPaypal = System::getContainer()->get('chuckki.contao_hvz_bundle.paypal');
                     $paymentObj = $hvzPaypal->generatePayment($orderModel);
                     $orderModel->paypal_paymentId = $paymentObj->getId();
@@ -240,6 +251,10 @@ class ModuleHvz extends \Frontend
                     $redirect = $GLOBALS['TL_CONFIG']['paypal_payment'];
                     break;
                 case 'klarna':
+                    if (!($GLOBALS['TL_CONFIG']['isAktive_klarna'] || $showAllPayments) )
+                    {
+                        throw new AccessDeniedException('Payment not allowed');
+                    }
                     $hvzKlarna = System::getContainer()->get('chuckki.contao_hvz_bundle.klarna');
                     $sessionObj = $hvzKlarna->getKlarnaNewOrderSession($orderModel);
                     $orderModel->klarna_session_id = $sessionObj['session_id'];
@@ -247,14 +262,16 @@ class ModuleHvz extends \Frontend
                     $orderModel->payment_status = 'Klarna in Progress';
                     $redirect = $GLOBALS['TL_CONFIG']['klarna_payment'];
                     break;
-                case 'cpaypal':
-                    $hvzPaypal = System::getContainer()->get('chuckki.contao_hvz_bundle.paypal');
-                    $hvzPaypal->createProfile();
-                    die;
                 case 'invoice':
+                    if (!($GLOBALS['TL_CONFIG']['isAktive_invoice'] || $showAllPayments) )
+                    {
+                        throw new AccessDeniedException('Payment not allowed');
+                    }
                     $orderModel->payment_status = 'Rechnung';
+
                     // no break
                 default:
+                    throw new AccessDeniedException('Payment not allowed');
             }
             $orderModel->save();
             self::setSessionForThankYouPage($orderModel);
