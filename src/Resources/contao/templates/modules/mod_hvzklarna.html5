@@ -10,8 +10,6 @@
                   console.debug(res);
                   if (res['approved'] === true) {
                       window.location.href = window.location.href + "?auth=" + res['authorization_token'];
-                  } else {
-                      alert("Falls Sie diese Nachricht lesen - Melden Sie sich bitte umgehend bei uns. Referenz:" + res['authorization_token']);
                   }
               })
           });

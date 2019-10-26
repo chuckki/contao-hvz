@@ -69,6 +69,13 @@ class ModuleHvzPaypal extends AbstractFrontendModule
         }
         if (!empty($orderObj->paypal_approvalLink) and empty(Input::get('paymentId'))) {
             // Start Payment
+            if ($GLOBALS['TL_CONFIG']['paypal_env']) {
+                $this->Template->mode = 'sandbox';
+            } else {
+                $this->Template->mode = 'live';
+            }
+
+
             $this->Template->approvalUrl = $orderObj->paypal_approvalLink;
             $this->Template->editOrder = $orderObj->getErrorOrderPage();
         }

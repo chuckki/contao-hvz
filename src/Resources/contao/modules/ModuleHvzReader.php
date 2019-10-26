@@ -153,7 +153,7 @@ class ModuleHvzReader extends \Module
         $this->import('FrontendUser', 'user');
         if (FE_USER_LOGGED_IN) {
 
-            $this->Template->isInvoicePaymentActive = $GLOBALS['TL_CONFIG']['isAktive_invoice'];
+            $this->Template->isInvoicePaymentActive = $this->user->isAktive_invoice;
 
             $this->Template->hasOtherPaymentsThanInvoice = $this->user->paymentAllowed;
             $this->Template->isKlarnaPaymentActive = $this->user->paymentAllowed || $GLOBALS['TL_CONFIG']['isAktive_klarna'];

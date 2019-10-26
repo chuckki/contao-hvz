@@ -11,7 +11,7 @@
     var ppp = PAYPAL.apps.PPP({
         "approvalUrl": "<?php echo $this->approvalUrl; ?>",
         "placeholder": "ppplus",
-        "mode": "sandbox",
+        "mode": "<?php echo $this->mode; ?>",
         "language": "de_DE",
         "country": "DE"
     });
