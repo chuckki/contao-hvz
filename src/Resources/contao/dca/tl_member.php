@@ -9,7 +9,7 @@
 $GLOBALS['TL_DCA']['tl_member']['palettes']['default'] = str_replace(
     'gender',
     //'gender,gutschein,zusatzinfo',
-    'gender,gutschein,zusatzinfo,umstid,paymentAllowed,isAktive_invoice',
+    'gender,gutschein,zusatzinfo,umstid;{pay_option},paymentAllowed,isAktive_invoice',
     $GLOBALS['TL_DCA']['tl_member']['palettes']['default']
 );
 
@@ -33,7 +33,8 @@ $GLOBALS['TL_DCA']['tl_member']['fields']['paymentAllowed'] = [
 
 
 $GLOBALS['TL_DCA']['tl_member']['fields']['isAktive_invoice'] = [
-    'exclude'   => true,
+    'label'     => ['Rechnungen erlaubt','Wenn aktiv - Bezahlen auf Rechnung aktiv'],
+    'exclude'   => false,
     'filter'    => true,
     'inputType' => 'checkbox',
     'eval'      => ['feEditable' => false, 'feViewable' => false, 'feGroup' => 'personal', 'tl_class' => 'w50'],
