@@ -351,22 +351,9 @@ class ModuleHvz extends Frontend
         $arrSubmitted['rabattValue'] = 0;
         $arrSubmitted['Rabatt'] = '';
         if (!empty($arrSubmitted['rabattCode'])) {
-            $objRabatt = Database::getInstance()->prepare(
-                "SELECT
-                  rabattProzent,
-                  rabattCode
-                FROM 
-                  tl_hvz_rabatt
-                WHERE
-                  rabattCode=? AND 
-                  (start<? OR start='') AND 
-                  (stop>? OR stop='')"
-            )->limit(1)->execute($arrSubmitted['rabattCode'], time(), time());
-            while ($objRabatt->next()) {
-                $rabatt = $objRabatt->rabattProzent;
-            }
-            $arrSubmitted['Rabatt']      = ($rabatt) ? (int)$rabatt : 0;
-            $netto                       = $this->roundTo2($arrSubmitted['fullPrice'] / 119 * 100);
+            $rabatt = HvzRabattModel::findRabattOnCode($arrSubmitted['rabattCode']);
+            $arrSubmitted['Rabatt'] = ($rabatt) ? (int) $rabatt : 0;
+            $netto = $this->roundTo2($arrSubmitted['fullPrice'] / 119 * 100);
             $arrSubmitted['rabattValue'] = $this->roundTo2($netto / 100 * $rabatt);
             $zwischenSummer              = $netto - $arrSubmitted['rabattValue'];
             $newMsst                     = $this->roundTo2($zwischenSummer * 0.19);
