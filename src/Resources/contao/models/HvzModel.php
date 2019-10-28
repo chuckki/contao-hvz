@@ -10,7 +10,8 @@
 
 namespace Chuckki\ContaoHvzBundle;
 
-//namespace Contao;
+use Contao\Model\Collection;
+
 
 /**
  * Reads and writes Hvzs.
@@ -74,29 +75,29 @@ namespace Chuckki\ContaoHvzBundle;
  * @method static HvzModel|null findOneByEnclosure($val, $opt=array())
  * @method static HvzModel|null findOneByNoComments($val, $opt=array())
  * @method static HvzModel|null findOneByPublished($val, $opt=array())
- * @method static Model\Collection|HvzModel[]|HvzModel|null findByPid($val, $opt=array())
- * @method static Model\Collection|HvzModel[]|HvzModel|null findBySorting($val, $opt=array())
- * @method static Model\Collection|HvzModel[]|HvzModel|null findByTstamp($val, $opt=array())
- * @method static Model\Collection|HvzModel[]|HvzModel|null findByQuestion($val, $opt=array())
- * @method static Model\Collection|HvzModel[]|HvzModel|null findByAlias($val, $opt=array())
- * @method static Model\Collection|HvzModel[]|HvzModel|null findByAuthor($val, $opt=array())
- * @method static Model\Collection|HvzModel[]|HvzModel|null findByAnswer($val, $opt=array())
- * @method static Model\Collection|HvzModel[]|HvzModel|null findByAddImage($val, $opt=array())
- * @method static Model\Collection|HvzModel[]|HvzModel|null findBySingleSRC($val, $opt=array())
- * @method static Model\Collection|HvzModel[]|HvzModel|null findByAlt($val, $opt=array())
- * @method static Model\Collection|HvzModel[]|HvzModel|null findBySize($val, $opt=array())
- * @method static Model\Collection|HvzModel[]|HvzModel|null findByImagemargin($val, $opt=array())
- * @method static Model\Collection|HvzModel[]|HvzModel|null findByImageUrl($val, $opt=array())
- * @method static Model\Collection|HvzModel[]|HvzModel|null findByFullsize($val, $opt=array())
- * @method static Model\Collection|HvzModel[]|HvzModel|null findByCaption($val, $opt=array())
- * @method static Model\Collection|HvzModel[]|HvzModel|null findByFloating($val, $opt=array())
- * @method static Model\Collection|HvzModel[]|HvzModel|null findByAddEnclosure($val, $opt=array())
- * @method static Model\Collection|HvzModel[]|HvzModel|null findByEnclosure($val, $opt=array())
- * @method static Model\Collection|HvzModel[]|HvzModel|null findByNoComments($val, $opt=array())
- * @method static Model\Collection|HvzModel[]|HvzModel|null findByPublished($val, $opt=array())
- * @method static Model\Collection|HvzModel[]|HvzModel|null findMultipleByIds($val, $opt=array())
- * @method static Model\Collection|HvzModel[]|HvzModel|null findBy($col, $val, $opt=array())
- * @method static Model\Collection|HvzModel[]|HvzModel|null findAll($opt=array())
+ * @method static Collection|HvzModel[]|HvzModel|null findByPid($val, $opt=array())
+ * @method static Collection|HvzModel[]|HvzModel|null findBySorting($val, $opt=array())
+ * @method static Collection|HvzModel[]|HvzModel|null findByTstamp($val, $opt=array())
+ * @method static Collection|HvzModel[]|HvzModel|null findByQuestion($val, $opt=array())
+ * @method static Collection|HvzModel[]|HvzModel|null findByAlias($val, $opt=array())
+ * @method static Collection|HvzModel[]|HvzModel|null findByAuthor($val, $opt=array())
+ * @method static Collection|HvzModel[]|HvzModel|null findByAnswer($val, $opt=array())
+ * @method static Collection|HvzModel[]|HvzModel|null findByAddImage($val, $opt=array())
+ * @method static Collection|HvzModel[]|HvzModel|null findBySingleSRC($val, $opt=array())
+ * @method static Collection|HvzModel[]|HvzModel|null findByAlt($val, $opt=array())
+ * @method static Collection|HvzModel[]|HvzModel|null findBySize($val, $opt=array())
+ * @method static Collection|HvzModel[]|HvzModel|null findByImagemargin($val, $opt=array())
+ * @method static Collection|HvzModel[]|HvzModel|null findByImageUrl($val, $opt=array())
+ * @method static Collection|HvzModel[]|HvzModel|null findByFullsize($val, $opt=array())
+ * @method static Collection|HvzModel[]|HvzModel|null findByCaption($val, $opt=array())
+ * @method static Collection|HvzModel[]|HvzModel|null findByFloating($val, $opt=array())
+ * @method static Collection|HvzModel[]|HvzModel|null findByAddEnclosure($val, $opt=array())
+ * @method static Collection|HvzModel[]|HvzModel|null findByEnclosure($val, $opt=array())
+ * @method static Collection|HvzModel[]|HvzModel|null findByNoComments($val, $opt=array())
+ * @method static Collection|HvzModel[]|HvzModel|null findByPublished($val, $opt=array())
+ * @method static Collection|HvzModel[]|HvzModel|null findMultipleByIds($val, $opt=array())
+ * @method static Collection|HvzModel[]|HvzModel|null findBy($col, $val, $opt=array())
+ * @method static Collection|HvzModel[]|HvzModel|null findAll($opt=array())
  * @method static integer countById($id, $opt=array())
  * @method static integer countByPid($val, $opt=array())
  * @method static integer countBySorting($val, $opt=array())
@@ -139,9 +140,9 @@ class HvzModel extends \Model
      *
      * @return HvzModel|null The model or null if there is no FAQ
      */
-    public static function findPublishedByParentAndIdOrAlias($varId, $arrPids, array $arrOptions = [])
+    public static function findPublishedByParentAndIdOrAlias($varId, $arrPids, array $arrOptions = []): ?HvzModel
     {
-        if (!\is_array($arrPids) || empty($arrPids)) {
+        if (!is_array($arrPids) || empty($arrPids)) {
             return null;
         }
 
@@ -161,11 +162,11 @@ class HvzModel extends \Model
      * @param array $arrPids    An array of parent IDs
      * @param array $arrOptions An optional options array
      *
-     * @return Model\Collection|HvzModel[]|HvzModel|null A collection of models or null if there are no Hvzs
+     * @return Collection|HvzModel[]|HvzModel|null A collection of models or null if there are no Hvzs
      */
     public static function findPublishedByFeatured($arrPids, array $arrOptions = [])
     {
-        if (!\is_array($arrPids) || empty($arrPids)) {
+        if (!is_array($arrPids) || empty($arrPids)) {
             return null;
         }
 
@@ -187,7 +188,7 @@ class HvzModel extends \Model
      * @param int   $intPid     The parent ID
      * @param array $arrOptions An optional options array
      *
-     * @return Model\Collection|HvzModel[]|HvzModel|null A collection of models or null if there are no Hvzs
+     * @return Collection|HvzModel[]|HvzModel|null A collection of models or null if there are no Hvzs
      */
     public static function findPublishedByPid($intPid, array $arrOptions = [])
     {
@@ -211,11 +212,11 @@ class HvzModel extends \Model
      * @param array $arrPids    An array of HVZ category IDs
      * @param array $arrOptions An optional options array
      *
-     * @return Model\Collection|HvzModel[]|HvzModel|null A collection of models or null if there are no Hvzs
+     * @return Collection|HvzModel[]|HvzModel|null A collection of models or null if there are no Hvzs
      */
     public static function findPublishedByPids($arrPids, array $arrOptions = [])
     {
-        if (!\is_array($arrPids) || empty($arrPids)) {
+        if (!is_array($arrPids) || empty($arrPids)) {
             return null;
         }
 

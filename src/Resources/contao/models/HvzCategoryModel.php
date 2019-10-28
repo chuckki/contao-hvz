@@ -12,6 +12,8 @@
 
 namespace Chuckki\ContaoHvzBundle;
 
+use Contao\Model\Collection;
+
 /**
  * Reads and writes Hvz categories.
  *
@@ -45,21 +47,21 @@ namespace Chuckki\ContaoHvzBundle;
  * @method static HvzCategoryModel|null findOneByBbcode($val, $opt=array())
  * @method static HvzCategoryModel|null findOneByRequireLogin($val, $opt=array())
  * @method static HvzCategoryModel|null findOneByDisableCaptcha($val, $opt=array())
- * @method static Model\Collection|HvzCategoryModel[]|HvzCategoryModel|null findByTstamp($val, $opt=array())
- * @method static Model\Collection|HvzCategoryModel[]|HvzCategoryModel|null findByTitle($val, $opt=array())
- * @method static Model\Collection|HvzCategoryModel[]|HvzCategoryModel|null findByHeadline($val, $opt=array())
- * @method static Model\Collection|HvzCategoryModel[]|HvzCategoryModel|null findByJumpTo($val, $opt=array())
- * @method static Model\Collection|HvzCategoryModel[]|HvzCategoryModel|null findByAllowComments($val, $opt=array())
- * @method static Model\Collection|HvzCategoryModel[]|HvzCategoryModel|null findByNotify($val, $opt=array())
- * @method static Model\Collection|HvzCategoryModel[]|HvzCategoryModel|null findBySortOrder($val, $opt=array())
- * @method static Model\Collection|HvzCategoryModel[]|HvzCategoryModel|null findByPerPage($val, $opt=array())
- * @method static Model\Collection|HvzCategoryModel[]|HvzCategoryModel|null findByModerate($val, $opt=array())
- * @method static Model\Collection|HvzCategoryModel[]|HvzCategoryModel|null findByBbcode($val, $opt=array())
- * @method static Model\Collection|HvzCategoryModel[]|HvzCategoryModel|null findByRequireLogin($val, $opt=array())
- * @method static Model\Collection|HvzCategoryModel[]|HvzCategoryModel|null findByDisableCaptcha($val, $opt=array())
- * @method static Model\Collection|HvzCategoryModel[]|HvzCategoryModel|null findMultipleByIds($val, $opt=array())
- * @method static Model\Collection|HvzCategoryModel[]|HvzCategoryModel|null findBy($col, $val, $opt=array())
- * @method static Model\Collection|HvzCategoryModel[]|HvzCategoryModel|null findAll($opt=array())
+ * @method static Collection|HvzCategoryModel[]|HvzCategoryModel|null findByTstamp($val, $opt=array())
+ * @method static Collection|HvzCategoryModel[]|HvzCategoryModel|null findByTitle($val, $opt=array())
+ * @method static Collection|HvzCategoryModel[]|HvzCategoryModel|null findByHeadline($val, $opt=array())
+ * @method static Collection|HvzCategoryModel[]|HvzCategoryModel|null findByJumpTo($val, $opt=array())
+ * @method static Collection|HvzCategoryModel[]|HvzCategoryModel|null findByAllowComments($val, $opt=array())
+ * @method static Collection|HvzCategoryModel[]|HvzCategoryModel|null findByNotify($val, $opt=array())
+ * @method static Collection|HvzCategoryModel[]|HvzCategoryModel|null findBySortOrder($val, $opt=array())
+ * @method static Collection|HvzCategoryModel[]|HvzCategoryModel|null findByPerPage($val, $opt=array())
+ * @method static Collection|HvzCategoryModel[]|HvzCategoryModel|null findByModerate($val, $opt=array())
+ * @method static Collection|HvzCategoryModel[]|HvzCategoryModel|null findByBbcode($val, $opt=array())
+ * @method static Collection|HvzCategoryModel[]|HvzCategoryModel|null findByRequireLogin($val, $opt=array())
+ * @method static Collection|HvzCategoryModel[]|HvzCategoryModel|null findByDisableCaptcha($val, $opt=array())
+ * @method static Collection|HvzCategoryModel[]|HvzCategoryModel|null findMultipleByIds($val, $opt=array())
+ * @method static Collection|HvzCategoryModel[]|HvzCategoryModel|null findBy($col, $val, $opt=array())
+ * @method static Collection|HvzCategoryModel[]|HvzCategoryModel|null findAll($opt=array())
  * @method static integer countById($id, $opt=array())
  * @method static integer countByTstamp($val, $opt=array())
  * @method static integer countByTitle($val, $opt=array())
