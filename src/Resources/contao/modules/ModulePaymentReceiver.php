@@ -10,6 +10,7 @@
 
 namespace Chuckki\ContaoHvzBundle;
 
+use Contao\BackendTemplate;
 use Contao\Input;
 use Contao\System;
 use GuzzleHttp\Client;
@@ -31,11 +32,10 @@ class ModulePaymentReceiver extends AbstractFrontendModule
      *
      * @return string
      */
-    public function generate()
+    public function generate(): string
     {
         if (TL_MODE === 'BE') {
-            /** @var \BackendTemplate|object $objTemplate */
-            $objTemplate = new \BackendTemplate('be_wildcard');
+            $objTemplate = new BackendTemplate('be_wildcard');
             $objTemplate->wildcard = '### Paypal Receiver ###';
             $objTemplate->title = $this->headline;
             $objTemplate->id = $this->id;
@@ -51,11 +51,14 @@ class ModulePaymentReceiver extends AbstractFrontendModule
     /**
      * Generate the module.
      */
-    protected function compile()
+    protected function compile():void
     {
         $session = System::getContainer()->get('session');
+        if(!$session){
+            throw new NotFoundHttpException('not Session');
+        }
         $orderObj = HvzOrderModel::findOneBy('hash', $session->get('orderToken'));
-        if (empty($orderObj)) {
+        if ($orderObj === null) {
             throw new NotFoundHttpException();
         }
         // receive Paypal
@@ -65,7 +68,7 @@ class ModulePaymentReceiver extends AbstractFrontendModule
             if (!empty($paymentId)) {
                 $this->strTemplate = null;
                 $currentOrderObj = HvzOrderModel::findOneBy('paypal_paymentId', $orderObj->paypal_paymentId);
-                if (empty($currentOrderObj) or $currentOrderObj->paypal_paymentId !== $orderObj->paypal_paymentId) {
+                if ($currentOrderObj === null || $currentOrderObj->paypal_paymentId !== $orderObj->paypal_paymentId) {
                     PushMeMessage::pushMe('Paypal Order not found by PaymentId: '.$orderObj->paypal_paymentId);
                 } else {
                     $orderObj->paypal_PayerID = Input::get('PayerID');
@@ -76,9 +79,6 @@ class ModulePaymentReceiver extends AbstractFrontendModule
                 $hvzPaypal = System::getContainer()->get('chuckki.contao_hvz_bundle.paypal');
                 $payment = $hvzPaypal->executePayment($paymentId, $orderObj->paypal_PayerID);
                 ModuleHvz::setSessionForThankYouPage($orderObj);
-                if ($payment) {
-//                    $orderObj->paypal_first_name = $payment->getPayer()->getPayerInfo()->
-                }
             }
         }
         // receive Klarna
@@ -93,7 +93,7 @@ class ModulePaymentReceiver extends AbstractFrontendModule
                 PushMeMessage::pushMe('Klarna Payment was not successfull:'.$orderObj->klarna_order_id);
             }
         }
-
+        // receive Invoice
         if (empty(Input::get('auth')) and empty(Input::get('paymentId')) and 'invoice' === $orderObj->choosen_payment) {
             $orderObj->payment_status = 'Rechnung';
             $orderObj->save();
