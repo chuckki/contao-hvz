@@ -11,6 +11,7 @@ namespace Chuckki\ContaoHvzBundle;
 
 use Chuckki\ContaoRabattBundle\Model\HvzRabattModel;
 use Contao\Config;
+use Contao\CoreBundle\Exception\AccessDeniedException;
 use Contao\Database;
 use Contao\Form;
 use Contao\PageModel;
