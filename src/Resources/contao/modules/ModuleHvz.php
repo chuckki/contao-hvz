@@ -187,7 +187,7 @@ class ModuleHvz extends Frontend
 
         if (!empty($arrSubmitted['type'])) {
             $orderModel              = $this->createOrderAndSaveToDatabase($arrSubmitted);
-            $orderModel->orderNumber = $this->sendNewOrderToBackend($arrSubmitted);
+            $orderModel->orderNumber = $this->sendNewOrderToBackend($orderModel);
             $orderModel->save();
             // set order for payment session
             $this->import('FrontendUser', 'user');
@@ -445,7 +445,7 @@ class ModuleHvz extends Frontend
         return $hvzOrder;
     }
 
-    private function sendNewOrderToBackend(&$arrSubmitted)
+    private function sendNewOrderToBackend(HvzOrderModel $orderModel): string
     {
         $api_url = $GLOBALS['TL_CONFIG']['hvz_api'];
         $api_auth = $GLOBALS['TL_CONFIG']['hvz_api_auth'];
@@ -457,33 +457,32 @@ class ModuleHvz extends Frontend
             $doubleSide = ($arrSubmitted['type'] % 2 === 0) ? true : false;
             // payload with missing value
             $data   = [
-                'uniqueRef'      => $arrSubmitted['orderNumber'],
-                'reason'         => $arrSubmitted['Grund'],
-                'plz'            => (int)($arrSubmitted['PLZ']),
-                'city'           => $arrSubmitted['Ort'],
-                'price'          => $arrSubmitted['fullPrice'].'',
-                'streetName'     => $arrSubmitted['Strasse'],
+                'uniqueRef'      => $orderModel->orderNumber,
+                'reason'         => $orderModel->hvz_grund,
+                'plz'            => $orderModel->hvz_plz,
+                'city'           => $orderModel->hvz_ort,
+                'price'          => $orderModel->getBrutto(),
+                'streetName'     => $orderModel->hvz_strasse_nr,
                 'streetNumber'   => '00',
-                'dateFrom'       => $arrSubmitted['vom'],
-                'dateTo'         => $arrSubmitted['bis'],
-                'timeFrom'       => $arrSubmitted['vomUhrzeit'].':00',
-                'timeTo'         => $arrSubmitted['bisUhrzeit'].':00',
-                'email'          => $arrSubmitted['email'],
-                'length'         => (int)($arrSubmitted['Meter']),
-                'isDoubleSided'  => $doubleSide,
-                'carrier'        => $arrSubmitted['Vorname'].' '.$arrSubmitted['Name'],
-                'additionalInfo' => $arrSubmitted['Zusatzinformationen'].'Genehmigung vorhanden:'
-                                    .$arrSubmitted['genehmigungVorhanden'],
-                'firma'          => $arrSubmitted['firma'],
-                'vorname'        => $arrSubmitted['Vorname'],
-                'name'           => $arrSubmitted['Name'],
-                'strasse'        => $arrSubmitted['strasse_rechnung'],
-                'ort'            => $arrSubmitted['ort_rechnung'],
-                'telefon'        => $arrSubmitted['Telefon'],
-                'needLicence'    => $arrSubmitted['apiNeedLicence'],
-                'gender'         => $arrSubmitted['apiGender'],
-                'customerId'     => 'hvb_'.$arrSubmitted['customerId'],
-                'paymentStatus'  => $arrSubmitted['choosen_payment'].' in Progress',
+                'dateFrom'       => $orderModel->hvz_vom,
+                'dateTo'         => $orderModel->hvz_bis,
+                'timeFrom'       => $orderModel->hvz_vom_time.':00',
+                'timeTo'         => $orderModel->hvz_vom_bis.':00',
+                'email'          => $orderModel->re_email,
+                'length'         => $orderModel->hvz_meter,
+                'isDoubleSided'  => $orderModel->hvz_type % 2 === 0,
+                'carrier'        => $orderModel->re_vorname . ' '.$orderModel->re_name,
+                'additionalInfo' => $orderModel->hvz_zusatzinfos,
+                'firma'          => $orderModel->re_firma,
+                'vorname'        => $orderModel->re_vorname,
+                'name'           => $orderModel->re_name,
+                'strasse'        => $orderModel->re_strasse_nr,
+                'ort'            => $orderModel->re_ort_plz,
+                'telefon'        => $orderModel->re_telefon,
+                'needLicence'    => $orderModel->hvz_type <= 2,
+                'gender'         => $orderModel->re_anrede === 'Herr' ? 'male' : 'female',
+                'customerId'     => 'hvb_'. $orderModel->user_id,
+                'paymentStatus'  => $orderModel->choosen_payment .' in Progress',
             ];
             $pushMe = '';
             try {
@@ -517,10 +516,10 @@ class ModuleHvz extends Frontend
             }
         }
         PushMeMessage::pushMe(
-            'HvbOnline2Backend -> Keine Auftragsnummer: '.$arrSubmitted['orderNumber'].'_0 :: '
-            .$arrSubmitted['ts']
+            'HvbOnline2Backend -> Keine Auftragsnummer: '.$orderModel->orderNumber.'_0 :: '
+            .$orderModel->ts
         );
 
-        return $arrSubmitted['orderNumber'].'_0';
+        return $orderModel->orderNumber.'_0';
     }
 }
