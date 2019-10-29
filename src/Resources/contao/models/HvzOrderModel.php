@@ -44,7 +44,7 @@ use Contao\PageModel;
  * @property string $hvz_type_name
  * @property string $hvz_ge_vorhanden
  * @property string $hvz_ort
- * @property string $hvz_plz
+ * @property int $hvz_plz
  * @property string $hvz_strasse_nr
  * @property string $hvz_vom
  * @property string $hvz_bis

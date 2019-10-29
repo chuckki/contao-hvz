@@ -155,7 +155,7 @@ class ModuleHvzReader extends \Module
 
             $this->Template->isInvoicePaymentActive = $this->user->isAktive_invoice;
 
-            $this->Template->hasOtherPaymentsThanInvoice = $this->user->paymentAllowed;
+            $this->Template->hasOtherPaymentsThanInvoice = $this->user->paymentAllowed || ($GLOBALS['TL_CONFIG']['isAktive_klarna'] or $GLOBALS['TL_CONFIG']['isAktive_paypal']);
             $this->Template->isKlarnaPaymentActive = $this->user->paymentAllowed || $GLOBALS['TL_CONFIG']['isAktive_klarna'];
             $this->Template->isPaypalPaymentActive = $this->user->paymentAllowed || $GLOBALS['TL_CONFIG']['isAktive_paypal'];
 

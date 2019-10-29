@@ -32,10 +32,6 @@ use Psr\Log\LoggerInterface;
  */
 class ModuleHvz extends Frontend
 {
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
 
     /**
      * Add HVZs to the indexer.
@@ -203,7 +199,7 @@ class ModuleHvz extends Frontend
                 // todo: make config ;)
                 case 'paypal':
                     if (!($GLOBALS['TL_CONFIG']['isAktive_paypal'] || $showAllPayments)) {
-                        throw new AccessDeniedException('Payment not allowed');
+                        throw new AccessDeniedException('Payment "paypal" not allowed');
                     }
                     $hvzPaypal                       = System::getContainer()->get('chuckki.contao_hvz_bundle.paypal');
                     $paymentObj                      = $hvzPaypal->generatePayment($orderModel);
@@ -214,7 +210,7 @@ class ModuleHvz extends Frontend
                     break;
                 case 'klarna':
                     if (!($GLOBALS['TL_CONFIG']['isAktive_klarna'] || $showAllPayments)) {
-                        throw new AccessDeniedException('Payment not allowed');
+                        throw new AccessDeniedException('Payment "klarna" not allowed');
                     }
                     $hvzKlarna                       = System::getContainer()->get('chuckki.contao_hvz_bundle.klarna');
                     $sessionObj                      = $hvzKlarna->getKlarnaNewOrderSession($orderModel);
@@ -224,10 +220,11 @@ class ModuleHvz extends Frontend
                     $redirect = $GLOBALS['TL_CONFIG']['klarna_payment'];
                     break;
                 case 'invoice':
-                    if (!($invoiceIsAllowed || $showAllPayments)) {
-                        throw new AccessDeniedException('Payment not allowed');
+                    if ($invoiceIsAllowed || $showAllPayments || (!$GLOBALS['TL_CONFIG']['isAktive_klarna'] && !$GLOBALS['TL_CONFIG']['isAktive_paypal'])){
+                        $orderModel->payment_status = 'Rechnung';
+                    }else{
+                        throw new AccessDeniedException('Payment "invoice" not allowed');
                     }
-                    $orderModel->payment_status = 'Rechnung';
                     // no break
                     break;
                 default:
@@ -340,7 +337,7 @@ class ModuleHvz extends Frontend
                 $price = $objHvz->hvz_double_og;
                 break;
             default:
-                $this->logger->log(500, 'HVZ-Type ist ungültig: '.$arrSubmitted['type'], $arrSubmitted);
+                PushMeMessage::pushMe('HVZ-Type ist ungültig: '.$arrSubmitted['type'] . 'ts: '. date('d.m.Y H:i'));
         }
         $arrSubmitted['hvz_solo_price'] = $price;
         $arrSubmitted['fullPrice'] = $price + ($arrSubmitted['wievieleTage'] - 1) * $objHvz->hvz_extra_tag;
@@ -437,14 +434,13 @@ class ModuleHvz extends Frontend
     {
         $api_url = $GLOBALS['TL_CONFIG']['hvz_api'];
         $api_auth = $GLOBALS['TL_CONFIG']['hvz_api_auth'];
-        $api_url = $GLOBALS['TL_CONFIG']['hvz_api'];
 
         if (!empty($api_url)) {
             // payload with missing value
             $data   = [
                 'uniqueRef'      => $orderModel->orderNumber,
                 'reason'         => $orderModel->hvz_grund,
-                'plz'            => $orderModel->hvz_plz,
+                'plz'            => (int)$orderModel->hvz_plz,
                 'city'           => $orderModel->hvz_ort,
                 'price'          => $orderModel->getBrutto(),
                 'streetName'     => $orderModel->hvz_strasse_nr,
@@ -454,7 +450,7 @@ class ModuleHvz extends Frontend
                 'timeFrom'       => $orderModel->hvz_vom_time.':00',
                 'timeTo'         => $orderModel->hvz_vom_bis.':00',
                 'email'          => $orderModel->re_email,
-                'length'         => $orderModel->hvz_meter,
+                'length'         => (int)$orderModel->hvz_meter,
                 'isDoubleSided'  => $orderModel->hvz_type % 2 === 0,
                 'carrier'        => $orderModel->re_vorname . ' '.$orderModel->re_name,
                 'additionalInfo' => $orderModel->hvz_zusatzinfos,
@@ -483,7 +479,6 @@ class ModuleHvz extends Frontend
                 );
                 $response = $client->post('/v1/order/new', ['body' => json_encode($data)]);
                 if (201 !== $response->getStatusCode()) {
-                    $this->logger->log(500, 'APICall fehlgeschlagen', $data);
                     $pushMe = 'Hvb2Api:'.$data['uniqueRef']."\n StatusCode:".$response->getStatusCode()
                               ."\nAPICall not found in ModuleHvz.php";
                 } else {
@@ -493,7 +488,6 @@ class ModuleHvz extends Frontend
                     }
                 }
             } catch (RequestException $e) {
-                $this->logger->log(500, 'APICall not found', $data);
                 $pushMe = 'Hvb2Api:'.$data['uniqueRef']."\n APICall Catch:".$e->getMessage();
             }
             if ('' !== $pushMe) {
