@@ -449,12 +449,9 @@ class ModuleHvz extends Frontend
     {
         $api_url = $GLOBALS['TL_CONFIG']['hvz_api'];
         $api_auth = $GLOBALS['TL_CONFIG']['hvz_api_auth'];
-        $arrSubmitted['apiGender'] = 'female';
-        if ('Herr' === $arrSubmitted['Geschlecht']) {
-            $arrSubmitted['apiGender'] = 'male';
-        }
+        $api_url = $GLOBALS['TL_CONFIG']['hvz_api'];
+
         if (!empty($api_url)) {
-            $doubleSide = ($arrSubmitted['type'] % 2 === 0) ? true : false;
             // payload with missing value
             $data   = [
                 'uniqueRef'      => $orderModel->orderNumber,
