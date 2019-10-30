@@ -3,50 +3,53 @@
 <div class="textblock">
 <form method="post">
 <input type="hidden" name="REQUEST_TOKEN" value="{{request_token}}" />
-  
-            <?php if ($this->isUser): ?>
-                <fieldset id="payment_field">
-                    <h2>alternative Zahlungsweise</h2>
-
-                    <p>Wählen Sie eine passende Zahlungsweise. Weitere Informationeen finden Sie hier: <a href="">Zahlungsarten</a></p>
-                    <div class="formRow" id="payments">
-
-                        <label for="pay_offline" class="pay_offline btn"><input type="radio" value="invoice" class="radio" id="pay_offline" name="NewPayment">Bezahlen via Rechnung</label>
-
-                        <label for="pay_paypal" class="pay_paypal btn"><input type="radio" value="paypal" class="radio" id="pay_paypal" name="NewPayment">
-                            Paypal
-                            <img id="paypal_logo" src="bundles/chuckkicontaohvz/img/paypalplus/de-pp_plus-logo-quer_ohne_PUI_365x60px.png" alt="Online Bezahlen (Paypal/SEPA-Lastschrift/Kreditkarte)" ></label>
-                        <label for="pay_klarna" class="pay_klarna btn"><input type="radio" value="klarna" class="radio" id="pay_klarna" checked="checked" name="NewPayment">
-                            Sofortüberweisung
-                            <img  id="paynow_logo" alt="Pay now. by Klarna" src="https://cdn.klarna.com/1.0/shared/image/generic/badge/de_de/pay_now/descriptive/horizontal/pink.svg" >
-                        </label>
-                    </div>
-                </fieldset>
-            <?php else: ?>
-                <fieldset id="payment_field">
-                    <h2>alternative Zahlungsweise</h2>
-                    <p>Wählen Sie eine passende Zahlungsweise. Weitere Informationeen finden Sie hier: <a href="">Zahlungsarten</a></p>
-                    <div class="formRow" id="payments">
-                        <label for="pay_paypal" class="pay_paypal btn"><input type="radio" value="paypal" class="radio" id="pay_paypal" name="NewPayment">
-                            Paypal
-                            <img id="paypal_logo" src="bundles/chuckkicontaohvz/img/paypalplus/de-pp_plus-logo-quer_ohne_PUI_365x60px.png" alt="Online Bezahlen (Paypal/SEPA-Lastschrift/Kreditkarte)" ></label>
-                        <label for="pay_klarna" class="pay_klarna btn"><input type="radio" value="klarna" class="radio" id="pay_klarna" checked="checked" name="NewPayment">
-                            Sofortüberweisung
-                            <img  id="paynow_logo" alt="Pay now. by Klarna" src="https://cdn.klarna.com/1.0/shared/image/generic/badge/de_de/pay_now/descriptive/horizontal/pink.svg" >
-                        </label>
-                    </div>
 
 
-                </fieldset>
+      <?php if ($this->hasOtherPaymentsThanInvoice): ?>
 
-            <?php endif; ?>
-            <input type="submit" id="confirm" class="btn submit" value="Jetzt Bezahlen">
+        <fieldset id="payment_field">
+          <h2>alternative Zahlungsweise</h2>
+          <p>Wählen Sie eine passende Zahlungsweise. Weitere Informationeen finden Sie hier: <a
+                href="">Zahlungsarten</a></p>
+          <div class="formRow" id="payments">
 
+
+              <?php if ($this->isPaypalPaymentActive): ?>
+                <label for="pay_paypal" class="pay_paypal btn">
+                  <input type="radio" value="paypal" class="radio" id="pay_paypal" name="NewPayment">
+                  Paypal
+                  <img id="paypal_logo"
+                       src="bundles/chuckkicontaohvz/img/paypalplus/de-pp_plus-logo-quer_ohne_PUI_365x60px.png"
+                       alt="Online Bezahlen (Paypal/SEPA-Lastschrift/Kreditkarte)"></label>
+              <?php endif; ?>
+              <?php if ($this->isKlarnaPaymentActive): ?>
+
+                <label for="pay_klarna" class="pay_klarna btn"><input type="radio" value="klarna" class="radio"
+                                                                      id="pay_klarna" name="NewPayment">
+                  Sofortüberweisung
+                  <img id="paynow_logo" alt="Pay now. by Klarna"
+                       src="https://cdn.klarna.com/1.0/shared/image/generic/badge/de_de/pay_now/descriptive/horizontal/pink.svg">
+                </label>
+              <?php endif; ?>
+              <?php if ($this->isInvoicePaymentActive): ?>
+
+                <label for="pay_offline" class="pay_offline btn"><input type="radio" value="invoice" class="radio"
+                                                                        id="pay_offline" name="NewPayment">Bezahlen
+                  via
+                  Rechnung</label>
+
+              <?php endif; ?>
+
+          </div>
+        </fieldset>
+      <?php endif; ?>
+
+    <input type="submit" id="confirm" class="btn submit" value="Jetzt Bezahlen">
   </form>
 </div>
 <div class="textblock">
-<h2>Bestellung Stornieren</h2>
-{{insert_form::14}}
+  <h2>Bestellung Stornieren</h2>
+  {{insert_form::14}}
 
 </div>
 
