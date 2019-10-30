@@ -178,7 +178,7 @@ class ModuleHvz extends Frontend
      *
      * @throws Exception
      */
-    public function saveFormData(&$arrSubmitted, $arrData, $arrFiles, $arrLabels, Form $objForm): void
+    public function saveFormData(&$arrSubmitted, &$arrData, $arrFiles, $arrLabels, Form $objForm): void
     {
         $redirect = null;
 
@@ -222,6 +222,7 @@ class ModuleHvz extends Frontend
                 case 'invoice':
                     if ($invoiceIsAllowed || $showAllPayments || (!$GLOBALS['TL_CONFIG']['isAktive_klarna'] && !$GLOBALS['TL_CONFIG']['isAktive_paypal'])){
                         $orderModel->payment_status = 'Rechnung';
+                        $redirect = $GLOBALS['TL_CONFIG']['finish_order'];
                     }else{
                         throw new AccessDeniedException('Payment "invoice" not allowed');
                     }
@@ -231,6 +232,7 @@ class ModuleHvz extends Frontend
                     throw new AccessDeniedException('No Payment');
             }
             $orderModel->save();
+            $arrData["nc_notification"] = null;
             self::setSessionForThankYouPage($orderModel);
             if (!empty($redirect)) {
                 $objForm->getModel()->jumpTo = $redirect;
@@ -347,7 +349,7 @@ class ModuleHvz extends Frontend
         $arrSubmitted['rabattCode'] =
             empty($arrSubmitted['gutscheincode']) ? '' : strtolower($arrSubmitted['gutscheincode']);
         $arrSubmitted['rabattValue'] = 0;
-        $arrSubmitted['Rabatt'] = '';
+        $arrSubmitted['Rabatt'] = 0;
         if (!empty($arrSubmitted['rabattCode'])) {
             $rabatt = HvzRabattModel::findRabattOnCode($arrSubmitted['rabattCode']);
             $arrSubmitted['Rabatt'] = ($rabatt) ? (int) $rabatt : 0;

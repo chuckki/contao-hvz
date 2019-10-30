@@ -67,7 +67,12 @@ $GLOBALS['FE_MOD']['faq']['faqreader'] = ModuleFaqReader::class;
 
 $GLOBALS['TL_HOOKS']['replaceInsertTags'][] = [ModuleHvzReplaceInsertTag::class, 'replaceCuInsertTags'];
 $GLOBALS['TL_HOOKS']['getSearchablePages'][] = [ModuleHvz::class, 'getSearchablePages'];
-$GLOBALS['TL_HOOKS']['processFormData'][] = [ModuleHvz::class, 'saveFormData'];
+
+if(!empty($GLOBALS['TL_HOOKS']['processFormData'])){
+    array_unshift($GLOBALS['TL_HOOKS']['processFormData'], [ModuleHvz::class, 'saveFormData']);
+}else{
+    $GLOBALS['TL_HOOKS']['processFormData'][] = [ModuleHvz::class, 'saveFormData'];
+}
 $GLOBALS['TL_CRON']['monthly'][] = [ModuleHvz::class, 'mergeFamus'];
 
 /*
