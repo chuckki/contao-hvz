@@ -64,7 +64,7 @@ class ModuleHvzPaypal extends AbstractFrontendModule
     {
         $orderObj = HvzOrderModel::findOneBy('hash', System::getContainer()->get('session')->get('orderToken'));
         if (!$orderObj) {
-            PushMeMessage::pushMe('Paypal Order not found by PaymentId: '.$orderObj->paypal_paymentId);
+            PushMeMessage::pushMe('Paypal Order not found by PaymentId: '.$orderObj->paypal_paymentId, 'ModuleHvzPaypal');
             throw new NotFoundHttpException();
         }
         if (!empty($orderObj->paypal_approvalLink) and empty(Input::get('paymentId'))) {

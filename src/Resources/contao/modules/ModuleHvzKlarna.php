@@ -62,7 +62,7 @@ class ModuleHvzKlarna extends \Module
     {
         $orderObj = HvzOrderModel::findOneBy('hash', System::getContainer()->get('session')->get('orderToken'));
         if (!$orderObj) {
-            PushMeMessage::pushMe('Klarna Order not found by PaymentId: '.$orderObj->paypal_paymentId);
+            PushMeMessage::pushMe('Klarna Order not found by PaymentId: '.$orderObj->paypal_paymentId, 'ModuleHvzKlarna');
             throw new NotFoundHttpException();
         }
         if (!empty($orderObj->klarna_client_token) and empty(Input::get('auth'))) {
@@ -81,7 +81,7 @@ class ModuleHvzKlarna extends \Module
             $orderObj->payment_status = 'Payed via Klarna';
             $orderObj->save();
             if ('ACCEPTED' !== $data['fraud_status']) {
-                PushMeMessage::pushMe('Klarna Payment was not successfull ('.$data['fraud_status'].'):'.$orderObj->klarna_order_id);
+                PushMeMessage::pushMe('Klarna Payment was not successfull ('.$data['fraud_status'].'):'.$orderObj->klarna_order_id, 'ModuleHvzKlarna');
                 $orderObj->payment_status = 'Payed via Klarna failed: '.$data['fraud_status'];
             }
             $orderObj->save();

@@ -14,7 +14,7 @@ class PushMeMessage
 {
     public static function pushMe($msg, $topic = '', $url = '')
     {
-        $curMsg = $topic.":\n".$msg."\n".$url;
+        $curMsg = 'ContaoHvzBundle:' . $topic.":\n".$msg."\n".$url;
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, 'https://pushme.projektorientiert.de/');
         curl_setopt($ch, CURLOPT_POSTFIELDS, [

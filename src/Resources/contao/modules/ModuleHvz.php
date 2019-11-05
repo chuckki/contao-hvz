@@ -339,7 +339,7 @@ class ModuleHvz extends Frontend
                 $price = $objHvz->hvz_double_og;
                 break;
             default:
-                PushMeMessage::pushMe('HVZ-Type ist ungültig: '.$arrSubmitted['type'] . 'ts: '. date('d.m.Y H:i'));
+                PushMeMessage::pushMe('HVZ-Type ist ungültig: '.$arrSubmitted['type'] . 'ts: '. date('d.m.Y H:i'), 'ModuleHvz');
         }
         $arrSubmitted['hvz_solo_price'] = $price;
         $arrSubmitted['fullPrice'] = $price + ($arrSubmitted['wievieleTage'] - 1) * $objHvz->hvz_extra_tag;
@@ -493,12 +493,13 @@ class ModuleHvz extends Frontend
                 $pushMe = 'Hvb2Api:'.$data['uniqueRef']."\n APICall Catch:".$e->getMessage();
             }
             if ('' !== $pushMe) {
-                PushMeMessage::pushMe($pushMe);
+                PushMeMessage::pushMe($pushMe, 'ModuleHvz');
             }
         }
         PushMeMessage::pushMe(
             'HvbOnline2Backend -> Keine Auftragsnummer: '.$orderModel->orderNumber.'_0 :: '
-            .$orderModel->ts
+            .$orderModel->ts,
+            'ModuleHvz'
         );
 
         return $orderModel->orderNumber.'_0';

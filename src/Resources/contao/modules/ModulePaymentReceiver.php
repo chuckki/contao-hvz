@@ -69,7 +69,7 @@ class ModulePaymentReceiver extends AbstractFrontendModule
                 $this->strTemplate = null;
                 $currentOrderObj = HvzOrderModel::findOneBy('paypal_paymentId', $orderObj->paypal_paymentId);
                 if ($currentOrderObj === null || $currentOrderObj->paypal_paymentId !== $orderObj->paypal_paymentId) {
-                    PushMeMessage::pushMe('Paypal Order not found by PaymentId: '.$orderObj->paypal_paymentId);
+                    PushMeMessage::pushMe('Paypal Order not found by PaymentId: '.$orderObj->paypal_paymentId, 'ModulePaymentReceiver');
                 } else {
                     $orderObj->paypal_PayerID = Input::get('PayerID');
                     $orderObj->paypal_token = Input::get('token');
@@ -90,7 +90,7 @@ class ModulePaymentReceiver extends AbstractFrontendModule
             $orderObj->payment_status = 'Payed via Klarna';
             $orderObj->save();
             if ('ACCEPTED' !== $data['fraud_status']) {
-                PushMeMessage::pushMe('Klarna Payment was not successfull:'.$orderObj->klarna_order_id);
+                PushMeMessage::pushMe('Klarna Payment was not successfull:'.$orderObj->klarna_order_id, 'ModulePaymentReceiver');
             }
         }
         // receive Invoice
@@ -138,7 +138,7 @@ class ModulePaymentReceiver extends AbstractFrontendModule
         } else {
             PushMeMessage::pushMe(
                 'Keine Order-Mail versand. Fehler in Notification-Center (id:'.$GLOBALS['TL_CONFIG']['notifications']
-                .')'
+                .')', 'ModulePaymentReceiver'
             );
         }
         ModuleHvz::setSessionForThankYouPage($orderObj);
@@ -183,7 +183,7 @@ class ModulePaymentReceiver extends AbstractFrontendModule
                 $pushMe = 'Hvb2Api:'.$data['uniqueRef']."\n APICall updatePaymentStatus:".$e->getMessage();
             }
             if ('' !== $pushMe) {
-                PushMeMessage::pushMe($pushMe);
+                PushMeMessage::pushMe($pushMe, 'ModulePaymentReceiver');
             }
         }
     }

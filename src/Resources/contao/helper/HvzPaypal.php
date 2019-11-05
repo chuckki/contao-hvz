@@ -48,7 +48,7 @@ class HvzPaypal
     public function createProfile()
     {
         $apiContext = $this->getApiContext();
-        
+
         // Parameters for style and presentation.
         $presentation = new \PayPal\Api\Presentation();
         // A URL to logo image. Allowed vaues: .gif, .jpg, or .png.
@@ -154,7 +154,7 @@ class HvzPaypal
 
             return $payment;
         } catch (PayPalConnectionException $ex) {
-            PushMeMessage::pushMe('Paypal Exception: '.$ex->getData());
+            PushMeMessage::pushMe('Paypal Exception: '.$ex->getData(), 'HvzPaypal');
         }
 
         return null;
@@ -180,11 +180,11 @@ class HvzPaypal
             try {
                 $payment = Payment::get($paymentId, $apiContext);
             } catch (Exception $ex) {
-                PushMeMessage::pushMe('Paypal Payment not exist: '.$ex->getMessage());
+                PushMeMessage::pushMe('Paypal Payment not exist: '.$ex->getMessage(),'HvzPaypal');
                 exit(1);
             }
         } catch (Exception $ex) {
-            PushMeMessage::pushMe('Paypal Execute Failure: '.$ex->getMessage());
+            PushMeMessage::pushMe('Paypal Execute Failure: '.$ex->getMessage(), 'HvzPaypal');
             $logger->error('Paypal  Execute Failure ('.$paymentId.')', [$ex->getMessage()]);
             exit(1);
         }

@@ -53,7 +53,7 @@ class HvzKlarna
             return $session;
         } catch (Exception $e) {
             $this->logger->error('Not possible to create Klarnaorder', [$e->getMessage()]);
-            PushMeMessage::pushMe('Not possible to create Klarnaorder');
+            PushMeMessage::pushMe('Not possible to create Klarnaorder', 'HvzKlarna');
             exit(0);
         }
         die('Klarna Payments got some errors');
@@ -68,7 +68,7 @@ class HvzKlarna
             return $session;
         } catch (Exception $e) {
             $this->logger->error('Not possible to get Klarnasession', [$e->getMessage()]);
-            PushMeMessage::pushMe('Not possible to get Klarnasession');
+            PushMeMessage::pushMe('Not possible to get Klarnasession','HvzKlarna');
             exit(0);
         }
         die('Klarna Payments got some errors');
@@ -85,7 +85,7 @@ class HvzKlarna
             return $data;
         } catch (Exception $e) {
             $this->logger->error('Not possible to execute Klarna Payment', [$e->getMessage()]);
-            PushMeMessage::pushMe('Not possible to execute Klarna Payment');
+            PushMeMessage::pushMe('Not possible to execute Klarna Payment','HvzKlarna');
             exit(0);
         }
         die('Klarna Payments got some errors');
