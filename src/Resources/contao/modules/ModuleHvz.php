@@ -220,7 +220,7 @@ class ModuleHvz extends Frontend
                     $redirect = $GLOBALS['TL_CONFIG']['klarna_payment'];
                     break;
                 case 'invoice':
-                    if ($invoiceIsAllowed || $showAllPayments || (!$GLOBALS['TL_CONFIG']['isAktive_klarna'] && !$GLOBALS['TL_CONFIG']['isAktive_paypal'])){
+                    if ($GLOBALS['TL_CONFIG']['invoice_for_all'] || $invoiceIsAllowed || $showAllPayments || (!$GLOBALS['TL_CONFIG']['isAktive_klarna'] && !$GLOBALS['TL_CONFIG']['isAktive_paypal'])){
                         $orderModel->payment_status = 'Rechnung';
                         $redirect = $GLOBALS['TL_CONFIG']['finish_order'];
                     }else{

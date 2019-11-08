@@ -87,6 +87,13 @@ $GLOBALS['TL_DCA']['tl_settings']['fields']['paypal_env'] = [
     'eval' => ['tl_class' => 'w50'],
 ];
 
+
+$GLOBALS['TL_DCA']['tl_settings']['fields']['invoice_for_all'] = [
+    'label' => ['Rechnungen erlauben', 'Wenn aktiv, dürfen alle die Rechnungsoption auswählen'],
+    'inputType' => 'checkbox',
+    'eval' => ['tl_class' => 'w50'],
+];
+
 /*
  * Fields
  */
@@ -114,4 +121,5 @@ $GLOBALS['TL_DCA']['tl_settings']['fields']['isAktive_paypal'] = [
 $GLOBALS['TL_DCA']['tl_settings']['palettes']['default'] .= ';{hvz_api:hide},hvz_api,hvz_api_auth;';
 $GLOBALS['TL_DCA']['tl_settings']['palettes']['default'] .= '{klarna_settings:hide},isAktive_klarna,klarna_env,klarna_user,klarna_pw;';
 $GLOBALS['TL_DCA']['tl_settings']['palettes']['default'] .= '{paypal_settings:hide},isAktive_paypal,paypal_env,paypal_id,paypal_secret,paypal_profil,notifications;';
+$GLOBALS['TL_DCA']['tl_settings']['palettes']['default'] .= '{invoice_setting:hide},invoice_for_all;';
 $GLOBALS['TL_DCA']['tl_settings']['palettes']['default'] .= '{hvz_payment:hide},edit_order,finish_order,paypal_payment,klarna_payment';

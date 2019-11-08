@@ -147,13 +147,13 @@ class ModuleHvzReader extends \Module
         $this->Template->isPaypalPaymentActive = $GLOBALS['TL_CONFIG']['isAktive_paypal'];
         $this->Template->hasOtherPaymentsThanInvoice = ($GLOBALS['TL_CONFIG']['isAktive_klarna'] or $GLOBALS['TL_CONFIG']['isAktive_paypal']);
 
-        $this->Template->isInvoicePaymentActive = false;
+        $this->Template->isInvoicePaymentActive = $GLOBALS['TL_CONFIG']['invoice_for_all'];
 
         // import FrontEndUser Data
         $this->import('FrontendUser', 'user');
         if (FE_USER_LOGGED_IN) {
 
-            $this->Template->isInvoicePaymentActive = $this->user->isAktive_invoice;
+            $this->Template->isInvoicePaymentActive = $this->user->isAktive_invoice || $GLOBALS['TL_CONFIG']['invoice_for_all'];
 
             $this->Template->hasOtherPaymentsThanInvoice = $this->user->paymentAllowed || ($GLOBALS['TL_CONFIG']['isAktive_klarna'] or $GLOBALS['TL_CONFIG']['isAktive_paypal']);
             $this->Template->isKlarnaPaymentActive = $this->user->paymentAllowed || $GLOBALS['TL_CONFIG']['isAktive_klarna'];
