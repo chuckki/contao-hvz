@@ -400,8 +400,7 @@
               <fieldset id="payment_field">
                 <legend>Zahlungsweise</legend>
 
-                <p>Wählen Sie eine passende Zahlungsweise. Weitere Informationeen finden Sie hier: <a href="">Zahlungsarten</a>
-                </p>
+                <p>Wählen Sie eine passende Zahlungsweise:</p>
                 <div class="formRow" id="payments">
 
                     <?php if ($this->isPaypalPaymentActive): ?>
@@ -423,11 +422,10 @@
                     <?php endif; ?>
                     <?php if ($this->isInvoicePaymentActive): ?>
 
-                      <label for="pay_offline" class="pay_offline btn"><input type="radio" value="invoice" class="radio"
-                                                                              id="pay_offline" name="Payment">Bezahlen
-                        via
-                        Rechnung</label>
-
+                        <label for="pay_offline" class="pay_offline btn">
+                            <input  <?php if ($this->isUser): ?>checked="checked" <?php endif; ?>type="radio" value="invoice" class="radio"
+                                                                              id="pay_offline" name="Payment">
+                            Bezahlen via Rechnung</label>
                     <?php endif; ?>
 
                 </div>
