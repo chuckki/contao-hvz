@@ -185,7 +185,7 @@ class HvzPaypal
             }
         } catch (Exception $ex) {
             PushMeMessage::pushMe('Paypal Execute Failure: '.$ex->getMessage(), 'HvzPaypal');
-            $logger->error('Paypal  Execute Failure ('.$paymentId.')', [$ex->getMessage()]);
+            $this->logger->error('Paypal  Execute Failure ('.$paymentId.')', [$ex->getMessage()]);
             exit(1);
         }
 
