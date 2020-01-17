@@ -14,6 +14,7 @@ use Contao\Config;
 use Contao\CoreBundle\Exception\AccessDeniedException;
 use Contao\Form;
 use Contao\PageModel;
+use Contao\StringUtil;
 use Contao\System;
 use Date;
 use DateTime;
@@ -125,7 +126,7 @@ class ModuleHvz extends Frontend
             "SELECT kreis FROM tl_hvz where land like 'Deutschland' group by kreis order by kreis asc"
         )->execute();
         while ($result_plz->next()) {
-            $stdKreis = standardize($result_plz->kreis);
+            $stdKreis = StringUtil::standardize($result_plz->kreis);
             $arrPages[] = $objParent->getAbsoluteUrl('/kreis/'.$stdKreis);
         }
 

@@ -123,7 +123,8 @@ class ModuleHvzReader extends \Module
                 exit;
             }
             $url = 'halteverbot-suche.html?suche='.$name;
-            \System::getContainer()->get('monolog.logger.contao')->log(LogLevel::INFO, sprintf('Keine Stadt gefunden mit "%s" - wurde weitergeleitet zur Suche.', \Input::get('items')));
+            // todo: look how contao log
+//            \System::getContainer()->get('monolog.logger.contao')->log(LogLevel::INFO, sprintf('Keine Stadt gefunden mit "%s" - wurde weitergeleitet zur Suche.', \Input::get('items')));
             $this->redirect($url, 302);
             exit;
         }

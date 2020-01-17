@@ -11,6 +11,9 @@
 /**
  * Load tl_content language file.
  */
+
+use Contao\StringUtil;
+
 System::loadLanguageFile('tl_content');
 
 /*
@@ -435,7 +438,7 @@ class tl_hvz extends Backend
 
                 if ($objAlias->numRows > 1) {
                     while ($objAlias->next()) {
-                        $strAlias = standardize(StringUtil::restoreBasicEntities($objAlias->question.' ('.$bLand[$objAlias->bundesland].')'));
+                        $strAlias = StringUtil::standardize(StringUtil::restoreBasicEntities($objAlias->question.' ('.$bLand[$objAlias->bundesland].')'));
                         $this->Database->prepare('UPDATE tl_hvz SET alias=? WHERE id=?')
                             ->execute($strAlias, $id);
                     }
@@ -445,7 +448,7 @@ class tl_hvz extends Backend
 
                     if ($objAlias->numRows > 1) {
                         while ($objAlias->next()) {
-                            $strAlias = standardize(StringUtil::restoreBasicEntities($objAlias->question.' ('.$objAlias->kreis.')'));
+                            $strAlias = StringUtil::standardize(StringUtil::restoreBasicEntities($objAlias->question.' ('.$objAlias->kreis.')'));
                             $this->Database->prepare('UPDATE tl_hvz SET alias=? WHERE id=?')
                                 ->execute($strAlias, $id);
                         }
@@ -460,8 +463,8 @@ class tl_hvz extends Backend
                     }
                 } else {
                     // Set the new alias
-                    //$strAlias = standardize(String::restoreBasicEntities($objPage->question));
-                    $strAlias = standardize(StringUtil::restoreBasicEntities($objPage->question));
+                    //$strAlias = StringUtil::standardize(String::restoreBasicEntities($objPage->question));
+                    $strAlias = StringUtil::standardize(StringUtil::restoreBasicEntities($objPage->question));
                     // Store the new alias
                     $this->Database->prepare('UPDATE tl_hvz SET alias=? WHERE id=?')
                                        ->execute($strAlias, $id);
@@ -555,7 +558,7 @@ class tl_hvz extends Backend
         // Generate alias if there is none
         if ('' === $varValue) {
             $autoAlias = true;
-            $varValue = standardize(StringUtil::restoreBasicEntities($dc->activeRecord->question));
+            $varValue = StringUtil::standardize(StringUtil::restoreBasicEntities($dc->activeRecord->question));
         }
 
         $objAlias = $this->Database->prepare('SELECT id FROM tl_hvz WHERE alias=?')
