@@ -10,8 +10,6 @@
 
 namespace Chuckki\ContaoHvzBundle;
 
-use Contao\PageModel;
-
 /**
  * Provide methods regarding FAQs.
  *
@@ -22,10 +20,8 @@ class ModuleFaqReader extends \Contao\ModuleFaqReader
     /**
      * Generate the module.
      */
-    protected function compile()
+    protected function compile(): void
     {
-        /* @var PageModel $objPage */
-        global $objPage;
 
         $objFaq = \FaqModel::findPublishedByParentAndIdOrAlias(\Input::get('items'), $this->faq_categories);
         if (null !== $objFaq) {

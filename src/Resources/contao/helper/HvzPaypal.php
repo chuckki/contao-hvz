@@ -13,7 +13,9 @@ namespace Chuckki\ContaoHvzBundle;
 use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
 use Exception;
 use PayPal\Api\Amount;
+use PayPal\Api\CreateProfileResponse;
 use PayPal\Api\Details;
+use PayPal\Api\InputFields;
 use PayPal\Api\Item;
 use PayPal\Api\ItemList;
 use PayPal\Api\Payer;
@@ -22,11 +24,11 @@ use PayPal\Api\PaymentExecution;
 use PayPal\Api\Presentation;
 use PayPal\Api\RedirectUrls;
 use PayPal\Api\Transaction;
+use PayPal\Api\WebProfile;
 use PayPal\Auth\OAuthTokenCredential;
 use PayPal\Exception\PayPalConnectionException;
 use PayPal\Rest\ApiContext;
 use Psr\Log\LoggerInterface;
-use ResultPrinter;
 
 class HvzPaypal
 {
@@ -45,12 +47,12 @@ class HvzPaypal
         $this->logger = $logger;
     }
 
-    public function createProfile()
+    public function createProfile(): CreateProfileResponse
     {
         $apiContext = $this->getApiContext();
 
         // Parameters for style and presentation.
-        $presentation = new \PayPal\Api\Presentation();
+        $presentation = new Presentation();
         // A URL to logo image. Allowed vaues: .gif, .jpg, or .png.
         $presentation->setLogoImage(
             'https://www.halteverbot-beantragen.de/files/halteverbot-theme/img/halteverbot-beantragen-Paypal.png'
@@ -62,7 +64,7 @@ class HvzPaypal
         )// A label to use as the title for the note to seller field. Used only when `allow_note` is `1`.
             ->setNoteToSellerLabel('Danke schön!');
         // Parameters for input fields customization.
-        $inputFields = new \PayPal\Api\InputFields();
+        $inputFields = new InputFields();
         // Enables the buyer to enter a note to the merchant on the PayPal page during checkout.
         $inputFields->setAllowNote(
             true
@@ -72,9 +74,9 @@ class HvzPaypal
             )// Determines whether or not the PayPal pages should display the shipping address and not the shipping address on file with PayPal for this buyer. Displaying the PayPal street address on file does not allow the buyer to edit that address. Allowed values: 0 or 1. When set to 0, the PayPal pages should not display the shipping address. When set to 1, the PayPal pages should display the shipping address.
             ->setAddressOverride(0);
         // #### Payment Web experience profile resource
-        $webProfile = new \PayPal\Api\WebProfile();
+        $webProfile = new WebProfile();
         // Name of the web experience profile. Required. Must be unique
-        $webProfile->setName('Halteverbot Online Demo2'.uniqid())// Parameters for flow configuration.
+        $webProfile->setName('Halteverbot Online Demo2'.uniqid('', true))// Parameters for flow configuration.
         ->setPresentation($presentation)// Parameters for input field customization.
         ->setInputFields(
             $inputFields
@@ -83,17 +85,16 @@ class HvzPaypal
         try {
             // Use this call to create a profile.
             $createProfileResponse = $webProfile->create($apiContext);
-        } catch (\PayPal\Exception\PayPalConnectionException $ex) {
+        } catch (PayPalConnectionException $ex) {
             // NOTE: PLEASE DO NOT USE RESULTPRINTER CLASS IN YOUR ORIGINAL CODE. FOR SAMPLE ONLY
             //ResultPrinter::printError('Created Web Profile', 'Web Profile', null, $request, $ex);
-            print_r($ex);
-            die;
+            throw new PayPalConnectionException($ex->getUrl(), $ex->getMessage());
         }
 
         return $createProfileResponse;
     }
 
-    public function initialCredits(array $conf)
+    public function initialCredits(array $conf): void
     {
         $this->clientId = $conf['paypal_id'];
         $this->clientSecret = $conf['paypal_secret'];
@@ -192,7 +193,7 @@ class HvzPaypal
         return $result;
     }
 
-    private function getApiContext()
+    private function getApiContext(): ApiContext
     {
         $apiContext = new ApiContext(
             new OAuthTokenCredential($this->clientId, $this->clientSecret)

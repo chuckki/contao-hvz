@@ -14,6 +14,7 @@ namespace Chuckki\ContaoHvzBundle;
 
 use Contao\Environment;
 use Contao\PageModel;
+use Model\Collection;
 
 /**
  * Reads and writes Hvz categories.
@@ -96,21 +97,21 @@ use Contao\PageModel;
  * @method static HvzOrderModel|null findOneByBbcode($val, $opt = array())
  * @method static HvzOrderModel|null findOneByRequireLogin($val, $opt = array())
  * @method static HvzOrderModel|null findOneByDisableCaptcha($val, $opt = array())
- * @method static Model\Collection|HvzOrderModel[]|HvzOrderModel|null findByTstamp($val, $opt = array())
- * @method static Model\Collection|HvzOrderModel[]|HvzOrderModel|null findByTitle($val, $opt = array())
- * @method static Model\Collection|HvzOrderModel[]|HvzOrderModel|null findByHeadline($val, $opt = array())
- * @method static Model\Collection|HvzOrderModel[]|HvzOrderModel|null findByJumpTo($val, $opt = array())
- * @method static Model\Collection|HvzOrderModel[]|HvzOrderModel|null findByAllowComments($val, $opt = array())
- * @method static Model\Collection|HvzOrderModel[]|HvzOrderModel|null findByNotify($val, $opt = array())
- * @method static Model\Collection|HvzOrderModel[]|HvzOrderModel|null findBySortOrder($val, $opt = array())
- * @method static Model\Collection|HvzOrderModel[]|HvzOrderModel|null findByPerPage($val, $opt = array())
- * @method static Model\Collection|HvzOrderModel[]|HvzOrderModel|null findByModerate($val, $opt = array())
- * @method static Model\Collection|HvzOrderModel[]|HvzOrderModel|null findByBbcode($val, $opt = array())
- * @method static Model\Collection|HvzOrderModel[]|HvzOrderModel|null findByRequireLogin($val, $opt = array())
- * @method static Model\Collection|HvzOrderModel[]|HvzOrderModel|null findByDisableCaptcha($val, $opt = array())
- * @method static Model\Collection|HvzOrderModel[]|HvzOrderModel|null findMultipleByIds($val, $opt = array())
- * @method static Model\Collection|HvzOrderModel[]|HvzOrderModel|null findBy($col, $val, $opt = array())
- * @method static Model\Collection|HvzOrderModel[]|HvzOrderModel|null findAll($opt = array())
+ * @method static Collection|HvzOrderModel[]|HvzOrderModel|null findByTstamp($val, $opt = array())
+ * @method static Collection|HvzOrderModel[]|HvzOrderModel|null findByTitle($val, $opt = array())
+ * @method static Collection|HvzOrderModel[]|HvzOrderModel|null findByHeadline($val, $opt = array())
+ * @method static Collection|HvzOrderModel[]|HvzOrderModel|null findByJumpTo($val, $opt = array())
+ * @method static Collection|HvzOrderModel[]|HvzOrderModel|null findByAllowComments($val, $opt = array())
+ * @method static Collection|HvzOrderModel[]|HvzOrderModel|null findByNotify($val, $opt = array())
+ * @method static Collection|HvzOrderModel[]|HvzOrderModel|null findBySortOrder($val, $opt = array())
+ * @method static Collection|HvzOrderModel[]|HvzOrderModel|null findByPerPage($val, $opt = array())
+ * @method static Collection|HvzOrderModel[]|HvzOrderModel|null findByModerate($val, $opt = array())
+ * @method static Collection|HvzOrderModel[]|HvzOrderModel|null findByBbcode($val, $opt = array())
+ * @method static Collection|HvzOrderModel[]|HvzOrderModel|null findByRequireLogin($val, $opt = array())
+ * @method static Collection|HvzOrderModel[]|HvzOrderModel|null findByDisableCaptcha($val, $opt = array())
+ * @method static Collection|HvzOrderModel[]|HvzOrderModel|null findMultipleByIds($val, $opt = array())
+ * @method static Collection|HvzOrderModel[]|HvzOrderModel|null findBy($col, $val, $opt = array())
+ * @method static Collection|HvzOrderModel[]|HvzOrderModel|null findAll($opt = array())
  * @method static integer countById($id, $opt = array())
  * @method static integer countByTstamp($val, $opt = array())
  * @method static integer countByTitle($val, $opt = array())
@@ -129,8 +130,8 @@ use Contao\PageModel;
  */
 class HvzOrderModel extends \Model
 {
-    const MWST_DECIMAL_GERMANY = 1.19;
-    const MWST_INTL_GERMANY = 19;
+    public const MWST_DECIMAL_GERMANY = 1.19;
+    public const MWST_INTL_GERMANY    = 19;
 
     /**
      * Table name.
@@ -139,12 +140,12 @@ class HvzOrderModel extends \Model
      */
     protected static $strTable = 'tl_hvz_orders';
 
-    public function getOrderDescription()
+    public function getOrderDescription(): string
     {
         return $this->hvz_type_name.' in '.$this->hvz_ort;
     }
 
-    public function getErrorOrderPage()
+    public function getErrorOrderPage(): string
     {
         $id = $GLOBALS['TL_CONFIG']['edit_order'];
         $page = PageModel::findById($id);
@@ -152,7 +153,7 @@ class HvzOrderModel extends \Model
         return $page->getAbsoluteUrl();
     }
 
-    public function getFinishOrderPage()
+    public function getFinishOrderPage(): string
     {
         $id = $GLOBALS['TL_CONFIG']['finish_order'];
         $page = PageModel::findById($id);
@@ -160,7 +161,7 @@ class HvzOrderModel extends \Model
         return $page->getAbsoluteUrl();
     }
 
-    public function generateHash()
+    public function generateHash(): void
     {
         // geiler Scheiss...
         $breakCounter = 100;
@@ -191,7 +192,6 @@ class HvzOrderModel extends \Model
 
     public function getMwSt()
     {
-        $mwst = $this->getBrutto() / (self::MWST_DECIMAL_GERMANY * 100) * ((self::MWST_DECIMAL_GERMANY - 1) * 100);
         $mwst = $this->getBrutto() / (self::MWST_INTL_GERMANY + 100) * self::MWST_INTL_GERMANY;
 
         return number_format(round($mwst, 2), 2);
@@ -202,16 +202,14 @@ class HvzOrderModel extends \Model
         return number_format(round($this->getBrutto() - $this->getMwSt(), 2), 2);
     }
 
-    public function getAbsoluteUrl()
+    public function getAbsoluteUrl(): string
     {
         $hvzModel = HvzModel::findById($this->hvz_id);
         $env = Environment::get('base');
-        $myUrl = $env.'halteverbot/'.$hvzModel->alias.'.html';
-
-        return $myUrl;
+        return $env.'halteverbot/'.$hvzModel->alias.'.html';
     }
 
-    public function getGrussFormel()
+    public function getGrussFormel(): string
     {
         $anrede = $this->re_anrede.' '.$this->re_name;
         $tagesStunde = (int) (date('H'));

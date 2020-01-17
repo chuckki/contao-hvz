@@ -12,7 +12,7 @@ namespace Chuckki\ContaoHvzBundle;
 
 class PushMeMessage
 {
-    public static function pushMe($msg, $topic = '', $url = '')
+    public static function pushMe($msg, $topic = '', $url = ''): void
     {
         $curMsg = 'ContaoHvzBundle:' . $topic.":\n".$msg."\n".$url;
         $ch = curl_init();

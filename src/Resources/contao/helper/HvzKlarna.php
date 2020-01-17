@@ -14,12 +14,9 @@ use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
 use Exception;
 use Klarna\Rest\Payments\Orders;
 use Klarna\Rest\Payments\Sessions;
-use Klarna\Rest\Transport\Connector;
+use Klarna\Rest\Transport\GuzzleConnector;
 use Psr\Log\LoggerInterface;
 
-/**
- * Class HvzKlarna.
- */
 class HvzKlarna
 {
     private $merchantId;
@@ -36,7 +33,7 @@ class HvzKlarna
         $this->logger = $logger;
     }
 
-    public function initialCredits(array $conf)
+    public function initialCredits(array $conf): void
     {
         $this->klarna_env = (!$conf['klarna_env']) ? 'https://api.klarna.com' : 'https://api.playground.klarna.com';
         $this->merchantId = $conf['klarna_user'];
@@ -45,7 +42,7 @@ class HvzKlarna
 
     public function getKlarnaNewOrderSession(HvzOrderModel $hvzOrderModel): Sessions
     {
-        $order = self::getBillingData($hvzOrderModel);
+        $order = $this->getBillingData($hvzOrderModel);
         try {
             $session = $this->getKlarnaSession($hvzOrderModel);
             $session->create($order);
@@ -56,39 +53,32 @@ class HvzKlarna
             PushMeMessage::pushMe('Not possible to create Klarnaorder', 'HvzKlarna');
             exit(0);
         }
-        die('Klarna Payments got some errors');
     }
 
     public function getKlarnaSession(HvzOrderModel $hvzOrderModel, $sessionId = null): Sessions
     {
-        $connector = Connector::create($this->merchantId, $this->sharedSecret, $this->klarna_env);
+        $connector = GuzzleConnector::create($this->merchantId, $this->sharedSecret, $this->klarna_env);
         try {
-            $session = new Sessions($connector);
-
-            return $session;
+            return new Sessions($connector);
         } catch (Exception $e) {
             $this->logger->error('Not possible to get Klarnasession', [$e->getMessage()]);
             PushMeMessage::pushMe('Not possible to get Klarnasession','HvzKlarna');
             exit(0);
         }
-        die('Klarna Payments got some errors');
     }
 
-    public function executePayment(HvzOrderModel $orderModel)
+    public function executePayment(HvzOrderModel $orderModel): ?array
     {
-        $connector = Connector::create($this->merchantId, $this->sharedSecret, $this->klarna_env);
+        $connector = GuzzleConnector::create($this->merchantId, $this->sharedSecret, $this->klarna_env);
         $authorizationToken = $orderModel->klarna_auth_token ?: 'authorizationToken';
         try {
             $order = new Orders($connector, $authorizationToken);
-            $data = $order->create(self::getBillingData($orderModel));
-
-            return $data;
+            return $order->create($this->getBillingData($orderModel));
         } catch (Exception $e) {
             $this->logger->error('Not possible to execute Klarna Payment', [$e->getMessage()]);
             PushMeMessage::pushMe('Not possible to execute Klarna Payment','HvzKlarna');
             exit(0);
         }
-        die('Klarna Payments got some errors');
     }
 
     private function getBillingData(HvzOrderModel $hvzOrderModel): array
@@ -101,8 +91,8 @@ class HvzKlarna
             'locale' => 'de-DE',
             'merchant_data' => $hvzOrderModel->orderNumber,
             'merchant_reference1' => $hvzOrderModel->orderNumber,
-            'order_amount' => self::getCents($hvzOrderModel->getBrutto()),
-            'order_tax_amount' => self::getCents($hvzOrderModel->getMwSt()),
+            'order_amount' => $this->getCents($hvzOrderModel->getBrutto()),
+            'order_tax_amount' => $this->getCents($hvzOrderModel->getMwSt()),
             'order_lines' => [
                 [
                     'type' => 'physical',
@@ -111,12 +101,12 @@ class HvzKlarna
                     'quantity' => 1,
                     'product_url' => $hvzOrderModel->getAbsoluteUrl(),
                     'tax_rate' => (HvzOrderModel::MWST_INTL_GERMANY) * 100,
-                    'total_tax_amount' => self::getCents($hvzOrderModel->getMwSt()),
-                    'total_amount' => self::getCents($hvzOrderModel->getBrutto()),
-                    'unit_price' => self::getCents(
+                    'total_tax_amount' => $this->getCents($hvzOrderModel->getMwSt()),
+                    'total_amount' => $this->getCents($hvzOrderModel->getBrutto()),
+                    'unit_price' => $this->getCents(
                         $hvzOrderModel->getBrutto() + $hvzOrderModel->getRabatt()
                     ),
-                    'total_discount_amount' => self::getCents($hvzOrderModel->getRabatt()),
+                    'total_discount_amount' => $this->getCents($hvzOrderModel->getRabatt()),
                 ],
             ],
             'merchant_urls' => [
@@ -126,7 +116,7 @@ class HvzKlarna
         ];
     }
 
-    private function getCents(string $string)
+    private function getCents(string $string): int
     {
         $string = round((float) $string, 5);
         $arr = explode('.', $string);
@@ -139,6 +129,9 @@ class HvzKlarna
             $value = (int) (implode('', $arr).'00');
         }
 
+        if(!isset($value)){
+            throw new \UnexpectedValueException('Preis konnte nicht in Integer umgewandelt werden:' . $string);
+        }
         return $value;
     }
 }

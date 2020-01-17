@@ -120,7 +120,7 @@ class ModuleHvzList extends \Module
         $myReturn = [];
 
         // no request => Bundesland
-        if (empty($bundesland) and empty($kreis)) {
+        if (empty($bundesland) && empty($kreis)) {
             $myReturn['title'] = 'Haltevebote in allen Bundesländern bestellen';
             $myReturn['items'] = [];
 
@@ -230,12 +230,10 @@ class ModuleHvzList extends \Module
      *
      * @return string
      */
-    protected function generateHvzLink($objHvz)
+    protected function generateHvzLink($objHvz): string
     {
-        /* @var \PageModel $objPage */
+        /** @var PageModel $objPage */
         global $objPage;
-        $myUrl = '/'.$objPage->alias.'/'.$objHvz.'.html';
-
-        return $myUrl;
+        return '/' . $objPage->alias . '/' . $objHvz . '.html';
     }
 }

@@ -658,7 +658,8 @@ class tl_hvz extends Backend
             $icon = 'invisible.gif';
         }
 
-        return '<a href="'.$this->addToUrl($href).'" title="'.StringUtil::specialchars($title).'"'.$attributes.'>'.Image::getHtml($icon, $label).'</a> ';
+        return '<a href="' . $this->addToUrl($href) . '" title="' . StringUtil::specialchars($title) . '" ' . $attributes
+               . '>' . Image::getHtml($icon, $label) . '</a> ';
     }
 
     /**
@@ -704,7 +705,7 @@ class tl_hvz extends Backend
      * @param mixed $intId
      * @param mixed $blnVisible
      */
-    public function toggleVisibility($intId, $blnVisible)
+    public function toggleVisibility($intId, $blnVisible): void
     {
         // Check permissions to publish
         if (!$this->User->isAdmin && !$this->User->hasAccess('tl_hvz::published', 'alexf')) {

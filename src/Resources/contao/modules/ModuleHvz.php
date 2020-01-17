@@ -12,7 +12,6 @@ namespace Chuckki\ContaoHvzBundle;
 use Chuckki\ContaoRabattBundle\Model\HvzRabattModel;
 use Contao\Config;
 use Contao\CoreBundle\Exception\AccessDeniedException;
-use Contao\Database;
 use Contao\Form;
 use Contao\PageModel;
 use Contao\System;
@@ -23,7 +22,6 @@ use Frontend;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use mysqli;
-use Psr\Log\LoggerInterface;
 
 /**
  * Provide methods regarding HVZs.
@@ -32,7 +30,6 @@ use Psr\Log\LoggerInterface;
  */
 class ModuleHvz extends Frontend
 {
-
     /**
      * Add HVZs to the indexer.
      *
@@ -232,7 +229,7 @@ class ModuleHvz extends Frontend
                     throw new AccessDeniedException('No Payment');
             }
             $orderModel->save();
-            $arrData["nc_notification"] = null;
+            $arrData['nc_notification'] = null;
             self::setSessionForThankYouPage($orderModel);
             if (!empty($redirect)) {
                 $objForm->getModel()->jumpTo = $redirect;
@@ -240,7 +237,7 @@ class ModuleHvz extends Frontend
         }
     }
 
-    public static function setSessionForThankYouPage(HvzOrderModel $orderModel)
+    public static function setSessionForThankYouPage(HvzOrderModel $orderModel): void
     {
         // Create Session Data for ResponseView
         $formDatas = [];

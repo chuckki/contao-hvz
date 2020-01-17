@@ -57,7 +57,6 @@ $GLOBALS['TL_DCA']['tl_member']['fields']['umstid']    = [
     'sql'       => "varchar(20) NOT NULL default ''",
 ];
 $GLOBALS['TL_DCA']['tl_member']['fields']['gender']    = [
-    'label'     => &$GLOBALS['TL_LANG']['tl_member']['gender'],
     'label'     => ['Anrede'],
     'exclude'   => true,
     'inputType' => 'select',
