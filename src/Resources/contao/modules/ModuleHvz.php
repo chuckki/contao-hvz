@@ -180,6 +180,16 @@ class ModuleHvz extends Frontend
     {
         $redirect = null;
 
+        if($arrData["formID"] == "cancel"){
+            $orderObj = HvzOrderModel::findOneBy('hash', System::getContainer()->get('session')->get('orderToken'));
+            if($orderObj){
+                $orderObj->payment_status = "Cancelled by website user";
+                $orderObj->save();
+                $this->updatePaymentStatus($orderObj);
+                $this->updateOrderStatus($orderObj, "Cancelled");
+            }
+        }
+
         if (!empty($arrSubmitted['type'])) {
             $orderModel              = $this->createOrderAndSaveToDatabase($arrSubmitted);
             $orderModel->orderNumber = $this->sendNewOrderToBackend($orderModel);
@@ -502,4 +512,86 @@ class ModuleHvz extends Frontend
 
         return $orderModel->orderNumber.'_0';
     }
+
+    private function updatePaymentStatus(HvzOrderModel $hvzOrderModel)
+    {
+        $api_url = $GLOBALS['TL_CONFIG']['hvz_api'];
+        $api_auth = $GLOBALS['TL_CONFIG']['hvz_api_auth'];
+        if (!empty($api_url)) {
+            $doubleSide = ($arrSubmitted['type'] % 2 === 0) ? true : false;
+            // payload with missing value
+            $data = [
+                'uniqueRef' => $hvzOrderModel->orderNumber,
+                'paymentStatus' => $hvzOrderModel->payment_status,
+            ];
+            $pushMe = '';
+            try {
+                // Send order to API
+                $client = new Client(
+                    [
+                        'base_uri' => $api_url,
+                        'headers' => [
+                            'Content-Type' => 'application/json',
+                            'authorization' => 'Basic '.$api_auth,
+                        ],
+                    ]
+                );
+                $response = $client->put('/v1/order/updatePaymentStatus', ['body' => json_encode($data)]);
+
+                if (200 !== $response->getStatusCode()) {
+                    $pushMe = 'Hvb2Api:'.$data['uniqueRef']."\n StatusCode:".$response->getStatusCode()
+                              ."\n updatePaymentStatus failed";
+                } else {
+                    $responseArray = json_decode($response->getBody(), true);
+                    if (!empty($responseArray['data']['uniqueRef'])) {
+                        return $responseArray['data']['uniqueRef'];
+                    }
+                }
+            } catch (RequestException $e) {
+                $pushMe = 'Hvb2Api:'.$data['uniqueRef']."\n APICall updatePaymentStatus:".$e->getMessage();
+            }
+            if ('' !== $pushMe) {
+                PushMeMessage::pushMe($pushMe, 'ModulePaymentReceiver');
+            }
+        }
+    }
+
+    private function updateOrderStatus(HvzOrderModel $hvzOrderModel, string $status)
+    {
+        $api_url = $GLOBALS['TL_CONFIG']['hvz_api'];
+        $api_auth = $GLOBALS['TL_CONFIG']['hvz_api_auth'];
+        if (!empty($api_url)) {
+            // payload with missing value
+            $pushMe = '';
+            try {
+                // Send order to API
+                $client = new Client(
+                    [
+                        'base_uri' => $api_url,
+                        'headers' => [
+                            'Content-Type' => 'application/json',
+                            'authorization' => 'Basic '.$api_auth,
+                        ],
+                    ]
+                );
+                $response = $client->put('/v1/order/' . $hvzOrderModel->orderNumber . '/status/'. $status);
+
+                if (200 !== $response->getStatusCode()) {
+                    $pushMe = 'Hvb2Api:'.$data['uniqueRef']."\n StatusCode:".$response->getStatusCode()
+                              ."\n updateOrderStatus failed";
+                } else {
+                    $responseArray = json_decode($response->getBody(), true);
+                    if (!empty($responseArray['data']['uniqueRef'])) {
+                        return $responseArray['data'];
+                    }
+                }
+            } catch (RequestException $e) {
+                $pushMe = 'Hvb2Api:'.$data['uniqueRef']."\n APICall updateOrderStatus:".$e->getMessage();
+            }
+            if ('' !== $pushMe) {
+                PushMeMessage::pushMe($pushMe, 'ModuleHvz');
+            }
+        }
+    }
+
 }
