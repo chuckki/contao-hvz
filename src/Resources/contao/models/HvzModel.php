@@ -32,6 +32,7 @@ use Contao\Model\Collection;
  * @property string $hvz_single_og
  * @property string $hvz_only
  * @property string $hvz_extra_tag
+ * @property int $hvz_min_vorlauf
  * @property string $isFamus
  * @property string $bundesland
  * @property string $kreis
@@ -130,6 +131,8 @@ class HvzModel extends \Model
      * @var string
      */
     protected static $strTable = 'tl_hvz';
+
+    public const MINTAGEVORLAUF = 14;
 
     /**
      * Find a published HVZ from one or more categories by its ID or alias.

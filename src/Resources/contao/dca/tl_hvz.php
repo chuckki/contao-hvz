@@ -109,7 +109,7 @@ $GLOBALS['TL_DCA']['tl_hvz'] = [
     // Palettes
     'palettes' => [
         '__selector__' => ['addImage', 'addEnclosure'],
-        'default' => '{title_legend},question,alias,bundesland,kreis,land,lk,descOrt,seitentitel;{hvzinfo_preise},hvz_single,hvz_double,hvz_single_og,hvz_double_og,hvz_extra_tag,hvz_only;{hvzzusatz},hvzzusatz;{hvzinfo_legend},hvzinfo;{image_legend},addImage;{enclosure_legend:hide},addEnclosure;{publish_legend},published,featured',
+        'default' => '{title_legend},question,alias,bundesland,kreis,land,lk,descOrt,seitentitel;{hvzinfo_preise},hvz_single,hvz_double,hvz_single_og,hvz_double_og,hvz_extra_tag,hvz_only,hvz_min_vorlauf;{hvzzusatz},hvzzusatz;{hvzinfo_legend},hvzinfo;{image_legend},addImage;{enclosure_legend:hide},addEnclosure;{publish_legend},published,featured',
     ],
     // Subpalettes
     'subpalettes' => [
@@ -226,6 +226,13 @@ $GLOBALS['TL_DCA']['tl_hvz'] = [
             'exclude' => true,
             'inputType' => 'text',
             'eval' => ['maxlength' => 255, 'tl_class' => 'w50'],
+            'sql' => "varchar(255) NOT NULL default ''",
+        ],
+        'hvz_min_vorlauf' => [
+            'label' => ['Vorlauf in Tagen std=14', 'Der Kalender wird bei der Bestellung den frühmöglichsten Termin abhängig anzeigen.'],
+            'exclude' => true,
+            'inputType' => 'text',
+            'eval' => ['maxlength' => 255, 'tl_class' => 'w50', 'rgxp'=>'natural'],
             'sql' => "varchar(255) NOT NULL default ''",
         ],
         'isFamus' => [

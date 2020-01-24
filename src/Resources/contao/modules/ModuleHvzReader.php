@@ -140,6 +140,8 @@ class ModuleHvzReader extends \Module
         $this->Template->hvz_single_og = $objHvz->hvz_single_og;
         $this->Template->hvz_double_og = (!empty($objHvz->hvz_double_og)) ? $objHvz->hvz_double_og : (int) ($objHvz->hvz_single_og) + ((int) ($objHvz->hvz_double) - (int) ($objHvz->hvz_single));
 
+        $vorlauf = $objHvz->hvz_min_vorlauf ?:HvzModel::MINTAGEVORLAUF;
+        $this->Template->hvz_min_vorlauf = $vorlauf;
         $this->Template->hvz_extra_tag = $objHvz->hvz_extra_tag;
         $this->Template->hvzzusatz = $objHvz->hvzzusatz;
         $this->Template->hvzinfo = $objHvz->hvzinfo;

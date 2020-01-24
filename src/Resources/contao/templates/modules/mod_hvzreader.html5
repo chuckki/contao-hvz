@@ -1,5 +1,4 @@
 <?php if ($this->error): ?>
-
   <div
       class="<?= $this->class ?> textblock block "<?= $this->cssID ?><?php if ($this->style): ?> style="<?= $this->style ?>"<?php endif; ?>>
     <h1>Halteverbot in <em><?= $this->question ?></em> beantragen</h1>
@@ -8,8 +7,7 @@
     </div>
   </div>
 <?php else: ?>
-  <div
-      class="<?= $this->class ?> textblock block "<?= $this->cssID ?><?php if ($this->style): ?> style="<?= $this->style ?>"<?php endif; ?>>
+  <div class="<?= $this->class ?> textblock block "<?= $this->cssID ?><?php if ($this->style): ?> style="<?= $this->style ?>"<?php endif; ?>>
     <h1>Halteverbot in <em><?= $this->question ?></em> beantragen</h1>
     <div class="ce_text hvz_info block">
       <p>
@@ -471,5 +469,36 @@
     }
     ?>
 
+
+<script>
+$(document).ready(function () {
+
+    var startdate = new Date();
+    startdate.setDate(startdate.getDate() + <?= $this->hvz_min_vorlauf ?>);
+
+    var picker = new Pikaday({
+        firstDay: 1, // 1 = Montag
+        defaultDate: startdate,
+        setDefaultDate: true,
+        field: document.getElementById('ctrl_53'),
+        minDate: startdate,
+        maxDate: new Date(new Date().getFullYear() + 1 + '-12-31'),
+        i18n: {
+            previousMonth: 'vorheriger Monat',
+            nextMonth: 'nächster Monat',
+            months: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+            weekdays: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
+            weekdaysShort: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa']
+        },
+        onSelect: function (date) {
+            isDate4Preis = true;
+            updatePreis();
+        }
+    });
+
+
+    globPick = picker;
+});
+</script>
 <?php endif; ?>
 
