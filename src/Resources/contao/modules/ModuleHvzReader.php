@@ -103,6 +103,10 @@ class ModuleHvzReader extends \Module
         /** @var ModuleHvz $objHvz */
         $objHvz = HvzModel::findPublishedByParentAndIdOrAlias(\Input::get('items'), $this->hvz_categories);
 
+        dump($this->hvz_categories);
+        dump($objHvz);
+        //die();
+
         if (null === $objHvz) {
             // Do not index or cache the page
             $objPage->noSearch = 1;

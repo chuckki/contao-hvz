@@ -1,4 +1,4 @@
-<?php 
+<?php
 	$classes = explode(" ",$this->class);
 	$count = count($classes);
 	switch($classes[$count-1]){
@@ -22,9 +22,19 @@
   <<?= $this->hl ?> id="hvzlistdropdown"><?= $title ?></<?= $this->hl ?>>
 <?php endif; ?>
 
+<form>
+<select class="custom-select">
+  <option selected="">DE</option>
+  <option value="1">One</option>
+  <option value="2">Two</option>
+  <option value="3">Three</option>
+</select>
+
 <input type="text" placeholder="Name oder PLZ der Stadt eintragen" value="<?= $_REQUEST['suche'] ?>" id="tags" >
 <div class="sexp">
     Suchen Sie nach den folgenden Mustern: "<b>Berlin</b>", "<b>10115 Berlin</b>" oder "<b>10115</b>"
 </div>
+
+</form>
 
 </div>
