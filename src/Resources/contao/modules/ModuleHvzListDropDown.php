@@ -56,7 +56,8 @@ class ModuleHvzListDropDown extends \Module
 
         if (TL_MODE === 'FE') {
             $GLOBALS['TL_JAVASCRIPT'][] = '/bundles/chuckkicontaohvz/js/typeahead.bundle.min.js|static';
-            $GLOBALS['TL_JAVASCRIPT'][] = '/bundles/chuckkicontaohvz/js/searchlist.min.js|static';
+//            $GLOBALS['TL_JAVASCRIPT'][] = '/bundles/chuckkicontaohvz/js/searchlist.min.js|static';
+            $GLOBALS['TL_JAVASCRIPT'][] = '/bundles/chuckkicontaohvz/js/src/searchlist.js|static';
         }
 
         $this->hvz_categories = \StringUtil::deserialize($this->hvz_categories);

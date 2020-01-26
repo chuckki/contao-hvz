@@ -22,12 +22,11 @@
   <<?= $this->hl ?> id="hvzlistdropdown"><?= $title ?></<?= $this->hl ?>>
 <?php endif; ?>
 
-<form>
+<form id="tagsWrapper">
 <select class="custom-select">
-  <option selected="">DE</option>
-  <option value="1">One</option>
-  <option value="2">Two</option>
-  <option value="3">Three</option>
+  <option value="de" selected="">DE</option>
+  <option value="at">AT</option>
+  <option value="gb">GB</option>
 </select>
 
 <input type="text" placeholder="Name oder PLZ der Stadt eintragen" value="<?= $_REQUEST['suche'] ?>" id="tags" >
