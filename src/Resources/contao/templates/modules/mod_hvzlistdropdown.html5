@@ -23,11 +23,12 @@
 <?php endif; ?>
 
 <form id="tagsWrapper">
+<div class="country-select-wrapper">
 <select class="custom-select">
-  <option value="de" selected="">DE</option>
-  <option value="at">AT</option>
-  <option value="gb">GB</option>
+  <option value="de" selected="">DE - Deutschland</option>
+  <option value="at">AT - Österreich</option>
 </select>
+</div>
 
 <input type="text" placeholder="Name oder PLZ der Stadt eintragen" value="<?= $_REQUEST['suche'] ?>" id="tags" >
 <div class="sexp">

@@ -41,21 +41,14 @@ $(document).ready(function() {
   var country = 'de';
 
   $('.custom-select').change(function() {
-    console.log( country);
     country = this.value;
-    console.log( country);
-    });
-
-  function getCountry() {
-      return country;
-  }
+  });
 
   var myloc = new Bloodhound({
       datumTokenizer: Bloodhound.tokenizers.obj.whitespace('ort'),
       queryTokenizer: Bloodhound.tokenizers.whitespace,
       remote: {
         url: "/search/%QUERY",
-//        url: "/search/",
         wildcard: '%QUERY',
         prepare: function(query, settings) {
             settings.url = '/search/' + query + '?c=' + country;
