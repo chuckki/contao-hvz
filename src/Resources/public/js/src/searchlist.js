@@ -42,6 +42,9 @@ $(document).ready(function() {
 
   $('.custom-select').change(function() {
     country = this.value;
+    $('.country-select-wrapper').removeClass('de');
+    $('.country-select-wrapper').removeClass('at');
+    $('.country-select-wrapper').addClass(country);
   });
 
   var myloc = new Bloodhound({
