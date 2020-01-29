@@ -9,7 +9,7 @@
 $GLOBALS['TL_DCA']['tl_member']['palettes']['default'] = str_replace(
     'gender',
     //'gender,gutschein,zusatzinfo',
-    'gender,gutschein,zusatzinfo,umstid;{pay_option},paymentAllowed,isAktive_invoice',
+    'gender,gutschein,zusatzinfo,token,umstid;{pay_option},paymentAllowed,isAktive_invoice',
     $GLOBALS['TL_DCA']['tl_member']['palettes']['default']
 );
 
@@ -72,3 +72,33 @@ $GLOBALS['TL_DCA']['tl_member']['fields']['gender']    = [
     'sql'       => "varchar(32) NOT NULL default ''",
 ];
 
+$GLOBALS['TL_DCA']['tl_member']['fields']['token']    = [
+    'label'     => ['Token', 'Authentifizierungstoken für die Anbindung an Partner Software. z.B. NeoMetrik'],
+    'exclude'   => true,
+    'inputType' => 'text',
+    'eval'      => ['feEditable' => true, 'feViewable' => true, 'readonly' => true, 'feGroup' => 'personal', 'tl_class' => 'w50'],
+    'sql'       => "varchar(32) NOT NULL default ''",
+];
+
+$GLOBALS['TL_DCA']['tl_member']['fields']['password']['save_callback'][] = array('cu_tl_member', 'generateToken');
+
+
+$GLOBALS['TL_DCA']['tl_member']['config']['onsubmit_callback'][] = array('cu_tl_member', 'generateToken');
+
+class cu_tl_member extends tl_member
+{
+    public function generateToken($strPassword, $user)
+	{
+		if (!$user instanceof FrontendUser)
+		{
+			return;
+		}
+
+		$token = bin2hex(openssl_random_pseudo_bytes(16));
+
+		$this->Database->prepare("UPDATE tl_member SET token=? WHERE id=?")
+					   ->execute($token, $user->id);
+
+        return $strPassword;
+	}
+}
