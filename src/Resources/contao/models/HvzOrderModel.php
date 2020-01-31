@@ -13,6 +13,7 @@
 namespace Chuckki\ContaoHvzBundle;
 
 use Contao\Environment;
+use Contao\Model;
 use Contao\PageModel;
 use Model\Collection;
 
@@ -128,7 +129,7 @@ use Model\Collection;
  *
  * @author Dennis Esken
  */
-class HvzOrderModel extends \Model
+class HvzOrderModel extends Model
 {
     public const MWST_DECIMAL_GERMANY = 1.19;
     public const MWST_INTL_GERMANY    = 19;

@@ -31,16 +31,7 @@ use mysqli;
  */
 class ModuleHvz extends Frontend
 {
-    /**
-     * Add HVZs to the indexer.
-     *
-     * @param array $arrPages
-     * @param int   $intRoot
-     * @param bool  $blnIsSitemap
-     *
-     * @return array
-     */
-    public function getSearchablePages($arrPages, $intRoot = 0, $blnIsSitemap = false): array
+    public function getSearchablePages(array $arrPages, int $intRoot = 0, bool $blnIsSitemap = false): array
     {
         $arrRoot = [];
         if ($intRoot > 0) {
@@ -133,7 +124,7 @@ class ModuleHvz extends Frontend
         return $arrPages;
     }
 
-    public function mergeFamus()
+    public function mergeFamus(): void
     {
         // todo: mergeFamus Hvz´s ! tag 1.1
         $passw = $GLOBALS['TL_CONFIG']['dbPass'];
@@ -180,7 +171,8 @@ class ModuleHvz extends Frontend
     {
         $redirect = null;
 
-        if($arrData["formID"] == "cancel"){
+        // order cancel by customer
+        if($arrData["formID"] === "cancel"){
             $orderObj = HvzOrderModel::findOneBy('hash', System::getContainer()->get('session')->get('orderToken'));
             if($orderObj){
                 $orderObj->payment_status = "Cancelled by website user";
@@ -190,6 +182,7 @@ class ModuleHvz extends Frontend
             }
         }
 
+        // order process
         if (!empty($arrSubmitted['type'])) {
             $orderModel              = $this->createOrderAndSaveToDatabase($arrSubmitted);
             $orderModel->orderNumber = $this->sendNewOrderToBackend($orderModel);
@@ -320,7 +313,7 @@ class ModuleHvz extends Frontend
         }
     }
 
-    private function calcValidPrices(&$arrSubmitted)
+    private function calcValidPrices(&$arrSubmitted): void
     {
         $this->import('Database');
         //************************************
