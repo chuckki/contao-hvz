@@ -39,6 +39,7 @@ if ('BE' === TL_MODE) {
 }
 
 $GLOBALS['TL_MODELS']['tl_hvz'] = \Chuckki\ContaoHvzBundle\HvzModel::class;
+$GLOBALS['TL_MODELS']['tl_plz'] = \Chuckki\ContaoHvzBundle\HvzPlzModel::class;
 $GLOBALS['TL_MODELS']['tl_hvz_orders'] = \Chuckki\ContaoHvzBundle\HvzOrderModel::class;
 $GLOBALS['TL_MODELS']['tl_hvz_category'] = \Chuckki\ContaoHvzBundle\HvzCategoryModel::class;
 

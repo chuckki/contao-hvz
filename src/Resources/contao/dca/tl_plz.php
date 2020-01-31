@@ -36,7 +36,7 @@ $GLOBALS['TL_DCA']['tl_plz'] = [
             'sql' => "int(10) unsigned NOT NULL default '0'",
         ],
         'plzS' => [
-            'sql' => 'varchar(10) NOT NULL',
+            'sql' => "varchar(10) NOT NULL default ''",
         ],
     ],
 ];
