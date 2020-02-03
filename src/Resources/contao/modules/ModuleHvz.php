@@ -43,57 +43,38 @@ class ModuleHvz extends Frontend
     public function getSearchablePages($arrPages, $intRoot = 0, $blnIsSitemap = false): array
     {
         $arrRoot = [];
-        if ($intRoot > 0) {
+        if ($intRoot > 0)
+        {
             $arrRoot = $this->Database->getChildRecords($intRoot, 'tl_page');
         }
+
         $arrProcessed = [];
         $time = Date::floorToMinute();
         // Get all categories
-        $objHvz = HvzCategoryModel::findAll();
+        $objHvzCategories = HvzCategoryModel::findAll();
+
         // Walk through each category
-        if (null !== $objHvz) {
-            while ($objHvz->next()) {
-                // Skip HVZs without target page
-                if (!$objHvz->jumpTo) {
-                    continue;
-                }
+        if (null !== $objHvzCategories)
+        {
+            while ($objHvzCategories->next())
+            {
                 // Skip HVZs outside the root nodes
-                if (!empty($arrRoot) && !in_array($objHvz->jumpTo, $arrRoot, true)) {
+                if (!empty($arrRoot) && !in_array($objHvzCategories->jumpTo, $arrRoot, true)) {
                     continue;
                 }
                 // Get the URL of the jumpTo page
-                if (!isset($arrProcessed[$objHvz->jumpTo])) {
-                    $objParent = PageModel::findWithDetails($objHvz->jumpTo);
-                    // The target page does not exist
-                    if (null === $objParent) {
-                        continue;
-                    }
-                    // The target page has not been published (see #5520)
-                    if (!$objParent->published || ('' !== $objParent->start && $objParent->start > $time)
-                        || ('' !== $objParent->stop
-                            && $objParent->stop <= ($time + 60))) {
-                        continue;
-                    }
-                    if ($blnIsSitemap) {
-                        // The target page is protected (see #8416)
-                        if ($objParent->protected) {
-                            continue;
-                        }
-                        // The target page is exempt from the sitemap (see #6418)
-                        if ('map_never' === $objParent->sitemap) {
-                            continue;
-                        }
-                    }
+                if (!isset($arrProcessed[$objHvzCategories->jumpTo])) {
+                    $objParent = PageModel::findWithDetails($objHvzCategories->jumpTo);
                     // Generate the URL
-                    $arrProcessed[$objHvz->jumpTo] =
-                        $objParent->getAbsoluteUrl(Config::get('useAutoItem') ? '/%s' : '/items/%s');
+                    $arrProcessed[$objHvzCategories->jumpTo] =
+                        $objParent->getAbsoluteUrl( '/%s/%s');
                 }
-                $strUrl = $arrProcessed[$objHvz->jumpTo];
+                $strUrl = $arrProcessed[$objHvzCategories->jumpTo];
                 // Get the items
-                $objItems = HvzModel::findByPid($objHvz->id, ['order' => 'isFamus DESC, sorting']);
+                $objItems = HvzModel::findByPid($objHvzCategories->id, ['order' => 'isFamus DESC, sorting']);
                 if (null !== $objItems) {
                     while ($objItems->next()) {
-                        $arrPages[] = sprintf($strUrl, ($objItems->alias ?: $objItems->id));
+                        $arrPages[] = sprintf($strUrl, $objHvzCategories->lkz, ($objItems->alias ?: $objItems->id));
                     }
                 }
             }
