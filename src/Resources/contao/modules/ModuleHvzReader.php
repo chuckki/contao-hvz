@@ -30,6 +30,7 @@ class ModuleHvzReader extends \Module
      */
     protected $strTemplate = 'mod_hvzreader';
 
+    private $lkz = '';
     /**
      * Display a wildcard in the back end.
      *
@@ -55,8 +56,18 @@ class ModuleHvzReader extends \Module
             \Input::setGet('items', \Input::get('auto_item'));
         }
 
-        // Do not index or cache the page if no FAQ has been specified
-        if (!\Input::get('items')) {
+        // loookup via lkz
+        $lkz = key($_GET);
+
+        // no lkz found - redirect to standard = /de/
+        if($lkz === 'auto_item'){
+            $url = 'halteverbot/de/'.\Input::get('auto_item').'.html';
+            $this->redirect($url, 301);
+
+        }
+
+        // check lkz
+        if(strlen($lkz) !== 2){
             /* @var \PageModel $objPage */
             global $objPage;
 
@@ -66,13 +77,26 @@ class ModuleHvzReader extends \Module
             return '';
         }
 
+        \Input::setGet('items', \Input::get($lkz));
+        $hvzCat = HvzCategoryModel::findOneBy('lkz', $lkz);
         $this->hvz_categories = \StringUtil::deserialize($this->hvz_categories);
+
+        if(!$hvzCat or !in_array($hvzCat->id, $this->hvz_categories)){
+            /* @var \PageModel $objPage */
+            global $objPage;
+
+            $objPage->noSearch = 1;
+            $objPage->cache = 0;
+            return '';
+        }
+
+        $this->lkz = $hvzCat->id;
 
         if (TL_MODE === 'FE') {
             $GLOBALS['TL_JAVASCRIPT'][] = '/bundles/chuckkicontaohvz/js/pikaday.min.js|static';
             $GLOBALS['TL_JAVASCRIPT'][] = '/bundles/chuckkicontaohvz/js/validateForm.min.js|static';
-            //$GLOBALS['TL_BODY'][]= "<script src='/bundles/chuckkicontaohvz/js/validateForm.min.js'></script>";
         }
+
         // Do not index or cache the page if there are no categories
         if (!\is_array($this->hvz_categories) || empty($this->hvz_categories)) {
             /* @var \PageModel $objPage */
@@ -101,11 +125,8 @@ class ModuleHvzReader extends \Module
         $this->Template->referer = 'javascript:history.go(-1)';
 
         /** @var ModuleHvz $objHvz */
-        $objHvz = HvzModel::findPublishedByParentAndIdOrAlias(\Input::get('items'), $this->hvz_categories);
-
-        dump($this->hvz_categories);
-        dump($objHvz);
-        //die();
+//        $objHvz = HvzModel::findPublishedByParentAndIdOrAlias(\Input::get('items'), $this->hvz_categories);
+        $objHvz = HvzModel::findPublishedByParentAndIdOrAlias(\Input::get('items'), [$this->lkz]);
 
         if (null === $objHvz) {
             // Do not index or cache the page
@@ -126,10 +147,7 @@ class ModuleHvzReader extends \Module
                 $this->redirect($url, 301);
                 exit;
             }
-            $url = 'halteverbot-suche.html?suche='.$name;
-            // todo: look how contao log
-//            \System::getContainer()->get('monolog.logger.contao')->log(LogLevel::INFO, sprintf('Keine Stadt gefunden mit "%s" - wurde weitergeleitet zur Suche.', \Input::get('items')));
-            $this->redirect($url, 302);
+            $this->redirect('halteverbot-suche.html?suche='.$name.'&lkz='.$this->lkz, 302);
             exit;
         }
 
