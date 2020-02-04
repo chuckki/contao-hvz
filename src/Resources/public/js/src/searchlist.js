@@ -72,13 +72,13 @@ $(document).ready(function() {
     });
 
   $('#tags').on('typeahead:selected', function(evt, item) {
-    window.location.href= "/halteverbot-suche.html?suche=" + encodeURIComponent($("#tags").val());
+    window.location.href= "/halteverbot-suche.html?suche=" + encodeURIComponent($("#tags").val()) + '&c=' + country;
   });
 
   $('#tags').keypress(function (e) {
     if (e.which == 13) {
       var myURI = $("#tags").val();
-          window.location.href= "/halteverbot-suche.html?suche=" + encodeURIComponent(myURI);
+          window.location.href= "/halteverbot-suche.html?suche=" + encodeURIComponent(myURI) + '&c=' + country;
     }
   });
 

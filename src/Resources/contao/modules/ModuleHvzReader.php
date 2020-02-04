@@ -139,7 +139,7 @@ class ModuleHvzReader extends \Module
             $request = mb_strtolower($request, 'UTF-8');
 
             $hvzResult = new ModuleHvzResult();
-            $myResults = $hvzResult->searchMe($request);
+            $myResults = $hvzResult->searchMe($request, $lkz);
             $myResults = array_unique($myResults, SORT_REGULAR);
 
             if (1 === \count($myResults)) {
