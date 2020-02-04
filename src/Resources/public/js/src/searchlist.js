@@ -45,6 +45,10 @@ $(document).ready(function() {
     $('.country-select-wrapper').removeClass('de');
     $('.country-select-wrapper').removeClass('at');
     $('.country-select-wrapper').addClass(country);
+
+    theVal = $('#tags').val();
+    $("#tags").typeahead('val', '')
+    $("#tags").focus().typeahead('val',theVal).focus();
   });
 
   var myloc = new Bloodhound({

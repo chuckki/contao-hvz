@@ -125,7 +125,6 @@ class ModuleHvzReader extends \Module
         $this->Template->referer = 'javascript:history.go(-1)';
 
         /** @var ModuleHvz $objHvz */
-//        $objHvz = HvzModel::findPublishedByParentAndIdOrAlias(\Input::get('items'), $this->hvz_categories);
         $objHvz = HvzModel::findPublishedByParentAndIdOrAlias(\Input::get('items'), [$this->lkz]);
 
         if (null === $objHvz) {
