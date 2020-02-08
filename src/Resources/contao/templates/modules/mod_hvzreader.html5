@@ -1,17 +1,17 @@
 <?php if ($this->error): ?>
-  <div
-      class="<?= $this->class ?> textblock block "<?= $this->cssID ?><?php if ($this->style): ?> style="<?= $this->style ?>"<?php endif; ?>>
+
+  <div class="<?= $this->class ?> textblock block "<?= $this->cssID ?><?php if ($this->style): ?> style="<?= $this->style ?>"<?php endif; ?>>
     <h1>Halteverbot in <em><?= $this->question ?></em> beantragen</h1>
     <div class="ce_text hvz_info block">
       <p>Leider existiert kein Eintrag zur angegebenen Stadt.</p>
     </div>
   </div>
+
 <?php else: ?>
-  <div class="<?= $this->class ?> textblock block "<?= $this->cssID ?><?php if ($this->style): ?> style="<?= $this->style ?>"<?php endif; ?>>
+  <div class="country_teaser_<?= $this->lkz ?> <?= $this->class ?> textblock block "<?= $this->cssID ?><?php if ($this->style): ?> style="<?= $this->style ?>"<?php endif; ?>>
     <h1>Halteverbot in <em><?= $this->question ?></em> beantragen</h1>
     <div class="ce_text hvz_info block">
       <p>
-
         Hier können Sie einfach und unkompliziert Ihr <b>Halteverbot in <?= $this->question ?> beantragen</b>. Die unten
         stehenden Angaben geben Ihnen Informationen zur jeweiligen Preisgestaltung bei einer Halteverbotszone
         in <?= $this->question ?>. Ergänzen Sie Ihre Angaben und klicken Sie auf „Halteverbot bestellen“. Sie erhalten
@@ -73,7 +73,8 @@
 
     </div>
   </div>
-  <div id="bestellung" class="ce_form last tableform block ">
+
+  <div id="bestellung" class="order_form_<?= $this->lkz ?> ce_form last tableform block ">
     <h2 class="textblock">Bestellformular <br><b>Halteverbot in <?= $this->question ?></b></h2>
     <div id="info">
       <form enctype="application/x-www-form-urlencoded" method="post" id="f7" action="bestellformular.html">

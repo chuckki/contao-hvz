@@ -51,6 +51,9 @@ $GLOBALS['TL_DCA']['tl_hvz_orders'] = [
         'hvz_ort' => [
             'sql' => "varchar(255) NOT NULL default ''",
         ],
+        'hvz_land' => [
+            'sql' => "varchar(255) NOT NULL default ''",
+        ],
         'hvz_plz' => [
             'sql' => "varchar(255) NOT NULL default ''",
         ],

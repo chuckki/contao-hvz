@@ -8,7 +8,7 @@ $(document).ready(function() {
   }
 
   function CheckWindow(win){
-    if (win.width() < 806) { 
+    if (win.width() < 806) {
       if(!$(".searchicon").length){
         $(".logo").append('<div ontouchstart="return true;" class="searchicon fa fa-search fa-3x" ></div>');
         $(".searchicon").click(function() {
@@ -38,12 +38,29 @@ $(document).ready(function() {
     return false;
   });
 
+  var country = 'de';
+
+  $('.custom-select').change(function() {
+    country = this.value;
+    $('.country-select-wrapper').removeClass('de');
+    $('.country-select-wrapper').removeClass('at');
+    $('.country-select-wrapper').addClass(country);
+
+    theVal = $('#tags').val();
+    $("#tags").typeahead('val', '')
+    $("#tags").focus().typeahead('val',theVal).focus();
+  });
+
   var myloc = new Bloodhound({
       datumTokenizer: Bloodhound.tokenizers.obj.whitespace('ort'),
       queryTokenizer: Bloodhound.tokenizers.whitespace,
       remote: {
-        url: '/system/modules/hvz/assets/megasearch.php?ort=%QUERY',
-        wildcard: '%QUERY'
+        url: "/search/%QUERY",
+        wildcard: '%QUERY',
+        prepare: function(query, settings) {
+            settings.url = '/search/' + query + '?c=' + country;
+            return settings;
+            },
       }
   });
 
@@ -59,31 +76,13 @@ $(document).ready(function() {
     });
 
   $('#tags').on('typeahead:selected', function(evt, item) {
-    //window.location.href= "/halteverbot-anfrage.html?anfrage=" + encodeURIComponent($("#tags").val());
-    window.location.href= "/halteverbot-suche.html?suche=" + encodeURIComponent($("#tags").val());
-
-
+    window.location.href= "/halteverbot-suche.html?suche=" + encodeURIComponent($("#tags").val()) + '&c=' + country;
   });
 
-  // on enter select first element
-  /*
-  $('#tags').keypress(function (e) {
-      if (e.which == 13) {
-        if(  $(".tt-suggestion").length != 0  ){
-          $(".tt-suggestion:first-child").trigger('click');
-          return true;
-        }else{
-          var myURI = $("#tags").val();
-          window.location.href= "/halteverbot-anfrage.html?anfrage=" + encodeURIComponent(myURI);
-        }
-      }
-  });
-*/
   $('#tags').keypress(function (e) {
     if (e.which == 13) {
       var myURI = $("#tags").val();
-//      alert(myURI);
-          window.location.href= "/halteverbot-suche.html?suche=" + encodeURIComponent(myURI);
+          window.location.href= "/halteverbot-suche.html?suche=" + encodeURIComponent(myURI) + '&c=' + country;
     }
   });
 

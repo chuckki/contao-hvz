@@ -76,7 +76,7 @@ $GLOBALS['TL_DCA']['tl_hvz_category'] = [
 
     // Palettes
     'palettes' => [
-        'default' => '{title_legend},title,headline,jumpTo',
+        'default' => '{title_legend},title,headline,lkz,jumpTo',
     ],
 
     // Fields
@@ -94,6 +94,14 @@ $GLOBALS['TL_DCA']['tl_hvz_category'] = [
             'inputType' => 'text',
             'eval' => ['mandatory' => true, 'maxlength' => 255, 'tl_class' => 'w50'],
             'sql' => "varchar(255) NOT NULL default ''",
+        ],
+        'lkz' => [
+            'label' => &$GLOBALS['TL_LANG']['tl_hvz_category']['lkz'],
+            'exclude' => true,
+            'search' => true,
+            'inputType' => 'text',
+            'eval' => ['mandatory' => true, 'maxlength' => 2, 'tl_class' => 'w50'],
+            'sql' => "varchar(2) NOT NULL default ''",
         ],
         'headline' => [
             'label' => &$GLOBALS['TL_LANG']['tl_hvz_category']['headline'],

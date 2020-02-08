@@ -53,8 +53,15 @@ class ModuleHvzResult extends \Module
         return parent::generate();
     }
 
-    public function searchMe($request, $logging = true)
+    public function searchMe($request, $country='gr')
     {
+
+        if($country==='gr'){
+            dump('searchMe');
+            die("searchMe");
+        }
+
+
         $searchPLZ = [];
         $cleanPLZ = null;
         $havePlz = false;
@@ -114,9 +121,9 @@ class ModuleHvzResult extends \Module
         if ($havePlz) {
             $result_plz = $this->Database
                 ->prepare(
-                    'SELECT alias,question,bundesland,kreis,hvz_single_og,isFamus  FROM tl_hvz as a inner join tl_plz as b on a.id = b.ortid where b.plzS=? group by alias order by isFamus desc, question asc LIMIT 0, 15'
+                    'SELECT alias,question,bundesland,kreis,hvz_single_og,isFamus  FROM tl_hvz as a inner join tl_plz as b on a.id = b.ortid where b.plzS=? AND a.lk=? group by alias order by isFamus desc, question asc LIMIT 0, 15'
                 )
-                ->execute($cleanPLZ);
+                ->execute($cleanPLZ, $country);
             $tmpArray = [];
             while ($result_plz->next()) {
                 $tmpArray[] = $result_plz->row();
@@ -151,7 +158,7 @@ class ModuleHvzResult extends \Module
             $tmpArray = [];
 
             foreach ($splitAnfrage as $anfrage) {
-                $tmpArray = array_merge($this->lookupPLZandString($cleanPLZ, $anfrage.'%'), $tmpArray);
+                $tmpArray = array_merge($this->lookupPLZandString($cleanPLZ, $anfrage.'%', $country), $tmpArray);
             }
             if (!empty($tmpArray)) {
                 return $tmpArray;
@@ -178,7 +185,7 @@ class ModuleHvzResult extends \Module
             $tmpArray = [];
             $srequest = implode('%', $cleanParts);
             foreach ($this->getAlternate($srequest) as $anfrage) {
-                $tmpArray = array_merge($this->lookupPLZandString('', $anfrage.'%'), $tmpArray);
+                $tmpArray = array_merge($this->lookupPLZandString('', $anfrage.'%', $country), $tmpArray);
             }
             $myResults = array_unique($tmpArray, SORT_REGULAR);
             if (1 === \count($myResults)) {
@@ -191,7 +198,7 @@ class ModuleHvzResult extends \Module
         $tmpArray = [];
         // first check original request with replacements for results
         foreach ($this->getAlternate($requestFirst) as $anfrage) {
-            $tmpArray = array_merge($this->lookupPLZandString('', $anfrage), $tmpArray);
+            $tmpArray = array_merge($this->lookupPLZandString('', $anfrage, $country), $tmpArray);
         }
 
         $myResults = array_merge($myResults, $tmpArray);
@@ -199,7 +206,7 @@ class ModuleHvzResult extends \Module
 
         if (0 === \count($myResults)) {
             foreach ($this->getAlternate($requestFirst) as $anfrage) {
-                $tmpArray = array_merge($this->lookupPLZandString('', $anfrage.'%'), $tmpArray);
+                $tmpArray = array_merge($this->lookupPLZandString('', $anfrage.'%', $country), $tmpArray);
             }
             $myResults = array_merge($myResults, $tmpArray);
             $myResults = array_unique($myResults, SORT_REGULAR);
@@ -218,14 +225,14 @@ class ModuleHvzResult extends \Module
                 $myparts = explode(' ', $request);
                 foreach ($myparts as $part) {
                     foreach ($this->getAlternate($part) as $anfrage) {
-                        $tmpArray = array_merge($this->lookupPLZandString('', $anfrage), $tmpArray);
+                        $tmpArray = array_merge($this->lookupPLZandString('', $anfrage, $country), $tmpArray);
                     }
                 }
                 $myResults = array_unique($tmpArray, SORT_REGULAR);
                 if (0 === \count($myResults)) {
                     foreach ($myparts as $part) {
                         foreach ($this->getAlternate($part) as $anfrage) {
-                            $tmpArray = array_merge($this->lookupPLZandString('', $anfrage.'%'), $tmpArray);
+                            $tmpArray = array_merge($this->lookupPLZandString('', $anfrage.'%', $country), $tmpArray);
                         }
 
                         $myResults = array_unique($tmpArray, SORT_REGULAR);
@@ -251,18 +258,19 @@ class ModuleHvzResult extends \Module
         $this->Template->userGender = $this->User->gender;
         $this->import('Database');
         $request = trim($this->Input->get('suche'));
+        $lkz = trim($this->Input->get('c'));
         $request = mb_strtolower($request, 'UTF-8');
         //$request = htmlspecialchars($request, ENT_QUOTES, 'UTF-8');
 
-        $myResults = $this->searchMe($request);
-
+        $myResults = $this->searchMe($request, $lkz);
+        
         $this->logRequest($request, \count($myResults), '');
 
         if (!empty($myResults)) {
             $myResults = array_unique($myResults, SORT_REGULAR);
             /***    Redirect to unique result  *****/
             if (1 === \count($myResults)) {
-                $url = 'halteverbot/'.$myResults[0]['alias'].'.html';
+                $url = 'halteverbot/'.$lkz.'/'.$myResults[0]['alias'].'.html';
                 $this->redirect($url, 301);
             }
 
@@ -316,17 +324,22 @@ class ModuleHvzResult extends \Module
     }
 
     // sqp with plz and string
-    private function lookupPLZandString($plz, $string)
+    private function lookupPLZandString($plz, $string, $lkz = 'gr')
     {
+
+        if($lkz === 'gr'){
+            die("walter");
+        }
+
         $anfrage = strtolower($string);
         if (empty($plz)) {
             $result_plz = $this->Database
-                ->prepare('SELECT alias,question,bundesland,kreis,hvz_single_og,isFamus FROM tl_hvz where LOWER(question) like ? group by alias order by isFamus desc, question asc LIMIT 0, 15')
-                ->execute($anfrage);
+                ->prepare('SELECT alias,question,bundesland,kreis,hvz_single_og,isFamus FROM tl_hvz where LOWER(question) like ? AND lk=? group by alias order by isFamus desc, question asc LIMIT 0, 15')
+                ->execute($anfrage, $lkz);
         } else {
             $result_plz = $this->Database
-                ->prepare('SELECT * from (SELECT alias,question,bundesland,kreis,hvz_single_og,isFamus  FROM tl_hvz as a inner join tl_plz as b on a.id = b.ortid where b.plzS=? group by alias order by isFamus desc, question asc LIMIT 0, 15) as a where LOWER(question) like ?')
-                ->execute($plz, $anfrage);
+                ->prepare('SELECT * from (SELECT alias,question,bundesland,kreis,hvz_single_og,isFamus  FROM tl_hvz as a inner join tl_plz as b on a.id = b.ortid where b.plzS=? AND a.lk=? group by alias order by isFamus desc, question asc LIMIT 0, 15) as a where LOWER(question) like ?')
+                ->execute($plz, $anfrage, $lkz);
         }
 
         $tmpArray = [];

@@ -22,6 +22,7 @@ use Contao\Model\Collection;
  * @property string $title
  * @property string $headline
  * @property int    $jumpTo
+ * @property string $lkz
  * @property bool   $allowComments
  * @property string $notify
  * @property string $sortOrder

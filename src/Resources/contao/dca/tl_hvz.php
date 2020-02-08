@@ -566,25 +566,29 @@ class tl_hvz extends Backend
         $autoAlias = false;
 
         // Generate alias if there is none
-        if ('' === $varValue) {
+        if ('' === $varValue)
+        {
             $autoAlias = true;
-            $varValue = StringUtil::standardize(StringUtil::restoreBasicEntities($dc->activeRecord->question));
+            //$varValue = StringUtil::standardize(StringUtil::restoreBasicEntities($dc->activeRecord->question));
+            $varValue = StringUtil::generateAlias($dc->activeRecord->question);
         }
 
-        $objAlias = $this->Database->prepare('SELECT id FROM tl_hvz WHERE alias=?')
-            ->execute($varValue);
+		$objAlias = $this->Database->prepare("SELECT id FROM tl_hvz WHERE alias=? AND id!=?")
+								   ->execute($varValue, $dc->id);
 
-        // Check whether the news alias exists
-        if ($objAlias->numRows > 1 && !$autoAlias) {
-            throw new Exception(sprintf($GLOBALS['TL_LANG']['ERR']['aliasExists'], $varValue));
-        }
 
-        // Add ID to alias
-        if ($objAlias->numRows && $autoAlias) {
-            $varValue .= '-'.$dc->id;
-        }
+		// Check whether the FAQ alias exists
+		if ($objAlias->numRows)
+		{
+			if (!$autoAlias)
+			{
+				throw new Exception(sprintf($GLOBALS['TL_LANG']['ERR']['aliasExists'], $varValue));
+			}
 
-        return $varValue;
+			$varValue .= '-' . $dc->id;
+		}
+
+		return $varValue;
     }
 
     /**
