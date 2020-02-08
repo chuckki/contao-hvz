@@ -36,6 +36,7 @@ use Contao\Model\Collection;
  * @property string $bundesland
  * @property string $kreis
  * @property string $land
+ * @property string $lk
  * @property string $plz
  * @property string $featured
  * @property bool   $addImage

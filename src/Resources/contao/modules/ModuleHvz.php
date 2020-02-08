@@ -367,6 +367,8 @@ class ModuleHvz extends Frontend
 
     private function createOrderAndSaveToDatabase(&$arrSubmitted): HvzOrderModel
     {
+        $hvzObj = HvzModel::findById($arrSubmitted['hvzID']);
+
         $this->cleanUpSubmit($arrSubmitted);
         $hvzOrder                      = new HvzOrderModel();
         $hvzOrder->tstamp              = time();
@@ -383,6 +385,7 @@ class ModuleHvz extends Frontend
         $hvzOrder->hvz_type_name       = $arrSubmitted['Genehmigung'];
         $hvzOrder->hvz_ge_vorhanden    = substr($arrSubmitted['genehmigungVorhanden'], 0, 1);
         $hvzOrder->hvz_ort             = $arrSubmitted['Ort'];
+        $hvzOrder->hvz_land            = $hvzObj->land;
         $hvzOrder->hvz_plz             = $arrSubmitted['PLZ'];
         $hvzOrder->hvz_strasse_nr      = $arrSubmitted['Strasse'];
         $hvzOrder->hvz_vom             = $arrSubmitted['vom'];
@@ -450,6 +453,7 @@ class ModuleHvz extends Frontend
                 'name'           => $orderModel->re_name,
                 'strasse'        => $orderModel->re_strasse_nr,
                 'ort'            => $orderModel->re_ort_plz,
+                'country'        => $orderModel->hvz_land,
                 'telefon'        => $orderModel->re_telefon,
                 'needLicence'    => $orderModel->hvz_type <= 2,
                 'gender'         => $orderModel->re_anrede === 'Herr' ? 'male' : 'female',
