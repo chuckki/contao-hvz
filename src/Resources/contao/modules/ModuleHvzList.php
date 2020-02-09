@@ -139,7 +139,7 @@ class ModuleHvzList extends \Module
 
             ++$blParm;
             $result_plz = $this->Database
-                ->prepare('SELECT kreis FROM tl_hvz where bundesland = ? group by kreis order by kreis asc')
+                ->prepare('SELECT kreis FROM tl_hvz where lk="de" and bundesland = ? group by kreis order by kreis asc')
                 ->execute($blParm);
 
             while ($result_plz->next()) {
@@ -177,7 +177,7 @@ class ModuleHvzList extends \Module
             $firstLetterKreis = substr($kreis, 0, 1).'%';
 
             $result_plz = $this->Database
-                ->prepare('SELECT kreis FROM tl_hvz where lower(kreis) like ? group by kreis order by kreis asc')
+                ->prepare('SELECT kreis FROM tl_hvz where lk="de" and lower(kreis) like ? group by kreis order by kreis asc')
                 ->execute($firstLetterKreis);
 
             while ($result_plz->next()) {
@@ -194,7 +194,7 @@ class ModuleHvzList extends \Module
             $myReturn['title'] = $currentKreis;
 
             $result_plz = $this->Database
-                ->prepare('SELECT question,alias FROM tl_hvz where kreis = ? group by alias order by question asc')
+                ->prepare('SELECT question,alias FROM tl_hvz where lk="de" and kreis = ? group by alias order by question asc')
                 ->execute($currentKreis);
 
             while ($result_plz->next()) {
