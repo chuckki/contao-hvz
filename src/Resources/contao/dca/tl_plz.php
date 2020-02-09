@@ -38,5 +38,8 @@ $GLOBALS['TL_DCA']['tl_plz'] = [
         'plzS' => [
             'sql' => "varchar(10) NOT NULL default ''",
         ],
+        'lk' => [
+            'sql' => "varchar(2) NOT NULL default ''",
+        ],
     ],
 ];
