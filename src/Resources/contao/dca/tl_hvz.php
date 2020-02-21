@@ -122,9 +122,6 @@ $GLOBALS['TL_DCA']['tl_hvz'] = [
         'id' => [
             'sql' => 'int(10) unsigned NOT NULL auto_increment',
         ],
-        'old_id' => [
-            'sql' => 'int(10) NOT NULL',
-        ],
         'pid' => [
             'foreignKey' => 'tl_hvz_category.title',
             'sql' => "int(10) unsigned NOT NULL default '0'",

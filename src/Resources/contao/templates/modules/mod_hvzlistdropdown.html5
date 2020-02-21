@@ -25,8 +25,9 @@
 <form id="tagsWrapper">
 <div class="country-select-wrapper">
 <select class="custom-select">
-  <option value="de" selected="">DE - Deutschland</option>
-  <option value="at">AT - Österreich</option>
+  <?php foreach ($this->hvzCats as $hvzCat): ?>
+  <option value="<?= $hvzCat->lkz ?>"<?php  if($hvzCat->lkz == 'de'): ?> selected=""<?php endif; ?>><?= $hvzCat->headline ?></option>
+  <?php endforeach; ?>
 </select>
 </div>
 

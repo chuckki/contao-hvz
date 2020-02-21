@@ -80,9 +80,11 @@ class ModuleHvzListDropDown extends \Module
      */
     protected function compile()
     {
+        $hvzCats = HvzCategoryModel::findAll();
         /* @var \PageModel $objPage */
         global $objPage;
         $this->Template->suche = \Input::get('suche');
+        $this->Template->hvzCats = $hvzCats;
     }
 
     /**
