@@ -89,11 +89,6 @@ class cu_tl_member extends tl_member
 {
     public function generateToken($strPassword, $user)
 	{
-		if (!$user instanceof FrontendUser)
-		{
-			return;
-		}
-
 		$token = bin2hex(openssl_random_pseudo_bytes(16));
 
 		$this->Database->prepare("UPDATE tl_member SET token=? WHERE id=?")
