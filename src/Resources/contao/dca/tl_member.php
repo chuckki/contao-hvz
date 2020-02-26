@@ -84,9 +84,20 @@ $GLOBALS['TL_DCA']['tl_member']['fields']['password']['save_callback'][] = array
 
 
 $GLOBALS['TL_DCA']['tl_member']['config']['onsubmit_callback'][] = array('cu_tl_member', 'generateToken');
+$GLOBALS['TL_HOOKS']['createNewUser'][] = [cu_tl_member::class, 'addToken'];
+
+
 
 class cu_tl_member extends tl_member
 {
+    public function addToken(int $userId, array $userData, Module $module): void
+    {
+		$token = bin2hex(openssl_random_pseudo_bytes(16));
+
+		$this->Database->prepare("UPDATE tl_member SET token=? WHERE id=?")
+					   ->execute($token, $userId);
+    }
+
     public function generateToken($strPassword, $user)
 	{
 		$token = bin2hex(openssl_random_pseudo_bytes(16));
