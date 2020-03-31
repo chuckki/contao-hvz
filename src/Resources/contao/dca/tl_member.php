@@ -98,13 +98,14 @@ class cu_tl_member extends tl_member
 					   ->execute($token, $userId);
     }
 
-    public function generateToken($strPassword, $user)
+    public function generateToken($strPassword, $user=null)
 	{
-		$token = bin2hex(openssl_random_pseudo_bytes(16));
+	    if($user){
+            $token = bin2hex(openssl_random_pseudo_bytes(16));
 
-		$this->Database->prepare("UPDATE tl_member SET token=? WHERE id=?")
-					   ->execute($token, $user->id);
-
+            $this->Database->prepare("UPDATE tl_member SET token=? WHERE id=?")
+                           ->execute($token, $user->id);
+        }
         return $strPassword;
 	}
 }
