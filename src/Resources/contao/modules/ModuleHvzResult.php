@@ -10,6 +10,8 @@
 
 namespace Chuckki\ContaoHvzBundle;
 
+use Contao\Input;
+
 class ModuleHvzResult extends \Module
 {
     protected $bLand = [
@@ -257,14 +259,19 @@ class ModuleHvzResult extends \Module
         $this->import('FrontendUser', 'User');
         $this->Template->userGender = $this->User->gender;
         $this->import('Database');
-        $request = trim($this->Input->get('suche'));
-        $lkz = trim($this->Input->get('c'));
+
+        $request = Input::get('suche',true);
+        $request = htmlentities($request, ENT_QUOTES, 'UTF-8');
         $request = mb_strtolower($request, 'UTF-8');
-        //$request = htmlspecialchars($request, ENT_QUOTES, 'UTF-8');
+
+        $lkz = Input::get('c',true);
+        $lkz = htmlentities($request, ENT_QUOTES, 'UTF-8');
+        $lkz = mb_strtolower($request, 'UTF-8');
+
 
         $myResults = $this->searchMe($request, $lkz);
-        
-        $this->logRequest($request, \count($myResults), '');
+        $hits = $myResults ?  \count($myResults) :0;
+        $this->logRequest($request, $hits, '');
 
         if (!empty($myResults)) {
             $myResults = array_unique($myResults, SORT_REGULAR);
@@ -278,11 +285,10 @@ class ModuleHvzResult extends \Module
                 $myResults[$i]['bundesland'] = $this->bLand[$myResults[$i]['bundesland']];
             }
         }
-        if ('' !== $_REQUEST['suche'] and null !== $_REQUEST['suche']) {
-            $this->Template->suche = $_REQUEST['suche'];
-        }
+
+        $this->Template->suche = $request;
         $this->Template->searchResult = $myResults;
-        $this->Template->ergAnzahl = \count($myResults);
+        $this->Template->ergAnzahl = $hits;
         $this->Template->error = $this->error;
     }
 

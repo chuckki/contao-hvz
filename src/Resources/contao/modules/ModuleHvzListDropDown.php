@@ -56,7 +56,6 @@ class ModuleHvzListDropDown extends \Module
 
         if (TL_MODE === 'FE') {
             $GLOBALS['TL_JAVASCRIPT'][] = '/bundles/chuckkicontaohvz/js/typeahead.bundle.min.js|static';
-//            $GLOBALS['TL_JAVASCRIPT'][] = '/bundles/chuckkicontaohvz/js/searchlist.min.js|static';
             $GLOBALS['TL_JAVASCRIPT'][] = '/bundles/chuckkicontaohvz/js/src/searchlist.js|static';
         }
 
@@ -83,7 +82,7 @@ class ModuleHvzListDropDown extends \Module
         $hvzCats = HvzCategoryModel::findAll();
         /* @var \PageModel $objPage */
         global $objPage;
-        $this->Template->suche = \Input::get('suche');
+        $this->Template->suche = htmlentities(\Input::get('suche',true),ENT_QUOTES);
         $this->Template->hvzCats = $hvzCats;
     }
 
