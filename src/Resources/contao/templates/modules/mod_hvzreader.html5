@@ -425,7 +425,15 @@
                             <input  <?php if ($this->isUser): ?>checked="checked" <?php endif; ?>type="radio" value="invoice" class="radio"
                                                                               id="pay_offline" name="Payment">
                             Bezahlen via Rechnung</label>
-                    <?php endif; ?>
+                    <?php else: ?>
+
+                      <?php if ($this->isUser): ?>
+                        <label class="btn">Bestellungen auf Rechnung zur Zeit nicht möglich, setzen Sie sich mit uns in Verbindung.</label>
+                      <?php else: ?>
+                      <label class="btn">Bei Bestelllungen auf Rechnung registrieren Sie sich&nbsp;<a href="/registrierung.html" title="Registrierung"> hier</a>.</label>
+                      <?php endif; ?>
+
+                   <?php endif; ?>
 
                 </div>
               </fieldset>
