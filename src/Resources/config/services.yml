@@ -19,3 +19,8 @@ services:
         arguments:
             - '@monolog.logger'
             - '@contao.framework'
+
+    Chuckki\ContaoHvzBundle\EventListener\ActivateAccountListener:
+        public: true
+        arguments:
+            - '@swiftmailer.mailer.default'

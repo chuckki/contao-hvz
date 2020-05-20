@@ -74,6 +74,10 @@ if(!empty($GLOBALS['TL_HOOKS']['processFormData'])){
 }else{
     $GLOBALS['TL_HOOKS']['processFormData'][] = [ModuleHvz::class, 'saveFormData'];
 }
+
+// contao/config.php
+$GLOBALS['TL_HOOKS']['activateAccount'][] = [Chuckki\ContaoHvzBundle\EventListener\ActivateAccountListener::class, 'onActivateAccount'];
+
 $GLOBALS['TL_CRON']['monthly'][] = [ModuleHvz::class, 'mergeFamus'];
 
 /*
