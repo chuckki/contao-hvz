@@ -55,7 +55,7 @@
             </div>
           <?php endif; ?>
       </div>
-      <p class="mwstInfo"><i class="fa fa-asterisk"></i><small> Alle Preise sind inklusive 19% Mehrwertsteuer</small>
+      <p class="mwstInfo"><i class="fa fa-asterisk"></i><small> Alle Preise sind inklusive 16% Mehrwertsteuer</small>
       </p>
 
 
