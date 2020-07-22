@@ -265,8 +265,8 @@ class ModuleHvzResult extends \Module
         $request = mb_strtolower($request, 'UTF-8');
 
         $lkz = Input::get('c',true);
-        $lkz = htmlentities($request, ENT_QUOTES, 'UTF-8');
-        $lkz = mb_strtolower($request, 'UTF-8');
+        $lkz = htmlentities($lkz, ENT_QUOTES, 'UTF-8');
+        $lkz = mb_strtolower($lkz, 'UTF-8');
 
 
         $myResults = $this->searchMe($request, $lkz);
