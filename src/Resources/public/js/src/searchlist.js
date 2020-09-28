@@ -44,6 +44,7 @@ $(document).ready(function() {
     country = this.value;
     $('.country-select-wrapper').removeClass('de');
     $('.country-select-wrapper').removeClass('at');
+    $('.country-select-wrapper').removeClass('ch');
     $('.country-select-wrapper').addClass(country);
 
     theVal = $('#tags').val();
