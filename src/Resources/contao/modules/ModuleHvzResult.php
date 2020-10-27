@@ -259,14 +259,14 @@ class ModuleHvzResult extends \Module
         $this->import('FrontendUser', 'User');
         $this->Template->userGender = $this->User->gender;
         $this->import('Database');
-
-        $request = Input::get('suche',true);
-        $request = htmlentities($request, ENT_QUOTES, 'UTF-8');
+        $request = trim($this->Input->get('suche'));
+        $lkz = trim($this->Input->get('c'));
         $request = mb_strtolower($request, 'UTF-8');
+        //$request = htmlspecialchars($request, ENT_QUOTES, 'UTF-8');
 
-        $lkz = Input::get('c',true);
-        $lkz = htmlentities($lkz, ENT_QUOTES, 'UTF-8');
-        $lkz = mb_strtolower($lkz, 'UTF-8');
+        $myResults = $this->searchMe($request, $lkz);
+
+        $this->logRequest($request, \count($myResults), '');
 
 
         $myResults = $this->searchMe($request, $lkz);

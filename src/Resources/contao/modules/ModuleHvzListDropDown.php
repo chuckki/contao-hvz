@@ -82,7 +82,7 @@ class ModuleHvzListDropDown extends \Module
         $hvzCats = HvzCategoryModel::findAll();
         /* @var \PageModel $objPage */
         global $objPage;
-        $this->Template->suche = htmlentities(\Input::get('suche',true),ENT_QUOTES);
+        $this->Template->suche = htmlentities(\Input::get('suche'),ENT_QUOTES);
         $this->Template->hvzCats = $hvzCats;
     }
 
