@@ -335,10 +335,10 @@ class ModuleHvz extends Frontend
         if (!empty($arrSubmitted['rabattCode'])) {
             $rabatt = HvzRabattModel::findRabattOnCode($arrSubmitted['rabattCode']);
             $arrSubmitted['Rabatt'] = ($rabatt) ? (int) $rabatt : 0;
-            $netto = $this->roundTo2($arrSubmitted['fullPrice'] / 119 * 100);
+            $netto = $this->roundTo2($arrSubmitted['fullPrice'] / (100 + HvzOrderModel::MWST_INTL_GERMANY) * 100);
             $arrSubmitted['rabattValue'] = $this->roundTo2($netto / 100 * $rabatt);
             $zwischenSummer              = $netto - $arrSubmitted['rabattValue'];
-            $newMsst                     = $this->roundTo2($zwischenSummer * 0.19);
+            $newMsst                     = $this->roundTo2($zwischenSummer * (HvzOrderModel::MWST_INTL_GERMANY / 100));
             $arr                         = [
                 'brutto'        => number_format($arrSubmitted['fullPrice'], 2),
                 'netto'         => $netto,
@@ -354,7 +354,7 @@ class ModuleHvz extends Frontend
             $arrSubmitted['fullPrice'] = $newMsst + $zwischenSummer;
         }
         $arrSubmitted['Preis'] = $arrSubmitted['fullPrice'];
-        $arrSubmitted['fullNetto'] = number_format(($arrSubmitted['fullPrice'] / 119 * 100), 2);
+        $arrSubmitted['fullNetto'] = number_format(($arrSubmitted['fullPrice'] / (100 + HvzOrderModel::MWST_INTL_GERMANY) * 100), 2);
         $arrSubmitted['preisDetaisl'] = $arr;
     }
 

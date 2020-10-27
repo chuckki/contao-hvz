@@ -162,6 +162,8 @@ class ModuleHvzReader extends \Module
         $this->Template->hvz_single_og = $objHvz->hvz_single_og;
         $this->Template->hvz_double_og = (!empty($objHvz->hvz_double_og)) ? $objHvz->hvz_double_og : (int) ($objHvz->hvz_single_og) + ((int) ($objHvz->hvz_double) - (int) ($objHvz->hvz_single));
 
+        $this->Template->MwSt = HvzOrderModel::MWST_INTL_GERMANY;
+
         $vorlauf = $objHvz->hvz_min_vorlauf ?:HvzModel::MINTAGEVORLAUF;
         $this->Template->hvz_min_vorlauf = $vorlauf;
         $this->Template->hvz_extra_tag = $objHvz->hvz_extra_tag;
