@@ -151,13 +151,14 @@ class HvzModel extends \Model
         }
 
         $t = static::$strTable;
-        $arrColumns = ["($t.id=? OR $t.alias=?) AND pid IN(".implode(',', array_map('intval', $arrPids)).')'];
+		$arrColumns = !preg_match('/^[1-9]\d*$/', $varId) ? array("BINARY $t.alias=?") : array("$t.id=?");
+		$arrColumns[] = "$t.pid IN(" . implode(',', array_map('\intval', $arrPids)) . ")";
 
         if (isset($arrOptions['ignoreFePreview']) || !BE_USER_LOGGED_IN) {
             $arrColumns[] = "$t.published='1'";
         }
 
-        return static::findOneBy($arrColumns, [(is_numeric($varId) ? $varId : 0), $varId], $arrOptions);
+        return static::findOneBy($arrColumns, $varId, $arrOptions);
     }
 
     /**

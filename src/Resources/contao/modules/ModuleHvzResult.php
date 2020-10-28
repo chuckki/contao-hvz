@@ -58,12 +58,6 @@ class ModuleHvzResult extends \Module
     public function searchMe($request, $country='gr')
     {
 
-        if($country==='gr'){
-            dump('searchMe');
-            die("searchMe");
-        }
-
-
         $searchPLZ = [];
         $cleanPLZ = null;
         $havePlz = false;
@@ -263,6 +257,10 @@ class ModuleHvzResult extends \Module
         $lkz = trim($this->Input->get('c'));
         $request = mb_strtolower($request, 'UTF-8');
         //$request = htmlspecialchars($request, ENT_QUOTES, 'UTF-8');
+
+        if(empty($lkz)){
+            $lkz =  trim($this->Input->get('lkz'));
+        }
 
         $myResults = $this->searchMe($request, $lkz);
 

@@ -31,6 +31,7 @@ class ModuleHvzReader extends \Module
     protected $strTemplate = 'mod_hvzreader';
 
     private $lkz = '';
+    private $catId = 0;
     /**
      * Display a wildcard in the back end.
      *
@@ -90,7 +91,8 @@ class ModuleHvzReader extends \Module
             return '';
         }
 
-        $this->lkz = $hvzCat->id;
+        $this->lkz = $hvzCat->lkz;
+        $this->catId = $hvzCat->id;
 
         if (TL_MODE === 'FE') {
             $GLOBALS['TL_JAVASCRIPT'][] = '/bundles/chuckkicontaohvz/js/pikaday.min.js|static';
@@ -125,7 +127,7 @@ class ModuleHvzReader extends \Module
         $this->Template->referer = 'javascript:history.go(-1)';
 
         /** @var HvzModel $objHvz */
-        $objHvz = HvzModel::findPublishedByParentAndIdOrAlias(\Input::get('items'), [$this->lkz]);
+        $objHvz = HvzModel::findPublishedByParentAndIdOrAlias(\Input::get('items'), [$this->catId]);
 
         if (null === $objHvz) {
             // Do not index or cache the page
