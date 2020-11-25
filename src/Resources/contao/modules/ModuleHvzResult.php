@@ -69,7 +69,7 @@ class ModuleHvzResult extends \Module
             // clean up request
             $request = strtolower(html_entity_decode($request));
             $request = trim($request);
-            $danger = '/^([a-zA-Z0-9öäüßÖÄÜß,.() \n\r-]+)$/is';
+            $danger = '/^([\p{L}a-zA-Z0-9öäüßÖÄÜß,.() \n\r-]+)$/is';
             if (!preg_match($danger, $request)) {
                 $this->error = 'Bitte benutzen Sie keine Sonderzeichen bei Ihrer Eingabe.';
                 if ($logging) {
@@ -264,7 +264,7 @@ class ModuleHvzResult extends \Module
 
         $myResults = $this->searchMe($request, $lkz);
 
-        $this->logRequest($request, \count($myResults), '');
+        $this->logRequest($request, ($myResults) ? \count($myResults) : 0, '');
 
 
         $myResults = $this->searchMe($request, $lkz);
