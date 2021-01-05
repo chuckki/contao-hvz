@@ -132,8 +132,8 @@ use Model\Collection;
  */
 class HvzOrderModel extends Model
 {
-    public const MWST_DECIMAL_GERMANY = 1.16;
-    public const MWST_INTL_GERMANY    = 16;
+    public const MWST_DECIMAL_GERMANY = 1.19;
+    public const MWST_INTL_GERMANY    = 19;
 
     /**
      * Table name.
