@@ -9,12 +9,14 @@ services:
                 - ["setContainer", ["@service_container"]]
 
     chuckki.contao_hvz_bundle.paypal:
+        public: true
         class: Chuckki\ContaoHvzBundle\HvzPaypal
         arguments:
             - '@monolog.logger'
             - '@contao.framework'
 
     chuckki.contao_hvz_bundle.klarna:
+        public: true
         class: Chuckki\ContaoHvzBundle\HvzKlarna
         arguments:
             - '@monolog.logger'
