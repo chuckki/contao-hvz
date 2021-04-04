@@ -292,43 +292,27 @@
               </div>
             </div>
 
+            <div class="formRow" id="fahrzeug">
+              <label for="ctrl_65" class="select mandatory">
+                <span class="invisible">Pflichtfeld </span>für welche Fahrzeugart<span class="mandatory">*</span>
+              </label>
 
+              <select name="Fahrzeug" id="ctrl_65" class="select mandatory" required="">
+                <option value="Fahrzeug bis 3,5t" selected="">Fahrzeug bis 3,5t</option>
+                <option value="Fahrzeug bis 7,5t">Fahrzeug bis 7,5t</option>
+                <option value="Fahrzeug bis 18t">Fahrzeug bis 18t</option>
+                <option value="Fahrzeug bis 40t">Fahrzeug bis 40t</option>
+              </select>
+            </div>
 
-<div class="formRow" id="fahrzeug">
-        <label for="ctrl_65" class="select mandatory">
-              <span class="invisible">Pflichtfeld </span>für welche Fahrzeugart<span class="mandatory">*</span>
-          </label>
-
-  <select name="Fahrzeug" id="ctrl_65" class="select mandatory" required="">
-
-              <option value="Fahrzeug bis 3,5t" selected="">Fahrzeug bis 3,5t</option>
-
-
-              <option value="Fahrzeug größer 3,5t (LKW)">Fahrzeug größer 3,5t (LKW)</option>
-
-
-              <option value="Fahrzeug größer 3,5t (LKW)">Fahrzeug größer 3,5t (LKW)</option>
-
-            </select>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            <div class="formRow">
+              <div id="fahrzeugTonne">
+                <p>
+                  <strong>Bitte beachten Sie:</strong><br>
+                  Ab 7,5t kann es zu Mehrkosten der Behörden kommen.
+                </p>
+              </div>
+            </div>
 
             <div class="formRow">
               <label class="zusatzinfo" for="ctrl_66">Zusatzinformationen</label> <textarea cols="40" rows="6"
