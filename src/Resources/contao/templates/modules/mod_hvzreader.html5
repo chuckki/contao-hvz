@@ -292,20 +292,26 @@
               </div>
             </div>
 
-            <div class="formRow floatme" id="fahrzeug">
-              <span class="expl">für welche Fahrzeugart</span>
-              <input type="hidden" value="" name="Fahrzeug">
-
-              <label for="opt_65_0" id="lbl_65_0" class="btn car floatmeL">
-                <input type="radio" value="Fahrzeug bis 3,5t" class="radio" id="opt_65_0" checked="checked"
-                       name="Fahrzeug">
-                Fahrzeug bis 3,5t
+            <div class="formRow" id="fahrzeug">
+              <label for="ctrl_65" class="select mandatory">
+                <span class="invisible">Pflichtfeld </span>für welche Fahrzeugart<span class="mandatory">*</span>
               </label>
 
-              <label for="opt_65_1" id="lbl_65_1" class="btn lkw floatmeR">
-                <input type="radio" value="Fahrzeug größer 3,5t (LKW)" class="radio" id="opt_65_1" name="Fahrzeug">
-                Fahrzeug größer 3,5t
-              </label>
+              <select name="Fahrzeug" id="ctrl_65" class="select mandatory" required="">
+                <option value="Fahrzeug bis 3,5t" selected="">Fahrzeug bis 3,5t</option>
+                <option value="Fahrzeug bis 7,5t">Fahrzeug bis 7,5t</option>
+                <option value="Fahrzeug bis 18t">Fahrzeug bis 18t</option>
+                <option value="Fahrzeug bis 40t">Fahrzeug bis 40t</option>
+              </select>
+            </div>
+
+            <div class="formRow">
+              <div id="fahrzeugTonne">
+                <p>
+                  <strong>Bitte beachten Sie:</strong><br>
+                  Ab 7,5t kann es zu Mehrkosten der Behörden kommen.
+                </p>
+              </div>
             </div>
 
             <div class="formRow">
