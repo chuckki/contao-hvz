@@ -131,6 +131,7 @@ class ModulePaymentReceiver extends AbstractFrontendModule
             'form_firma' => $orderObj->re_firma,
             'form_strasse_rechnung' => $orderObj->re_strasse_nr,
             'form_ort_rechnung' => $orderObj->re_ort_plz,
+            'form_billingmail' => $orderObj->re_bemail,
         ];
         $objNotification = Notification::findByPk($GLOBALS['TL_CONFIG']['notifications']);
         if (null !== $objNotification) {

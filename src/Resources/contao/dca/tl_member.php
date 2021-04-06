@@ -8,11 +8,18 @@
  */
 $GLOBALS['TL_DCA']['tl_member']['palettes']['default'] = str_replace(
     'gender',
-    //'gender,gutschein,zusatzinfo',
-    'gender,gutschein,zusatzinfo,token,umstid;{pay_option},paymentAllowed,isAktive_invoice,internInfo',
+    'gender,gutschein,billing_mail,zusatzinfo,token,umstid;{pay_option},paymentAllowed,isAktive_invoice,internInfo',
     $GLOBALS['TL_DCA']['tl_member']['palettes']['default']
 );
 
+$GLOBALS['TL_DCA']['tl_member']['fields']['billing_mail']    = [
+    'label'                   =>  ['Rechnungs-E-Mail-Adresse', 'Falls Sie Rechnungen an eine bestimmte E-Mail gesendet bekommen möchten, können Sie hier diese angeben.'],
+    'exclude'                 => true,
+    'search'                  => true,
+    'inputType'               => 'text',
+    'eval'                    => array('maxlength'=>255, 'rgxp'=>'email', 'decodeEntities'=>true, 'feEditable'=>true, 'feViewable'=>true, 'feGroup'=>'contact', 'tl_class'=>'w50'),
+    'sql'                     => "varchar(255) NOT NULL default ''"
+];
 
 $GLOBALS['TL_DCA']['tl_member']['fields']['street']['label'] = ['Strasse und Hausnummer', ''];
 $GLOBALS['TL_DCA']['tl_member']['fields']['zusatzinfo']      = [

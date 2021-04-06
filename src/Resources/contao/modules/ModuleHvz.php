@@ -262,6 +262,7 @@ class ModuleHvz extends Frontend
         $this->import('FrontendUser', 'user');
         if (FE_USER_LOGGED_IN) {
             $arrSubmitted['customerId'] = $this->user->id;
+            $arrSubmitted['billingmail'] = $this->user->billing_mail;
         }
         // add $umstid
         if (empty($arrSubmitted['umstid'])) {
@@ -363,6 +364,10 @@ class ModuleHvz extends Frontend
         $hvzObj = HvzModel::findById($arrSubmitted['hvzID']);
 
         $this->cleanUpSubmit($arrSubmitted);
+        if(!empty($arrSubmitted['billingmail'])){
+            $arrSubmitted['Zusatzinformationen'] .= 'Rechnung an: '.$arrSubmitted['billingmail'];
+        }
+
         $hvzOrder                      = new HvzOrderModel();
         $hvzOrder->tstamp              = time();
         $hvzOrder->hvz_solo_price      = $arrSubmitted['hvz_solo_price'];
@@ -411,6 +416,7 @@ class ModuleHvz extends Frontend
         $hvzOrder->hvz_id              = $arrSubmitted['hvzID'];
         $hvzOrder->choosen_payment     = \Input::post('Payment');
         $hvzOrder->klarna_order_id     = '';
+        $hvzOrder->re_bemail           = $arrSubmitted['billingmail'];
         $hvzOrder->generateHash();
         $hvzOrder->save();
 

@@ -66,6 +66,7 @@ use Model\Collection;
  * @property string $re_strasse_nr
  * @property string $re_ort_plz
  * @property string $re_email
+ * @property string $re_bemail
  * @property string $re_telefon
  * @property string $re_ip
  * @property string $re_agb_akzeptiert

@@ -120,6 +120,9 @@ $GLOBALS['TL_DCA']['tl_hvz_orders'] = [
         're_email' => [
             'sql' => "varchar(255) NOT NULL default ''",
         ],
+        're_bemail' => [
+            'sql' => "varchar(255) NOT NULL default ''",
+        ],
         're_telefon' => [
             'sql' => "varchar(255) NOT NULL default ''",
         ],
